@@ -24,7 +24,7 @@ public final class TestCodeData {
     private final GenerationMode mode;
     private final Long seed;
 
-    TestCodeData(ClassInfo classInfo, TestFixture fixture,
+    public TestCodeData(ClassInfo classInfo, TestFixture fixture,
                  String targetPackage, TestKitTemplate template,
                  ProjectType projectType, GenerationMode mode, Long seed) {
         this.classInfo = classInfo;

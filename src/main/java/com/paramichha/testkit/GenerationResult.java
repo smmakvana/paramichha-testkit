@@ -1,71 +1,66 @@
 package com.paramichha.testkit;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
- * Output of {@link TestKit#generateTest()} — the generated Java source.
+ * Output of {@link TestKit#generateTest()} or {@link TestKit#generateTests()}.
  *
- * <p>On write: unused imports are removed, then source is formatted
- * using Google Java Format — clean, consistent output every time.
- * Falls back to raw source if JVM flags are missing.
+ * <p>Contains one or more {@link JavaSourceCode}s:
+ * <ul>
+ *   <li>{@code generateTest()}  — one file (full nested-class test)</li>
+ *   <li>{@code generateTests()} — N files (split mode)</li>
+ * </ul>
+ *
+ * <p>Client code is always identical:
+ * <pre>
+ * TestKit.of(UserRequest.class).generateTest().writeTo(path);
+ * TestKit.of(UserRequest.class).generateTests().writeTo(path);
+ * </pre>
  */
-public record GenerationResult(
-        String className,
-        String packageName,
-        String source
-) {
+public record GenerationResult(List<JavaSourceCode> files) {
+
+    public GenerationResult {
+        if (files == null || files.isEmpty())
+            throw new TestKitException("GenerationResult must have at least one file");
+        files = List.copyOf(files);
+    }
+
+    // ── Convenience factory ───────────────────────────────────────────────
+
+    public static GenerationResult of(String className, String packageName, String source) {
+        return new GenerationResult(List.of(new JavaSourceCode(packageName, className, source)));
+    }
+
+    // ── Write — writes ALL files ──────────────────────────────────────────
+
     /**
-     * Writes the generated class to {@code sourceRoot}.
-     * Skips writing if the file already exists with identical content —
-     * no diff in version control when regenerating unchanged classes.
+     * Writes all files. Returns path of first file — backward compatible.
      */
     public Path writeTo(Path sourceRoot) {
-        try {
-            String formatted = format(source);
-            Path dir = sourceRoot;
-            for (String part : packageName.split("\\.")) dir = dir.resolve(part);
-            Files.createDirectories(dir);
-            Path file = dir.resolve(className + ".java");
-            if (Files.exists(file) && Files.readString(file).equals(formatted)) {
-                return file;
-            }
-            Files.writeString(file, formatted);
-            return file;
-        } catch (IOException e) {
-            throw new TestKitException("Failed to write " + className + ".java", e);
+        Path first = null;
+        for (JavaSourceCode file : files) {
+            Path written = file.writeTo(sourceRoot);
+            if (first == null) first = written;
         }
+        return first;
     }
 
+    // ── Backward-compatible convenience — delegates to first file ─────────
+
+    public String className() {
+        return files.getFirst().className();
+    }
+
+    public String packageName() {
+        return files.getFirst().packageName();
+    }
+
+    public String source() {
+        return files.getFirst().source();
+    }
 
     public String asString() {
-        return source;
-    }
-
-    // ── Formatting ────────────────────────────────────────────────────────
-
-    /**
-     * Two-pass cleanup:
-     * 1. RemoveUnusedImports — removes any import not referenced in the source
-     * 2. Formatter           — formats whitespace, indentation, line breaks
-     * Requires JVM flags (add to .mvn/jvm.config):
-     * --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
-     * --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
-     * --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
-     * --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
-     * --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
-     * Falls back to raw source if flags are missing.
-     */
-    private static String format(String source) {
-        try {
-            // Pass 1 — remove unused imports
-            String cleaned = com.google.googlejavaformat.java.RemoveUnusedImports
-                    .removeUnusedImports(source);
-            // Pass 2 — format
-            return new com.google.googlejavaformat.java.Formatter().formatSource(cleaned);
-        } catch (Exception | IllegalAccessError ignored) {
-            return source;
-        }
+        return files.getFirst().asString();
     }
 }

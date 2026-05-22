@@ -53,7 +53,12 @@ final class LiteralConverter {
             case Date ignored        -> true;
             case Enum<?> ignored     -> true;
             case List<?> list        -> list.stream().allMatch(LiteralConverter::canSerialize);
-            default                  -> value.getClass().isRecord() && canSerializeRecord(value);
+            case java.util.Set<?> set -> set.stream().allMatch(LiteralConverter::canSerialize);
+            default                  -> {
+                Class<?> c = value.getClass();
+                if (c.isArray()) yield canSerializeArray(value);
+                yield c.isRecord() && canSerializeRecord(value);
+            }
         };
     }
 
@@ -94,14 +99,21 @@ final class LiteralConverter {
             case Enum<?> e           -> e.getClass().getSimpleName() + "." + e.name();
             case List<?> list        -> {
                 if (list.isEmpty()) yield "List.of()";
-                // if any element can't be serialized, fall back to empty list
                 if (!list.stream().allMatch(LiteralConverter::canSerialize)) yield "List.of()";
                 yield "List.of(" + list.stream().map(LiteralConverter::toLiteral)
                         .reduce((a, b) -> a + ", " + b).orElse("") + ")";
             }
+            case java.util.Set<?> set -> {
+                if (set.isEmpty()) yield "Set.of()";
+                if (!set.stream().allMatch(LiteralConverter::canSerialize)) yield "Set.of()";
+                yield "Set.of(" + set.stream().map(LiteralConverter::toLiteral)
+                        .reduce((a, b) -> a + ", " + b).orElse("") + ")";
+            }
             default                  -> {
-                if (value.getClass().isRecord()) yield toLiteralRecord(value);
-                yield "/* TODO: " + value.getClass().getSimpleName() + " */ null";
+                Class<?> dc = value.getClass();
+                if (dc.isArray()) yield toLiteralArray(value);
+                if (dc.isRecord()) yield toLiteralRecord(value);
+                yield "/* TODO: " + dc.getSimpleName() + " */ null";
             }
         };
     }
@@ -123,7 +135,6 @@ final class LiteralConverter {
     private static String toLiteralRecord(Object record) {
         try {
             java.lang.reflect.RecordComponent[] rcs = record.getClass().getRecordComponents();
-            // Use enclosing-aware name: InnerRecord → OuterClass.InnerRecord
             String typeName = JavaTypeNames.of(record.getClass());
             StringBuilder sb = new StringBuilder("new ")
                     .append(typeName).append("(");
@@ -158,7 +169,6 @@ final class LiteralConverter {
         // For records: recurse into each component to collect transitive imports
         if (value.getClass().isRecord()) {
             java.util.Set<String> all = new java.util.LinkedHashSet<>(base);
-            // Import the record's own class (handles nested types via enclosing class)
             all.addAll(importsForClass(value.getClass()));
             try {
                 for (java.lang.reflect.RecordComponent rc : value.getClass().getRecordComponents()) {
@@ -186,18 +196,42 @@ final class LiteralConverter {
 
     /**
      * Returns the import string for a class, walking up to the top-level enclosing class.
-     * Returns empty list for java.lang, primitives, and java.util.List.
+     * Returns empty list for java.lang, primitives, and fixed imports.
      */
     static List<String> importsForClass(Class<?> type) {
         if (type == null || type.isPrimitive()) return List.of();
         if (type.isArray()) return importsForClass(type.getComponentType());
-        // Walk to top-level enclosing class
         Class<?> top = type;
         while (top.getEnclosingClass() != null) top = top.getEnclosingClass();
         String pkg = top.getPackageName();
         if (pkg.isEmpty() || pkg.equals("java.lang")) return List.of();
-        if (top == java.util.List.class || top == java.util.Collection.class) return List.of(); // in FIXED imports
+        if (top == java.util.List.class
+                || top == java.util.Set.class
+                || top == java.util.Map.class
+                || top == java.util.Collection.class) return List.of(); // in FIXED imports
         return List.of(pkg + "." + top.getSimpleName());
+    }
+
+    /** Returns true if all array elements can be serialized. */
+    private static boolean canSerializeArray(Object arr) {
+        int len = java.lang.reflect.Array.getLength(arr);
+        for (int i = 0; i < len; i++) {
+            if (!canSerialize(java.lang.reflect.Array.get(arr, i))) return false;
+        }
+        return true;
+    }
+
+    /** Converts an array to a Java source literal e.g. {@code new String[]{"a","b"}}. */
+    private static String toLiteralArray(Object arr) {
+        Class<?> comp = arr.getClass().getComponentType();
+        int      len  = java.lang.reflect.Array.getLength(arr);
+        String   typeName = comp.isPrimitive() ? comp.getName() : comp.getSimpleName();
+        StringBuilder sb = new StringBuilder("new ").append(typeName).append("[]{");
+        for (int i = 0; i < len; i++) {
+            if (i > 0) sb.append(", ");
+            sb.append(toLiteral(java.lang.reflect.Array.get(arr, i)));
+        }
+        return sb.append("}").toString();
     }
 
     private static String escape(String s) {

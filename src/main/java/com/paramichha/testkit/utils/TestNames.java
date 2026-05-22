@@ -18,6 +18,24 @@ public final class TestNames {
     private TestNames() {}
 
     // =========================================================================
+    // Accessor naming — pure string utility
+    // =========================================================================
+
+    /**
+     * Returns the correct accessor name for a field.
+     * <ul>
+     *   <li>Record: {@code name()} → {@code "name"}</li>
+     *   <li>Boolean field: {@code active} → {@code "isActive"}</li>
+     *   <li>Everything else: {@code email} → {@code "getEmail"}</li>
+     * </ul>
+     */
+    public static String getterName(String fieldName, boolean isBoolean, boolean isRecord) {
+        if (isRecord) return fieldName;
+        String suffix = Texts.capitalize(fieldName);
+        return isBoolean ? "is" + suffix : "get" + suffix;
+    }
+
+    // =========================================================================
     // String helpers — used by both TestKit and DevBoost
     // =========================================================================
 

@@ -182,7 +182,7 @@ class TestKitTest {
             var files = TestKit.of(UserRegistration.class)
                     .withPackage("com.example.split")
                     .generateTests();
-            assertThat(files).hasSizeGreaterThan(1);
+            assertThat(files.files()).hasSizeGreaterThan(1);
         }
 
         @Test
@@ -190,7 +190,7 @@ class TestKitTest {
             var files = TestKit.of(UserRegistration.class)
                     .withPackage("com.example.split")
                     .generateTests();
-            assertThat(files.get(0).className()).isEqualTo("UserRegistrationTest");
+            assertThat(files.files().get(0).className()).isEqualTo("UserRegistrationTest");
         }
 
         @Test
@@ -198,7 +198,7 @@ class TestKitTest {
             var files = TestKit.of(UserRegistration.class)
                     .withPackage("com.example.split")
                     .generateTests();
-            assertThat(files.get(1).className()).isEqualTo("UserRegistrationCreationTest");
+            assertThat(files.files().get(1).className()).isEqualTo("UserRegistrationCreationTest");
         }
 
         @Test
@@ -206,7 +206,7 @@ class TestKitTest {
             var files = TestKit.of(UserRegistration.class)
                     .withPackage("com.example.split")
                     .generateTests();
-            files.forEach(f ->
+            files.files().forEach(f ->
                     assertThat(f.packageName()).isEqualTo("com.example.split"));
         }
 
@@ -215,7 +215,7 @@ class TestKitTest {
             var files = TestKit.of(CombinedRecord.class)
                     .withPackage("com.example.split")
                     .generateTests();
-            files.forEach(f -> {
+            files.files().forEach(f -> {
                 String src = f.asString();
                 long opens  = src.chars().filter(c -> c == '{').count();
                 long closes = src.chars().filter(c -> c == '}').count();

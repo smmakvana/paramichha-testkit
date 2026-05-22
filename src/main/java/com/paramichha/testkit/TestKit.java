@@ -5,7 +5,6 @@ import com.paramichha.testkit.generator.CleanCodeGenerator;
 import com.paramichha.testkit.model.ClassInfo;
 import com.paramichha.testkit.model.TestFixture;
 
-import java.util.List;
 
 /**
  * Entry point for test generation.
@@ -97,7 +96,7 @@ public final class TestKit {
         return generator.generate(buildPayload());
     }
 
-    public List<GenerationResult> generateTests() {
+    public GenerationResult generateTests() {
         return generator.generateAll(buildPayload());
     }
 

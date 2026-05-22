@@ -25,6 +25,8 @@ final class ImportCollector {
             "org.junit.jupiter.params.provider.Arguments",
             "org.junit.jupiter.params.provider.MethodSource",
             "java.util.List",
+            "java.util.Set",
+            "java.util.Map",
             "java.util.Collection",
             "java.util.stream.Stream",
             "static org.assertj.core.api.Assertions.assertThat",
