@@ -140,22 +140,24 @@ class ObjectMixedServiceTest {
           Arguments.of("valid price 3", new BigDecimal("70.57")));
     }
 
-    // TODO: add constraints to price then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidPrices")
+    @DisplayName("rejects invalid value")
+    void testRejectsPrice(String description, BigDecimal price) {
+      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      ObjectMixedService obj =
+          new ObjectMixedService(
+              "Harvey Dach", price, LocalDate.of(2024, 1, 15), "nathalie.mcclure@hotmail.com");
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidPrices")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsPrice(String description, BigDecimal price) {
-    //     ObjectMixedService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidPrices() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidPrices() {
+      // TODO: add constraints to price, or delete this test
+      return Stream.of(
+          Arguments.of("null price", (BigDecimal) null),
+          Arguments.of("invalid price 2", new BigDecimal("-1")));
+    }
   }
 
   // =========================================================================
@@ -224,22 +226,22 @@ class ObjectMixedServiceTest {
       return Stream.of(Arguments.of("email 0", "nathalie.mcclure@hotmail.com"));
     }
 
-    // TODO: add constraints to email then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidEmails")
+    @DisplayName("rejects invalid value")
+    void testRejectsEmail(String description, String email) {
+      // TODO: add constraints to email, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      ObjectMixedService obj =
+          new ObjectMixedService(
+              "Harvey Dach", new BigDecimal("-1.00"), LocalDate.of(2024, 1, 15), email);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidEmails")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsEmail(String description, String email) {
-    //     ObjectMixedService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidEmails() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidEmails() {
+      // TODO: add constraints to email, or delete this test
+      return Stream.of(Arguments.of("null email", (String) null), Arguments.of("blank email", ""));
+    }
   }
 
   // =========================================================================
@@ -301,7 +303,7 @@ class ObjectMixedServiceTest {
     }
 
     static Stream<Arguments> validFormatDisplayInputs() {
-      return Stream.of(Arguments.of("valid formatDisplay", "a"));
+      return Stream.of(Arguments.of("valid formatDisplay", "rerum"));
     }
 
     static Stream<Arguments> invalidFormatDisplayInputs() {

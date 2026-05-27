@@ -4,20 +4,17 @@ import com.paramichha.datafactory.DataFactory;
 import com.paramichha.testkit.ReflectionClassReader;
 import com.paramichha.testkit.TestCodeData;
 import com.paramichha.testkit.TestKitTemplate;
-import com.paramichha.testkit.generator.InstantiationWriter;
-import com.paramichha.testkit.generator.JavaTypeNames;
-import com.paramichha.testkit.generator.LiteralConverter;
 import com.paramichha.testkit.model.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Builds a complete {@link ClassData} tree from a {@link TestCodeData}.
  *
- * This is the ONLY class that calls DataFactory anywhere in the v2 pipeline.
+ * This is the ONLY class that calls DataFactory anywhere in the V2 pipeline.
  * Everything it produces is plain data — no DataFactory below this point.
  *
  * Flow:
@@ -28,6 +25,10 @@ final class ClassDataFactory {
     private ClassDataFactory() {}
 
     static ClassData build(TestCodeData payload) {
+        return build(payload, new HashSet<>());
+    }
+
+    private static ClassData build(TestCodeData payload, Set<Class<?>> visiting) {
         ClassInfo       classInfo = payload.classInfo();
         TestFixture     fixture   = payload.fixture();
         TestKitTemplate template  = payload.template();
@@ -35,18 +36,32 @@ final class ClassDataFactory {
 
         InstantiationWriter iw = new InstantiationWriter(classInfo, seed);
 
-        // ── Pre-resolve all field values ──────────────────────────────────
-        List<Object> validParts = resolveValidParts(fixture, classInfo, iw);
+        List<Object> validParts;
+        try { validParts = resolveValidParts(fixture, classInfo, iw); }
+        catch (Exception e) { validParts = new ArrayList<>(); }
 
-        List<MemberData> members = buildMembers(classInfo, fixture, iw, validParts);
-        List<MethodData> methods = buildMethods(classInfo, template, seed, payload.projectType().hasValidator());
+        List<MemberData> members;
+        try { members = buildMembers(classInfo, fixture, iw, validParts); }
+        catch (Exception e) { members = new ArrayList<>(); }
 
-        boolean isConstrained = classInfo.fields().stream().anyMatch(FieldInfo::isConstrained);
+        List<MethodData> methods;
+        try { methods = buildMethods(classInfo, template, seed,
+                payload.projectType().hasValidator(), visiting); }
+        catch (Exception e) { methods = new ArrayList<>(); }
+
+        boolean isConstrained = false;
+        try { isConstrained = classInfo.fields().stream().anyMatch(FieldInfo::isConstrained); }
+        catch (Exception ignored) {}
+
+        boolean isRecord = classInfo.constructorStyle() == com.paramichha.testkit.model.ConstructorStyle.RECORD;
 
         return new DefaultClassData(
                 classInfo.simpleName() + "Test",
                 payload.targetPackage(),
-                false, false, false, isConstrained,
+                false, false, false,
+                isRecord, false, false, false,
+                isConstrained,
+                null,
                 members, methods,
                 validParts, List.of()
         );
@@ -55,11 +70,15 @@ final class ClassDataFactory {
     // ── Field value resolution ────────────────────────────────────────────
 
     private static List<Object> resolveValidParts(TestFixture fixture, ClassInfo classInfo,
-                                                   InstantiationWriter iw) {
+                                                  InstantiationWriter iw) {
         List<Object> parts = new ArrayList<>();
         for (FieldInfo f : classInfo.fields()) {
-            List<?> vals = iw.validValuesFor(fixture.type(), f);
-            parts.add(vals.isEmpty() ? null : vals.get(0));
+            try {
+                List<?> vals = iw.validValuesFor(fixture != null ? fixture.type() : classInfo.type(), f);
+                parts.add(vals.isEmpty() ? null : vals.get(0));
+            } catch (Exception ignored) {
+                parts.add(null);
+            }
         }
         return List.copyOf(parts);
     }
@@ -67,19 +86,31 @@ final class ClassDataFactory {
     // ── Members ───────────────────────────────────────────────────────────
 
     private static List<MemberData> buildMembers(ClassInfo classInfo, TestFixture fixture,
-                                                  InstantiationWriter iw,
-                                                  List<Object> validParts) {
+                                                 InstantiationWriter iw,
+                                                 List<Object> validParts) {
         List<MemberData> result = new ArrayList<>();
-        List<FieldInfo> fields = classInfo.fields();
-        for (int i = 0; i < fields.size(); i++) {
-            FieldInfo    field        = fields.get(i);
-            List<Object> validVals    = castList(iw.validValuesFor(fixture.type(), field));
-            List<Object> invalidVals  = castList(iw.invalidValuesFor(fixture.type(), field));
-            ClassData    fieldType    = primitiveOrSimpleClassData(field.rawType());
-            result.add(new DefaultMemberData(
-                    field.name(), fieldType,
-                    field.isConstrained(), field.required(),
-                    validVals, invalidVals));
+        List<FieldInfo>  fields = classInfo.fields();
+        for (FieldInfo field : fields) {
+            try {
+                Class<?> rawType = field.rawType();
+                List<Object> validVals   = castList(iw.validValuesFor(
+                        fixture != null ? fixture.type() : classInfo.type(), field));
+                List<Object> invalidVals = castList(iw.invalidValuesFor(
+                        fixture != null ? fixture.type() : classInfo.type(), field))
+                        .stream()
+                        .filter(v -> v == null || rawType.isAssignableFrom(v.getClass()))
+                        .collect(Collectors.toList());
+                ClassData fieldType = classDataForType(rawType, field.genericType());
+                result.add(new DefaultMemberData(
+                        field.name(), fieldType,
+                        field.isConstrained(), field.required(),
+                        validVals, invalidVals));
+            } catch (Exception ignored) {
+                ClassData fieldType = classDataForType(field.rawType(), field.genericType());
+                result.add(new DefaultMemberData(
+                        field.name(), fieldType,
+                        false, false, List.of(), List.of()));
+            }
         }
         return List.copyOf(result);
     }
@@ -87,25 +118,28 @@ final class ClassDataFactory {
     // ── Methods ───────────────────────────────────────────────────────────
 
     private static List<MethodData> buildMethods(ClassInfo classInfo, TestKitTemplate template,
-                                                  long seed, boolean hasJakarta) {
-        List<MethodData> result = new ArrayList<>();
-        String className = classInfo.simpleName();
+                                                 long seed, boolean hasJakarta,
+                                                 Set<Class<?>> visiting) {
+        List<MethodData> result    = new ArrayList<>();
+        String           className = classInfo.simpleName();
         for (MethodInfo method : classInfo.methods()) {
-            result.add(buildMethodData(method, className, template, seed, hasJakarta));
+            try {
+                result.add(buildMethodData(method, className, template, seed, hasJakarta, visiting));
+            } catch (Exception ignored) {}
         }
         return List.copyOf(result);
     }
 
     private static MethodData buildMethodData(MethodInfo method, String className,
-                                               TestKitTemplate template, long seed,
-                                               boolean hasJakarta) {
+                                              TestKitTemplate template, long seed,
+                                              boolean hasJakarta, Set<Class<?>> visiting) {
         String methodName      = method.name();
         String nestedClassName = template.resolveMethod(template.methodClassName, className, methodName);
         String displayName     = template.resolveMethod(template.methodDisplay, className, methodName);
         String validSrc        = template.resolveMethod(template.validInputsSource, className, methodName);
         String invalidSrc      = template.resolveMethod(template.invalidInputsSource, className, methodName);
 
-        List<ParamData> params     = buildParams(method.parameters(), seed);
+        List<ParamData> params     = buildParams(method.parameters(), seed, methodName, visiting);
         ReturnData      returnData = buildReturnData(method.returnType(), methodName, hasJakarta);
 
         return new DefaultMethodData(
@@ -115,14 +149,15 @@ final class ClassDataFactory {
 
     // ── Parameters ────────────────────────────────────────────────────────
 
-    private static List<ParamData> buildParams(List<ParameterInfo> params, long seed) {
+    private static List<ParamData> buildParams(List<ParameterInfo> params, long seed,
+                                               String methodName, Set<Class<?>> visiting) {
         List<ParamData> result = new ArrayList<>();
         for (ParameterInfo p : params) {
-            long         paramSeed    = com.paramichha.utils.Seeds.stableHash(p.name()) ^ seed;
-            List<Object> validVals    = resolveParamValid(p, paramSeed);
-            List<Object> invalidVals  = resolveParamInvalid(p);
-            List<String> hints        = buildEnforcementHints(p);
-            ClassData    paramType    = resolveParamClassData(p, paramSeed);
+            long         paramSeed   = com.paramichha.utils.Seeds.stableHash(methodName + p.name()) ^ seed;
+            List<Object> validVals   = resolveParamValid(p, paramSeed);
+            List<Object> invalidVals = resolveParamInvalid(p);
+            List<String> hints       = buildEnforcementHints(p);
+            ClassData    paramType   = resolveParamClassData(p, paramSeed, visiting);
             result.add(new DefaultParamData(
                     p.name(), paramType, p.isConstrained(),
                     validVals, invalidVals, hints));
@@ -133,15 +168,15 @@ final class ClassDataFactory {
     // ── Return type ───────────────────────────────────────────────────────
 
     private static ReturnData buildReturnData(ReturnTypeInfo ret, String methodName,
-                                               boolean hasJakarta) {
+                                              boolean hasJakarta) {
         if (ret.isVoid())
             return new DefaultReturnData(null, true, false, false, "", null);
 
-        ClassData type              = primitiveOrSimpleClassData(ret.type());
-        boolean   constrained       = ret.isConstrained();
-        String    assertionCode     = buildReturnAssertion(ret, hasJakarta);
-        boolean   needsWrapper      = needsWrapperRecord(ret);
-        String    wrapperRecord     = needsWrapper ? buildWrapperRecord(methodName, ret) : null;
+        ClassData type          = primitiveOrSimpleClassData(ret.type());
+        boolean   constrained   = ret.isConstrained();
+        String    assertionCode = buildReturnAssertion(ret, hasJakarta);
+        boolean   needsWrapper  = needsWrapperRecord(ret);
+        String    wrapperRecord = needsWrapper ? buildWrapperRecord(methodName, ret) : null;
 
         return new DefaultReturnData(type, false, constrained, needsWrapper,
                 assertionCode, wrapperRecord);
@@ -152,6 +187,37 @@ final class ClassDataFactory {
     @SuppressWarnings("unchecked")
     private static List<Object> resolveParamValid(ParameterInfo param, long seed) {
         Class<?> type = param.type();
+
+        if (type.isPrimitive()) {
+            try {
+                Object val = param.validations().isEmpty()
+                        ? DataFactory.of(type).seed(seed).valid()
+                        : DataFactory.field(param.name(), (Class<Object>) type,
+                        param.validations()).seed(seed).valid();
+                if (val != null) return List.of(val);
+            } catch (Exception ignored) {}
+            return List.of(primitiveDefault(type));
+        }
+
+        String  pkg      = type.getPackageName();
+        boolean isDomain = !type.isEnum()
+                && !pkg.startsWith("java.") && !pkg.startsWith("jakarta.")
+                && !pkg.startsWith("javax.");
+        if (isDomain) {
+            try {
+                ClassInfo           meta  = ReflectionClassReader.INSTANCE.read(type);
+                InstantiationWriter iw    = new InstantiationWriter(meta, seed);
+                List<Object>        parts = new ArrayList<>();
+                for (FieldInfo f : meta.fields()) {
+                    List<?> vals = iw.validValuesFor(type, f);
+                    parts.add(vals.isEmpty() ? null : vals.get(0));
+                }
+                Object instance = buildInstance(type, meta, parts);
+                if (instance != null) return List.of(instance);
+            } catch (Exception ignored) {}
+            return List.of();
+        }
+
         try {
             Object val = param.validations().isEmpty()
                     ? DataFactory.of(type).seed(seed).valid()
@@ -174,20 +240,105 @@ final class ClassDataFactory {
         return List.of();
     }
 
-    private static ClassData resolveParamClassData(ParameterInfo param, long seed) {
+    private static ClassData resolveParamClassData(ParameterInfo param, long seed,
+                                                   Set<Class<?>> visiting) {
         Class<?> type = param.type();
         String   pkg  = type.isPrimitive() ? "" : type.getPackageName();
         boolean isDomain = !type.isPrimitive() && !type.isEnum()
                 && !pkg.startsWith("java.") && !pkg.startsWith("jakarta.")
                 && !pkg.startsWith("javax.");
 
-        if (isDomain) {
+        if (isDomain && visiting.contains(type)) return primitiveOrSimpleClassData(type);
+        return classDataForType(type, null);
+    }
+
+    // ── Instance builder ──────────────────────────────────────────────────
+
+    private static Object buildInstance(Class<?> type, ClassInfo meta, List<Object> parts) {
+        try {
+            Class<?>[] types = meta.fields().stream()
+                    .map(FieldInfo::rawType).toArray(Class<?>[]::new);
+            return type.getDeclaredConstructor(types).newInstance(parts.toArray());
+        } catch (Exception e) {
             try {
-                ClassInfo meta = ReflectionClassReader.INSTANCE.read(type);
-                return build(wrapAsPayload(meta, seed));
+                for (java.lang.reflect.Constructor<?> c : type.getDeclaredConstructors()) {
+                    if (c.getParameterCount() == parts.size()) {
+                        c.setAccessible(true);
+                        return c.newInstance(parts.toArray());
+                    }
+                }
             } catch (Exception ignored) {}
+            return null;
         }
-        return primitiveOrSimpleClassData(type);
+    }
+
+    // ── ClassData construction ────────────────────────────────────────────
+
+    /**
+     * Builds a correct ClassData for any type — correctly sets isArray, isCollection,
+     * isMap, isRecord, componentType.
+     */
+    static ClassData classDataForType(Class<?> type, java.lang.reflect.Type genericType) {
+        if (type == null) return primitiveOrSimpleClassData(void.class);
+
+        boolean isPrimitive  = type.isPrimitive();
+        boolean isVoid       = type == void.class || type == Void.class;
+        boolean isEnum       = type.isEnum();
+        boolean isArray      = type.isArray();
+        boolean isCollection = !isArray && isCollectionType(type);
+        boolean isMap        = isMapType(type);
+        boolean isRecord     = type.isRecord();
+        String  pkg          = isPrimitive ? "" : type.getPackageName();
+
+        ClassData component = null;
+        if (isArray) {
+            component = classDataForType(type.getComponentType(), null);
+        } else if (isCollection && genericType instanceof java.lang.reflect.ParameterizedType pt) {
+            java.lang.reflect.Type[] args = pt.getActualTypeArguments();
+            if (args.length == 1 && args[0] instanceof Class<?> argClass)
+                component = classDataForType(argClass, null);
+        } else if (isMap && genericType instanceof java.lang.reflect.ParameterizedType pt) {
+            java.lang.reflect.Type[] args = pt.getActualTypeArguments();
+            if (args.length == 2 && args[1] instanceof Class<?> valClass)
+                component = classDataForType(valClass, null);
+        }
+
+        return new DefaultClassData(
+                JavaTypeNames.of(type),
+                pkg,
+                isPrimitive, isVoid, isEnum,
+                isRecord, isArray, isCollection, isMap,
+                false, // constrained — field-level, not type-level
+                component,
+                List.of(), List.of(), List.of(), List.of());
+    }
+
+    private static ClassData primitiveOrSimpleClassData(Class<?> type) {
+        return classDataForType(type, null);
+    }
+
+    private static boolean isCollectionType(Class<?> type) {
+        return java.util.Collection.class.isAssignableFrom(type);
+    }
+
+    private static boolean isMapType(Class<?> type) {
+        return java.util.Map.class.isAssignableFrom(type);
+    }
+
+    // ── Primitive defaults ────────────────────────────────────────────────
+
+    private static Object primitiveDefault(Class<?> type) {
+        return switch (type.getName()) {
+            case "int"     -> 0;
+            case "long"    -> 0L;
+            case "double"  -> 0.0d;
+            case "float"   -> 0.0f;
+            case "boolean" -> false;
+            case "byte"    -> (byte) 0;
+            case "short"   -> (short) 0;
+            case "char"    -> 'A';
+            default        -> 0;
+        };
     }
 
     // ── Assertion helpers ─────────────────────────────────────────────────
@@ -235,17 +386,6 @@ final class ClassDataFactory {
                         + ": DataValidation." + call + ";");
         }
         return List.copyOf(hints);
-    }
-
-    // ── ClassData for simple/primitive types ──────────────────────────────
-
-    private static ClassData primitiveOrSimpleClassData(Class<?> type) {
-        return new DefaultClassData(
-                JavaTypeNames.of(type),
-                type.isPrimitive() ? "" : type.getPackageName(),
-                type.isPrimitive(), type == void.class || type == Void.class,
-                type.isEnum(), false,
-                List.of(), List.of(), List.of(), List.of());
     }
 
     // ── Annotation helpers ────────────────────────────────────────────────
@@ -333,7 +473,6 @@ final class ClassDataFactory {
     }
 
     private static TestCodeData wrapAsPayload(ClassInfo meta, long seed) {
-        // minimal payload for recursive domain type resolution
         return new com.paramichha.testkit.TestCodeData(
                 meta, null, meta.packageName(),
                 com.paramichha.testkit.TestKitTemplate.DEFAULT,

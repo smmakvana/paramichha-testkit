@@ -306,12 +306,12 @@ class ObjectAnnotatedServiceTest {
     }
 
     static Stream<Arguments> validCopyFromInputs() {
-      return Stream.of(Arguments.of("valid copyFrom", (ObjectAnnotatedService) null, "adipisci"));
+      return Stream.of(Arguments.of("valid copyFrom", (ObjectAnnotatedService) null, "accusamus"));
     }
 
     static Stream<Arguments> invalidCopyFromInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "adipisci"),
+          Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "accusamus"),
           Arguments.of("invalid arg1", (ObjectAnnotatedService) null, (String) null),
           Arguments.of("invalid arg1", (ObjectAnnotatedService) null, ""));
     }
@@ -345,7 +345,7 @@ class ObjectAnnotatedServiceTest {
     }
 
     static Stream<Arguments> validFormatDisplayInputs() {
-      return Stream.of(Arguments.of("valid formatDisplay", "veniam"));
+      return Stream.of(Arguments.of("valid formatDisplay", "ea"));
     }
 
     static Stream<Arguments> invalidFormatDisplayInputs() {
@@ -381,12 +381,12 @@ class ObjectAnnotatedServiceTest {
     }
 
     static Stream<Arguments> validMergeInputs() {
-      return Stream.of(Arguments.of("valid merge", (ObjectAnnotatedService) null, "adipisci"));
+      return Stream.of(Arguments.of("valid merge", (ObjectAnnotatedService) null, "quia"));
     }
 
     static Stream<Arguments> invalidMergeInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "adipisci"),
+          Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "quia"),
           Arguments.of("invalid arg1", (ObjectAnnotatedService) null, (String) null),
           Arguments.of("invalid arg1", (ObjectAnnotatedService) null, ""));
     }

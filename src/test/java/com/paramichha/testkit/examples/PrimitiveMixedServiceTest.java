@@ -72,14 +72,14 @@ class PrimitiveMixedServiceTest {
   class PrimitiveMixedServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("validQuantitys")
+    @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
       PrimitiveMixedService obj = new PrimitiveMixedService(quantity, 100L, 1.5d, (byte) 127, true);
       assertThat(validator.validate(obj)).isEmpty();
     }
 
-    static Stream<Arguments> validQuantitys() {
+    static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
           Arguments.of("valid quantity 2", 1),
@@ -90,7 +90,7 @@ class PrimitiveMixedServiceTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidQuantitys")
+    @MethodSource("invalidQuantities")
     @DisplayName("rejects invalid value")
     void testRejectsQuantity(String description, int quantity) {
       try {
@@ -102,9 +102,8 @@ class PrimitiveMixedServiceTest {
       }
     }
 
-    static Stream<Arguments> invalidQuantitys() {
-      return Stream.of(
-          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 1001));
+    static Stream<Arguments> invalidQuantities() {
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
     }
   }
 
@@ -134,22 +133,20 @@ class PrimitiveMixedServiceTest {
           Arguments.of("valid price 6", 9223372036854775807L));
     }
 
-    // TODO: add constraints to price then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidPrices")
+    @DisplayName("rejects invalid value")
+    void testRejectsPrice(String description, long price) {
+      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitiveMixedService obj = new PrimitiveMixedService(1, price, 1.5d, (byte) 127, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidPrices")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsPrice(String description, long price) {
-    //     PrimitiveMixedService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidPrices() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidPrices() {
+      // TODO: add constraints to price, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
+    }
   }
 
   // =========================================================================
@@ -188,7 +185,7 @@ class PrimitiveMixedServiceTest {
     }
 
     static Stream<Arguments> invalidRates() {
-      return Stream.of(Arguments.of("invalid rate 1", 0.0d));
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
     }
   }
 
@@ -218,22 +215,20 @@ class PrimitiveMixedServiceTest {
           Arguments.of("valid level 6", (byte) 127));
     }
 
-    // TODO: add constraints to level then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidLevels")
+    @DisplayName("rejects invalid value")
+    void testRejectsLevel(String description, byte level) {
+      // TODO: add constraints to level, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitiveMixedService obj = new PrimitiveMixedService(1, 100L, 1.5d, level, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidLevels")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsLevel(String description, byte level) {
-    //     PrimitiveMixedService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidLevels() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidLevels() {
+      // TODO: add constraints to level, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
+    }
   }
 
   // =========================================================================
@@ -256,22 +251,20 @@ class PrimitiveMixedServiceTest {
       return Stream.of(Arguments.of("valid active 1", true), Arguments.of("valid active 2", false));
     }
 
-    // TODO: add constraints to active then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidActives")
+    @DisplayName("rejects invalid value")
+    void testRejectsActive(String description, boolean active) {
+      // TODO: add constraints to active, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitiveMixedService obj = new PrimitiveMixedService(1, 100L, 1.5d, (byte) 127, active);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidActives")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsActive(String description, boolean active) {
-    //     PrimitiveMixedService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidActives() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidActives() {
+      // TODO: add constraints to active, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", false));
+    }
   }
 
   // =========================================================================

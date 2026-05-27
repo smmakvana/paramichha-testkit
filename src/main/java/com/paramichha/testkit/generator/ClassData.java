@@ -25,22 +25,35 @@ public interface ClassData {
 
     // ── Identity ──────────────────────────────────────────────────────────
 
-    String  className();
-    String  packageName();
+    String className();       // simple name: "UserRequest"
+    String packageName();     // "com.example.requests"
+
+    default String qualifiedName() {
+        String pkg = packageName();
+        return (pkg == null || pkg.isBlank()) ? className() : pkg + "." + className();
+    }
 
     // ── Type characteristics ──────────────────────────────────────────────
 
-    boolean isPrimitive();
-    boolean isVoid();
-    boolean isEnum();
-    boolean isConstrained();       // has Jakarta validation annotations
+    boolean isPrimitive();     // int, long, boolean, etc.
+    boolean isVoid();          // void / Void
+    boolean isEnum();          // enum types
+    boolean isRecord();        // Java record
+    boolean isArray();         // int[], String[], UserRequest[]
+    boolean isCollection();    // List, Set, Collection
+    boolean isMap();           // Map, HashMap, etc.
+    boolean isConstrained();   // has at least one Jakarta annotation
 
-    // ── Structure ─────────────────────────────────────────────────────────
+    // ── Component type — for arrays and collections ───────────────────────
 
-    List<MemberData> members();    // fields — in declaration order
-    List<MethodData> methods();    // methods — sorted alphabetically
+    ClassData componentType(); // null for non-array/collection/map
 
-    // ── Pre-resolved values ───────────────────────────────────────────────
+    // ── Structure — only populated for domain types ───────────────────────
+
+    List<MemberData> members();    // fields in declaration order
+    List<MethodData> methods();    // methods sorted alphabetically
+
+    // ── Pre-resolved values (ALL from DataFactory, set in ClassDataFactory) ──
 
     List<Object> validValues();    // boundary-covering valid instances
     List<Object> invalidValues();  // one-constraint-violated instances

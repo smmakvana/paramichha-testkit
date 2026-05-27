@@ -54,7 +54,7 @@ class PrimitivePlainServiceTest {
   class PrimitivePlainServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("validQuantitys")
+    @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
       PrimitivePlainService obj =
@@ -62,7 +62,7 @@ class PrimitivePlainServiceTest {
       assertThat(obj.getQuantity()).isEqualTo(quantity);
     }
 
-    static Stream<Arguments> validQuantitys() {
+    static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
           Arguments.of("valid quantity 2", -2147483648),
@@ -72,22 +72,21 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid quantity 6", 2147483647));
     }
 
-    // TODO: add constraints to quantity then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidQuantities")
+    @DisplayName("rejects invalid value")
+    void testRejectsQuantity(String description, int quantity) {
+      // TODO: add constraints to quantity, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitivePlainService obj =
+          new PrimitivePlainService(quantity, 100L, -1.0d, (byte) 127, (short) 5, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidQuantitys")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsQuantity(String description, int quantity) {
-    //     PrimitivePlainService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidQuantitys() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidQuantities() {
+      // TODO: add constraints to quantity, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+    }
   }
 
   // =========================================================================
@@ -117,22 +116,21 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid price 6", 9223372036854775807L));
     }
 
-    // TODO: add constraints to price then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidPrices")
+    @DisplayName("rejects invalid value")
+    void testRejectsPrice(String description, long price) {
+      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitivePlainService obj =
+          new PrimitivePlainService(1, price, -1.0d, (byte) 127, (short) 5, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidPrices")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsPrice(String description, long price) {
-    //     PrimitivePlainService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidPrices() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidPrices() {
+      // TODO: add constraints to price, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
+    }
   }
 
   // =========================================================================
@@ -159,22 +157,21 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid rate 3", 698.5d));
     }
 
-    // TODO: add constraints to rate then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidRates")
+    @DisplayName("rejects invalid value")
+    void testRejectsRate(String description, double rate) {
+      // TODO: add constraints to rate, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitivePlainService obj =
+          new PrimitivePlainService(1, 100L, rate, (byte) 127, (short) 5, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidRates")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsRate(String description, double rate) {
-    //     PrimitivePlainService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidRates() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidRates() {
+      // TODO: add constraints to rate, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
+    }
   }
 
   // =========================================================================
@@ -203,22 +200,20 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid level 6", (byte) 127));
     }
 
-    // TODO: add constraints to level then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidLevels")
+    @DisplayName("rejects invalid value")
+    void testRejectsLevel(String description, byte level) {
+      // TODO: add constraints to level, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitivePlainService obj = new PrimitivePlainService(1, 100L, -1.0d, level, (short) 5, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidLevels")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsLevel(String description, byte level) {
-    //     PrimitivePlainService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidLevels() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidLevels() {
+      // TODO: add constraints to level, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
+    }
   }
 
   // =========================================================================
@@ -248,22 +243,21 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid score 6", (short) 32767));
     }
 
-    // TODO: add constraints to score then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidScores")
+    @DisplayName("rejects invalid value")
+    void testRejectsScore(String description, short score) {
+      // TODO: add constraints to score, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitivePlainService obj =
+          new PrimitivePlainService(1, 100L, -1.0d, (byte) 127, score, true);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidScores")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsScore(String description, short score) {
-    //     PrimitivePlainService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidScores() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidScores() {
+      // TODO: add constraints to score, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", (short) 0));
+    }
   }
 
   // =========================================================================
@@ -287,22 +281,21 @@ class PrimitivePlainServiceTest {
       return Stream.of(Arguments.of("valid active 1", true), Arguments.of("valid active 2", false));
     }
 
-    // TODO: add constraints to active then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidActives")
+    @DisplayName("rejects invalid value")
+    void testRejectsActive(String description, boolean active) {
+      // TODO: add constraints to active, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitivePlainService obj =
+          new PrimitivePlainService(1, 100L, -1.0d, (byte) 127, (short) 5, active);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidActives")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsActive(String description, boolean active) {
-    //     PrimitivePlainService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidActives() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidActives() {
+      // TODO: add constraints to active, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", false));
+    }
   }
 
   // =========================================================================

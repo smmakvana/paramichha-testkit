@@ -2,22 +2,20 @@ package com.paramichha.testkit.generator;
 
 import com.paramichha.testkit.utils.TestNames;
 
-import com.paramichha.testkit.generator.LiteralConverter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Pure string assembly from {@link ClassData}.
- *
+ * <p>
  * Zero DataFactory. Zero ClassInfo. Zero TestSourceContext.
  * Fully deterministic — same ClassData always produces same String.
  * Fully testable in isolation — construct ClassData manually, assert output.
  */
 final class ClassDataCoder {
 
-    private static final String INDENT       = "    ";
+    private static final String INDENT = "    ";
     private static final String SECTION_LINE =
             "  // =========================================================================\n";
 
@@ -87,7 +85,7 @@ final class ClassDataCoder {
 
     private String codeCreationNested(ClassData data, ClassDataConfig config) {
         StringBuilder sb = new StringBuilder();
-        String nestedName  = config.sourceClassName() + "CreationTest";
+        String nestedName = config.sourceClassName() + "CreationTest";
         String instanceName = config.instanceName();
 
         sb.append(INDENT).append("@Nested\n");
@@ -115,7 +113,7 @@ final class ClassDataCoder {
             if (isComplexType(m.type())) continue;
             String accessor = config.isRecord()
                     ? instanceName + "." + m.name() + "()"
-                    : instanceName + "." + TestNames.getterName(m.name(), m.type().isPrimitive() && m.type().className().equals("boolean") || m.type().className().equals("Boolean"), config.isRecord()) + "()";
+                    : instanceName + "." + TestNames.getterName(m.name(), isBooleanType(m.type()), config.isRecord()) + "()";
             sb.append(INDENT).append(INDENT).append(INDENT)
                     .append("assertThat(").append(accessor).append(").isEqualTo(")
                     .append(LiteralConverter.toLiteral(val)).append(");\n");
@@ -141,17 +139,17 @@ final class ClassDataCoder {
 
     private String codeFieldNested(MemberData member, ClassData classData,
                                    ClassDataConfig config) {
-        StringBuilder sb       = new StringBuilder();
-        String        className = config.sourceClassName();
-        String        name      = member.name();
-        String        boxedType = member.type().className();
-        String        nestedName= TestNames.memberClass(className, name);
-        String        acceptsM  = "testAccepts" + com.paramichha.utils.Texts.capitalize(name);
-        String        rejectsM  = "testRejects" + com.paramichha.utils.Texts.capitalize(name);
-        String        validSrc  = TestNames.validSource(name);
-        String        invalidSrc= TestNames.invalidSource(name);
+        StringBuilder sb = new StringBuilder();
+        String className = config.sourceClassName();
+        String name = member.name();
+        String boxedType = member.type().className();
+        String nestedName = TestNames.memberClass(className, name);
+        String acceptsM = "testAccepts" + com.paramichha.utils.Texts.capitalize(name);
+        String rejectsM = "testRejects" + com.paramichha.utils.Texts.capitalize(name);
+        String validSrc = TestNames.validSource(name);
+        String invalidSrc = TestNames.invalidSource(name);
 
-        List<Object> validVals   = member.validValues().stream()
+        List<Object> validVals = member.validValues().stream()
                 .filter(LiteralConverter::canSerialize).collect(Collectors.toList());
         List<Object> invalidVals = member.invalidValues().stream()
                 .filter(LiteralConverter::canSerialize).collect(Collectors.toList());
@@ -165,7 +163,7 @@ final class ClassDataCoder {
             String constructorWithVar = buildConstructorCallWithVar(className, classData, member, config);
             String assertion = member.isConstrained()
                     ? "assertThat(" + config.validatorField() + ".validate(obj)).isEmpty();"
-                    : "assertThat(obj." + TestNames.getterName(name, member.type().isPrimitive() && member.type().className().equals("boolean") || member.type().className().equals("Boolean"), config.isRecord()) + "()).isEqualTo(" + name + ");";
+                    : "assertThat(obj." + TestNames.getterName(name, isBooleanType(member.type()), config.isRecord()) + "()).isEqualTo(" + name + ");";
 
             sb.append(INDENT).append(INDENT)
                     .append("@ParameterizedTest(name = \"{0}\")\n");
@@ -197,8 +195,8 @@ final class ClassDataCoder {
             sb.append(INDENT).append(INDENT).append("}\n\n");
         }
 
-        // Rejects test
-        if (member.isConstrained() && !invalidVals.isEmpty()) {
+        // Rejects test — always emitted
+        {
             String constructorWithVar = buildConstructorCallWithVar(className, classData, member, config);
             sb.append(INDENT).append(INDENT)
                     .append("@ParameterizedTest(name = \"{0}\")\n");
@@ -209,53 +207,61 @@ final class ClassDataCoder {
             sb.append(INDENT).append(INDENT)
                     .append("void ").append(rejectsM)
                     .append("(String description, ").append(boxedType).append(" ").append(name).append(") {\n");
-            sb.append(INDENT).append(INDENT).append(INDENT).append("try {\n");
-            sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
-                    .append(className).append(" obj = ").append(constructorWithVar).append(";\n");
-            sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
-                    .append("assertThat(").append(config.validatorField()).append(".validate(obj)).isNotEmpty();\n");
-            sb.append(INDENT).append(INDENT).append(INDENT)
-                    .append("} catch (Exception ignored) {\n");
-            sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
-                    .append("// Constructor enforced the contract — test passes\n");
-            sb.append(INDENT).append(INDENT).append(INDENT).append("}\n");
+
+            if (!member.isConstrained()) {
+                // No constraints yet — create object with candidate value and assert it was created.
+                // TODO: add constraints to this field, then replace assertThat(obj).isNotNull()
+                //       with assertThat(validator.validate(obj)).isNotEmpty()
+                sb.append(INDENT).append(INDENT).append(INDENT)
+                        .append("// TODO: add constraints to ").append(name)
+                        .append(", then replace assertThat(obj).isNotNull()\n");
+                sb.append(INDENT).append(INDENT).append(INDENT)
+                        .append("//       with assertThat(validator.validate(obj)).isNotEmpty()\n");
+                sb.append(INDENT).append(INDENT).append(INDENT)
+                        .append(className).append(" obj = ").append(constructorWithVar).append(";\n");
+                sb.append(INDENT).append(INDENT).append(INDENT)
+                        .append("assertThat(obj).isNotNull();\n");
+            } else {
+                sb.append(INDENT).append(INDENT).append(INDENT).append("try {\n");
+                sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
+                        .append(className).append(" obj = ").append(constructorWithVar).append(";\n");
+                sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
+                        .append("assertThat(").append(config.validatorField()).append(".validate(obj)).isNotEmpty();\n");
+                sb.append(INDENT).append(INDENT).append(INDENT)
+                        .append("} catch (Exception ignored) {\n");
+                sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
+                        .append("// Constructor enforced the contract — test passes\n");
+                sb.append(INDENT).append(INDENT).append(INDENT).append("}\n");
+            }
             sb.append(INDENT).append(INDENT).append("}\n\n");
 
             // Invalid stream
             sb.append(INDENT).append(INDENT)
                     .append("static Stream<Arguments> ").append(invalidSrc).append("() {\n");
-            sb.append(INDENT).append(INDENT).append(INDENT).append("return Stream.of(\n");
-            for (int j = 0; j < invalidVals.size(); j++) {
-                Object v = invalidVals.get(j);
-                String lit = v == null ? "(" + boxedType + ") null" : LiteralConverter.toLiteral(v);
-                sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
-                        .append("Arguments.of(\"").append(labelFor(v, name, "invalid", j))
-                        .append("\", ").append(lit).append(")");
-                sb.append(j < invalidVals.size() - 1 ? ",\n" : "\n");
+            if (!member.isConstrained()) {
+                sb.append(INDENT).append(INDENT).append(INDENT)
+                        .append("// TODO: add constraints to ").append(name).append(", or delete this test\n");
             }
-            sb.append(INDENT).append(INDENT).append(INDENT).append(");\n");
+            if (invalidVals.isEmpty()) {
+                // Emit one placeholder so @ParameterizedTest always has at least one argument
+                String placeholder = placeholderLiteral(member.type(), boxedType);
+                sb.append(INDENT).append(INDENT).append(INDENT).append("return Stream.of(\n");
+                sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
+                        .append("Arguments.of(\"no constraints defined — add some!\", ")
+                        .append(placeholder).append("));\n");
+            } else {
+                sb.append(INDENT).append(INDENT).append(INDENT).append("return Stream.of(\n");
+                for (int j = 0; j < invalidVals.size(); j++) {
+                    Object v = invalidVals.get(j);
+                    String lit = v == null ? "(" + boxedType + ") null" : LiteralConverter.toLiteral(v);
+                    sb.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
+                            .append("Arguments.of(\"").append(labelFor(v, name, "invalid", j))
+                            .append("\", ").append(lit).append(")");
+                    sb.append(j < invalidVals.size() - 1 ? ",\n" : "\n");
+                }
+                sb.append(INDENT).append(INDENT).append(INDENT).append(");\n");
+            }
             sb.append(INDENT).append(INDENT).append("}\n\n");
-
-        } else if (!member.isConstrained()) {
-            // TODO block
-            sb.append(INDENT).append(INDENT)
-                    .append("// TODO: add constraints to ").append(name).append(" then uncomment\n\n");
-            sb.append(INDENT).append(INDENT).append("// @ParameterizedTest(name = \"{0}\")\n");
-            sb.append(INDENT).append(INDENT).append("// @MethodSource(\"").append(invalidSrc).append("\")\n");
-            sb.append(INDENT).append(INDENT).append("// @DisplayName(\"rejects invalid value\")\n");
-            sb.append(INDENT).append(INDENT).append("// void ").append(rejectsM)
-                    .append("(String description, ").append(boxedType).append(" ").append(name).append(") {\n");
-            sb.append(INDENT).append(INDENT).append("//     ").append(className)
-                    .append(" obj = ...\n");
-            sb.append(INDENT).append(INDENT).append("//     assertThat(")
-                    .append(config.validatorField()).append(".validate(obj)).isNotEmpty();\n");
-            sb.append(INDENT).append(INDENT).append("// }\n\n");
-            sb.append(INDENT).append(INDENT)
-                    .append("// static Stream<Arguments> ").append(invalidSrc).append("() {\n");
-            sb.append(INDENT).append(INDENT).append("//     return Stream.of(\n");
-            sb.append(INDENT).append(INDENT).append("//         // Arguments.of(\"reason\", value)\n");
-            sb.append(INDENT).append(INDENT).append("//     );\n");
-            sb.append(INDENT).append(INDENT).append("// }\n\n");
         }
 
         sb.append(INDENT).append("}\n\n");
@@ -277,11 +283,11 @@ final class ClassDataCoder {
                     .append(method.returnData().wrapperRecord()).append("\n\n");
 
         String body = switch (method.kind()) {
-            case COMMAND     -> codeCommand(method, config);
-            case QUERY       -> codeQuery(method, config);
+            case COMMAND -> codeCommand(method, config);
+            case QUERY -> codeQuery(method, config);
             case MUTATOR,
                  TRANSFORMER,
-                 OPERATION   -> codeMutatorOrTransformer(method, config);
+                 OPERATION -> codeMutatorOrTransformer(method, config);
         };
         sb.append(body);
 
@@ -290,8 +296,8 @@ final class ClassDataCoder {
     }
 
     private String codeCommand(MethodData method, ClassDataConfig config) {
-        StringBuilder sb   = new StringBuilder();
-        String        call = config.instanceName() + "." + method.name() + "()";
+        StringBuilder sb = new StringBuilder();
+        String call = config.instanceName() + "." + method.name() + "()";
 
         sb.append(INDENT).append(INDENT).append("@Test\n");
         sb.append(INDENT).append(INDENT).append("@DisplayName(\"executes without exception\")\n");
@@ -316,10 +322,10 @@ final class ClassDataCoder {
     }
 
     private String codeQuery(MethodData method, ClassDataConfig config) {
-        StringBuilder sb      = new StringBuilder();
-        ReturnData    ret      = method.returnData();
-        String        typeName = ret.type() != null ? ret.type().className() : "void";
-        String        call     = config.instanceName() + "." + method.name() + "()";
+        StringBuilder sb = new StringBuilder();
+        ReturnData ret = method.returnData();
+        String typeName = ret.type() != null ? ret.type().className() : "void";
+        String call = config.instanceName() + "." + method.name() + "()";
 
         sb.append(INDENT).append(INDENT).append("@Test\n");
         sb.append(INDENT).append(INDENT)
@@ -342,12 +348,12 @@ final class ClassDataCoder {
     }
 
     private String codeMutatorOrTransformer(MethodData method, ClassDataConfig config) {
-        StringBuilder sb             = new StringBuilder();
-        ReturnData    ret             = method.returnData();
-        boolean       anyConstrained = method.anyParamConstrained();
-        String        paramSig       = buildParamSig(method.params());
-        String        paramCall      = buildParamCall(method.params());
-        String        call           = config.instanceName() + "." + method.name() + "(" + paramCall + ")";
+        StringBuilder sb = new StringBuilder();
+        ReturnData ret = method.returnData();
+        boolean anyConstrained = method.anyParamConstrained();
+        String paramSig = buildParamSig(method.params());
+        String paramCall = buildParamCall(method.params());
+        String call = config.instanceName() + "." + method.name() + "(" + paramCall + ")";
 
         // testAcceptsValidInput
         sb.append(INDENT).append(INDENT)
@@ -422,9 +428,9 @@ final class ClassDataCoder {
                     row.append(INDENT).append(INDENT).append(INDENT).append(INDENT)
                             .append("Arguments.of(\"invalid ").append(p.name()).append("\"");
                     for (int qi = 0; qi < method.params().size(); qi++) {
-                        ParamData q   = method.params().get(qi);
-                        Object    val = q.validValues().isEmpty() ? null : q.validValues().get(0);
-                        String    lit = qi == pi ? invLit : literalFor(val, q.type());
+                        ParamData q = method.params().get(qi);
+                        Object val = q.validValues().isEmpty() ? null : q.validValues().get(0);
+                        String lit = qi == pi ? invLit : literalFor(val, q.type());
                         row.append(",\n").append(INDENT).append(INDENT).append(INDENT)
                                 .append(INDENT).append(INDENT).append(lit);
                     }
@@ -447,7 +453,7 @@ final class ClassDataCoder {
 
     private String buildConstructorCall(String className, ClassData data,
                                         ClassDataConfig config) {
-        List<Object> parts   = data.validValues();
+        List<Object> parts = data.validValues();
         List<MemberData> members = data.members();
         StringBuilder sb = new StringBuilder("new ").append(className).append("(\n");
         for (int i = 0; i < members.size(); i++) {
@@ -466,9 +472,9 @@ final class ClassDataCoder {
     private String buildConstructorCallWithVar(String className, ClassData data,
                                                MemberData targetMember,
                                                ClassDataConfig config) {
-        List<Object>     parts   = data.validValues();
+        List<Object> parts = data.validValues();
         List<MemberData> members = data.members();
-        StringBuilder    sb      = new StringBuilder("new ").append(className).append("(\n");
+        StringBuilder sb = new StringBuilder("new ").append(className).append("(\n");
         for (int i = 0; i < members.size(); i++) {
             if (i > 0) sb.append(",\n");
             MemberData m = members.get(i);
@@ -501,8 +507,13 @@ final class ClassDataCoder {
 
     // ── Utilities ─────────────────────────────────────────────────────────
 
+    private static boolean isBooleanType(ClassData type) {
+        return (type.isPrimitive() && type.className().equals("boolean"));
+    }
+
     private static boolean isComplexType(ClassData type) {
         if (type.isPrimitive() || type.isVoid()) return false;
+        if (type.isArray() || type.isCollection() || type.isMap()) return false;
         String pkg = type.packageName();
         return !pkg.startsWith("java.") && !pkg.startsWith("jakarta.")
                 && !type.isEnum() && !type.className().equals("String");
@@ -512,6 +523,27 @@ final class ClassDataCoder {
         if (value == null) return "null " + name;
         if (value instanceof String s) return s.isEmpty() ? "blank " + name : name + " " + index;
         return kind + " " + name + " " + (index + 1);
+    }
+
+    /**
+     * Returns a placeholder literal for unconstrained rejects stream.
+     * Primitives get their zero/default, reference types get null cast.
+     */
+    private static String placeholderLiteral(ClassData type, String boxedType) {
+        if (type.isPrimitive()) {
+            return switch (type.className()) {
+                case "int" -> "0";
+                case "long" -> "0L";
+                case "double" -> "0.0d";
+                case "float" -> "0.0f";
+                case "boolean" -> "false";
+                case "byte" -> "(byte) 0";
+                case "short" -> "(short) 0";
+                case "char" -> "'\\0'";
+                default -> "0";
+            };
+        }
+        return "(" + boxedType + ") null";
     }
 
     // capitalize removed — use Texts.capitalize() or TestNames
@@ -527,15 +559,15 @@ final class ClassDataCoder {
         }
         if (type.isPrimitive()) {
             return switch (type.className()) {
-                case "int"     -> "0";
-                case "long"    -> "0L";
-                case "double"  -> "0.0d";
-                case "float"   -> "0.0f";
+                case "int" -> "0";
+                case "long" -> "0L";
+                case "double" -> "0.0d";
+                case "float" -> "0.0f";
                 case "boolean" -> "false";
-                case "byte"    -> "(byte) 0";
-                case "short"   -> "(short) 0";
-                case "char"    -> "'\0'";
-                default        -> "0";
+                case "byte" -> "(byte) 0";
+                case "short" -> "(short) 0";
+                case "char" -> "'\0'";
+                default -> "0";
             };
         }
         return "(" + type.className() + ") null";

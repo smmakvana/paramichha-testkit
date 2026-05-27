@@ -109,14 +109,14 @@ class SampleServiceTest {
   class SampleServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("validQuantitys")
+    @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
       SampleService obj = new SampleService("Daina Goodwin", quantity, new BigDecimal("1.50"));
       assertThat(validator.validate(obj)).isEmpty();
     }
 
-    static Stream<Arguments> validQuantitys() {
+    static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
           Arguments.of("valid quantity 2", 1),
@@ -127,7 +127,7 @@ class SampleServiceTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidQuantitys")
+    @MethodSource("invalidQuantities")
     @DisplayName("rejects invalid value")
     void testRejectsQuantity(String description, int quantity) {
       try {
@@ -138,9 +138,8 @@ class SampleServiceTest {
       }
     }
 
-    static Stream<Arguments> invalidQuantitys() {
-      return Stream.of(
-          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 101));
+    static Stream<Arguments> invalidQuantities() {
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
     }
   }
 
@@ -314,7 +313,7 @@ class SampleServiceTest {
     }
 
     static Stream<Arguments> validFormatNameInputs() {
-      return Stream.of(Arguments.of("valid formatName", "nisi"));
+      return Stream.of(Arguments.of("valid formatName", "natus"));
     }
 
     static Stream<Arguments> invalidFormatNameInputs() {
@@ -349,12 +348,12 @@ class SampleServiceTest {
     }
 
     static Stream<Arguments> validMergeInputs() {
-      return Stream.of(Arguments.of("valid merge", (SampleService) null, "consectetur"));
+      return Stream.of(Arguments.of("valid merge", (SampleService) null, "optio"));
     }
 
     static Stream<Arguments> invalidMergeInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (SampleService) null, "consectetur"),
+          Arguments.of("invalid arg0", (SampleService) null, "optio"),
           Arguments.of("invalid arg1", (SampleService) null, (String) null),
           Arguments.of("invalid arg1", (SampleService) null, ""));
     }

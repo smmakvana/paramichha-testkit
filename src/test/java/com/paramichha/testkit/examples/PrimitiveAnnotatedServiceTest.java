@@ -75,7 +75,7 @@ class PrimitiveAnnotatedServiceTest {
   class PrimitiveAnnotatedServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("validQuantitys")
+    @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
       PrimitiveAnnotatedService obj =
@@ -83,7 +83,7 @@ class PrimitiveAnnotatedServiceTest {
       assertThat(validator.validate(obj)).isEmpty();
     }
 
-    static Stream<Arguments> validQuantitys() {
+    static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
           Arguments.of("valid quantity 2", 1),
@@ -94,7 +94,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidQuantitys")
+    @MethodSource("invalidQuantities")
     @DisplayName("rejects invalid value")
     void testRejectsQuantity(String description, int quantity) {
       try {
@@ -106,9 +106,8 @@ class PrimitiveAnnotatedServiceTest {
       }
     }
 
-    static Stream<Arguments> invalidQuantitys() {
-      return Stream.of(
-          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 101));
+    static Stream<Arguments> invalidQuantities() {
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
     }
   }
 
@@ -153,8 +152,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidPrices() {
-      return Stream.of(
-          Arguments.of("invalid price 1", -1L), Arguments.of("invalid price 2", 1000000L));
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
     }
   }
 
@@ -196,7 +194,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidRates() {
-      return Stream.of(Arguments.of("invalid rate 1", 0.0d));
+      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
     }
   }
 
@@ -241,8 +239,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidLevels() {
-      return Stream.of(
-          Arguments.of("invalid level 1", (byte) -1), Arguments.of("invalid level 2", (byte) -128));
+      return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
     }
   }
 
@@ -284,7 +281,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidScores() {
-      return Stream.of(Arguments.of("invalid score 1", (short) -1));
+      return Stream.of(Arguments.of("no constraints defined — add some!", (short) 0));
     }
   }
 
@@ -309,22 +306,21 @@ class PrimitiveAnnotatedServiceTest {
       return Stream.of(Arguments.of("valid active 1", true), Arguments.of("valid active 2", false));
     }
 
-    // TODO: add constraints to active then uncomment
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidActives")
+    @DisplayName("rejects invalid value")
+    void testRejectsActive(String description, boolean active) {
+      // TODO: add constraints to active, then replace assertThat(obj).isNotNull()
+      //       with assertThat(validator.validate(obj)).isNotEmpty()
+      PrimitiveAnnotatedService obj =
+          new PrimitiveAnnotatedService(1, 100L, 1.5d, (byte) 63, (short) 5, active);
+      assertThat(obj).isNotNull();
+    }
 
-    // @ParameterizedTest(name = "{0}")
-    // @MethodSource("invalidActives")
-    // @DisplayName("rejects invalid value")
-    // void testRejectsActive(String description, boolean active) {
-    //     PrimitiveAnnotatedService obj = ...
-    //     assertThat(validator.validate(obj)).isNotEmpty();
-    // }
-
-    // static Stream<Arguments> invalidActives() {
-    //     return Stream.of(
-    //         // Arguments.of("reason", value)
-    //     );
-    // }
-
+    static Stream<Arguments> invalidActives() {
+      // TODO: add constraints to active, or delete this test
+      return Stream.of(Arguments.of("no constraints defined — add some!", false));
+    }
   }
 
   // =========================================================================

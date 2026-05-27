@@ -97,11 +97,26 @@ public final class CleanCodeGenerator implements CodeGenerator {
         ic.addTypeImport(classInfo.type());
         ic.addFieldTypeImports(classInfo.fields());
 
-        // Add method param type imports
+        // Add method param type imports — skip domain types that would self-import
+        String targetPkg = payload.targetPackage();
         classInfo.methods().forEach(m -> {
-            m.parameters().forEach(p -> ic.addTypeImport(p.type()));
+            m.parameters().forEach(p -> {
+                String pkg = p.type().isPrimitive() ? "" : p.type().getPackageName();
+                // Skip: same package as target, java.lang, java.util (already in FIXED)
+                if (!pkg.equals(targetPkg)
+                        && !pkg.equals("java.lang")
+                        && !pkg.startsWith("java.util")) {
+                    ic.addTypeImport(p.type());
+                }
+            });
             ic.addAnnotationImports(m.returnType().annotations());
         });
+
+        // jakarta.validation.Valid — only add if @Valid actually appears on a return type
+        boolean hasValid = classInfo.methods().stream()
+                .anyMatch(m -> m.returnType().annotations().stream()
+                        .anyMatch(a -> a.annotationType().getSimpleName().equals("Valid")));
+        if (hasValid) ic.addRawImport("jakarta.validation.Valid");
 
         boolean needsDataValidation = classInfo.methods().stream().anyMatch(m ->
                 m.returnType().isConstrained() ||
@@ -116,9 +131,13 @@ public final class CleanCodeGenerator implements CodeGenerator {
     private GenerationResult placeholder(TestCodeData payload, String error) {
         String name = payload.classInfo().simpleName() + "Test";
         String pkg = payload.targetPackage();
-        return GenerationResult.of("// TODO: " + name, "package " + pkg, "// Generation failed for " + payload.classInfo().simpleName() + "\n"
+        System.err.println("✗ TestKit failed for "
+                + payload.classInfo().simpleName() + ": " + error);
+        String source = "package " + pkg + ";\n\n"
+                + "// TODO: " + name + "\n"
+                + "// Generation failed for: " + payload.classInfo().simpleName() + "\n"
                 + "// Reason: " + error + "\n"
-                + "// Fix and regenerate.\n");
-
+                + "// Fix the class and regenerate.\n";
+        return GenerationResult.of(name, pkg, source);
     }
 }
