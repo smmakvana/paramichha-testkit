@@ -9,17 +9,13 @@ import java.util.List;
  * Two modes:
  * - transform()      → single ClassCoderInfo tree (single file)
  * - transformSplit() → flat List<ClassCoderInfo> (split files)
- *
- * Delegates nested class building to:
- * {@link CreationTransformer}, {@link FieldTransformer}, {@link MethodTransformer}
  */
 final class ClassDataTransformer {
 
     // ── Single file ───────────────────────────────────────────────────────
 
     static ClassCoderInfo transform(ClassData data, ClassDataConfig config) {
-        List<ClassCoderInfo> nested = buildNestedClasses(data, config);
-        return buildRoot(data, config, nested);
+        return buildRoot(data, config, buildNestedClasses(data, config));
     }
 
     // ── Split files ───────────────────────────────────────────────────────
@@ -27,33 +23,47 @@ final class ClassDataTransformer {
     static List<ClassCoderInfo> transformSplit(ClassData data, ClassDataConfig config) {
         List<ClassCoderInfo> result = new ArrayList<>();
 
-        // Root — no nested classes, just instance field + @BeforeAll
+        // Root — instance field + @BeforeAll only
         result.add(buildRoot(data, config, List.of()));
 
-        // Each nested becomes a standalone top-level class:
-        // Fix 1 — strip @Nested annotation (not valid on top-level class)
-        // Fix 2 — add own instance field + @BeforeAll so it can stand alone
-        for (ClassCoderInfo nested : buildNestedClasses(data, config)) {
-            result.add(promoteToTopLevel(nested, data, config));
+        // Creation → GodRecordCreationTest (name unchanged)
+        if (!config.isUtilityClass()) {
+            ClassCoderInfo creation = CreationTransformer.transform(data, config);
+            result.add(promoteToTopLevel(creation, data, config));
+        }
+
+        // Fields → GodRecordField<FieldName>Test
+        if (!config.isUtilityClass()) {
+            for (MemberData member : data.members()) {
+                ClassCoderInfo field = FieldTransformer.transform(member, data, config);
+                String splitName = config.sourceClassName() + "Field"
+                        + com.paramichha.utils.Texts.capitalize(member.name()) + "Test";
+                result.add(promoteToTopLevel(withName(field, splitName), data, config));
+            }
+        }
+
+        // Methods → GodRecordMethod<MethodName>Test
+        for (MethodData method : data.methods()) {
+            ClassCoderInfo methodClass = MethodTransformer.transform(method, config);
+            String splitName = config.sourceClassName() + "Method"
+                    + com.paramichha.utils.Texts.capitalize(method.name()) + "Test";
+            result.add(promoteToTopLevel(withName(methodClass, splitName), data, config));
         }
 
         return List.copyOf(result);
     }
 
-    /**
-     * Promotes a nested ClassCoderInfo to a standalone top-level class.
-     * Fix 1: strips @Nested annotation.
-     * Fix 2: injects instance field (and @BeforeAll if Jakarta) so it can compile standalone.
-     */
+    // ── Promote nested → standalone top-level ─────────────────────────────
+
     private static ClassCoderInfo promoteToTopLevel(ClassCoderInfo nested,
                                                     ClassData data,
                                                     ClassDataConfig config) {
-        // Fix 1 — strip @Nested, keep only @DisplayName
+        // Strip @Nested — not valid on top-level class
         List<String> annotations = nested.annotations().stream()
                 .filter(a -> !a.equals("@Nested"))
                 .toList();
 
-        // Fix 2 — prepend instance field (and validator field + @BeforeAll if Jakarta)
+        // Prepend validator field + instance field + @BeforeAll
         List<FieldCoderInfo>  fields  = buildStandaloneFields(nested, data, config);
         List<MethodCoderInfo> methods = buildStandaloneMethods(nested, config);
 
@@ -61,73 +71,57 @@ final class ClassDataTransformer {
                 config.targetPackage(),
                 config.imports(),
                 annotations,
-                List.of(),                  // no modifiers — top-level class
+                List.of(),
                 nested.name(),
                 fields,
                 methods,
-                List.of());                 // no further nesting
+                List.of());
     }
 
-    /**
-     * Builds fields for a standalone split class:
-     * - validator field (if Jakarta)
-     * - instance field with constructor call
-     * - any fields the nested class already had (e.g. wrapper records)
-     */
+    /** Rename a ClassCoderInfo — everything else identical */
+    private static ClassCoderInfo withName(ClassCoderInfo info, String name) {
+        return new ClassCoderInfo(
+                info.packageName(), info.imports(), info.annotations(),
+                info.modifiers(), name, info.fields(), info.methods(), info.nestedClasses());
+    }
+
+    // ── Standalone fields/methods ─────────────────────────────────────────
+
     private static List<FieldCoderInfo> buildStandaloneFields(ClassCoderInfo nested,
                                                               ClassData data,
                                                               ClassDataConfig config) {
         List<FieldCoderInfo> fields = new ArrayList<>();
 
-        // Validator field
         if (config.hasJakarta()) {
             fields.add(new FieldCoderInfo(
-                    List.of(),
-                    List.of("private", "static"),
-                    "Validator",
-                    config.validatorField(),
-                    null));
+                    List.of(), List.of("private", "static"),
+                    "Validator", config.validatorField(), null));
         }
 
-        // Instance field
         if (!data.members().isEmpty()) {
             fields.add(new FieldCoderInfo(
                     List.of(), List.of(),
-                    config.sourceClassName(),
-                    config.instanceName(),
+                    config.sourceClassName(), config.instanceName(),
                     buildConstructorCall(data, config)));
         }
 
-        // Any existing fields from nested (e.g. wrapper records)
         fields.addAll(nested.fields());
-
         return List.copyOf(fields);
     }
 
-    /**
-     * Builds methods for a standalone split class:
-     * - @BeforeAll validator setup (if Jakarta)
-     * - all existing methods from the nested class
-     */
     private static List<MethodCoderInfo> buildStandaloneMethods(ClassCoderInfo nested,
                                                                 ClassDataConfig config) {
         List<MethodCoderInfo> methods = new ArrayList<>();
 
-        // @BeforeAll validator setup
         if (config.hasJakarta()) {
             methods.add(new MethodCoderInfo(
-                    List.of("@BeforeAll"),
-                    List.of("static"),
-                    "void",
-                    config.validatorSetup(),
-                    List.of(),
+                    List.of("@BeforeAll"), List.of("static"),
+                    "void", config.validatorSetup(), List.of(),
                     config.validatorField()
                             + " = Validation.buildDefaultValidatorFactory().getValidator();"));
         }
 
-        // All existing methods from nested
         methods.addAll(nested.methods());
-
         return List.copyOf(methods);
     }
 
@@ -135,58 +129,39 @@ final class ClassDataTransformer {
 
     private static ClassCoderInfo buildRoot(ClassData data, ClassDataConfig config,
                                             List<ClassCoderInfo> nestedClasses) {
+        List<FieldCoderInfo>  fields  = new ArrayList<>();
+        List<MethodCoderInfo> methods = new ArrayList<>();
+
+        if (config.hasJakarta()) {
+            fields.add(new FieldCoderInfo(
+                    List.of(), List.of("private", "static"),
+                    "Validator", config.validatorField(), null));
+            methods.add(new MethodCoderInfo(
+                    List.of("@BeforeAll"), List.of("static"),
+                    "void", config.validatorSetup(), List.of(),
+                    config.validatorField()
+                            + " = Validation.buildDefaultValidatorFactory().getValidator();"));
+        }
+
+        if (!data.members().isEmpty()) {
+            fields.add(new FieldCoderInfo(
+                    List.of(), List.of(),
+                    config.sourceClassName(), config.instanceName(),
+                    buildConstructorCall(data, config)));
+        }
+
         return new ClassCoderInfo(
                 config.targetPackage(),
                 config.imports(),
                 List.of("@DisplayName(\"" + config.sourceClassName() + "\")"),
                 List.of(),
                 data.className(),
-                buildRootFields(data, config),
-                buildRootMethods(config),
+                List.copyOf(fields),
+                List.copyOf(methods),
                 nestedClasses);
     }
 
-    private static List<FieldCoderInfo> buildRootFields(ClassData data, ClassDataConfig config) {
-        List<FieldCoderInfo> fields = new ArrayList<>();
-
-        if (config.hasJakarta()) {
-            fields.add(new FieldCoderInfo(
-                    List.of(),
-                    List.of("private", "static"),
-                    "Validator",
-                    config.validatorField(),
-                    null));
-        }
-
-        if (!data.members().isEmpty()) {
-            fields.add(new FieldCoderInfo(
-                    List.of(), List.of(),
-                    config.sourceClassName(),
-                    config.instanceName(),
-                    buildConstructorCall(data, config)));
-        }
-
-        return List.copyOf(fields);
-    }
-
-    private static List<MethodCoderInfo> buildRootMethods(ClassDataConfig config) {
-        List<MethodCoderInfo> methods = new ArrayList<>();
-
-        if (config.hasJakarta()) {
-            methods.add(new MethodCoderInfo(
-                    List.of("@BeforeAll"),
-                    List.of("static"),
-                    "void",
-                    config.validatorSetup(),
-                    List.of(),
-                    config.validatorField()
-                            + " = Validation.buildDefaultValidatorFactory().getValidator();"));
-        }
-
-        return List.copyOf(methods);
-    }
-
-    // ── Nested classes ────────────────────────────────────────────────────
+    // ── Nested classes (single file) ──────────────────────────────────────
 
     private static List<ClassCoderInfo> buildNestedClasses(ClassData data, ClassDataConfig config) {
         List<ClassCoderInfo> nested = new ArrayList<>();
