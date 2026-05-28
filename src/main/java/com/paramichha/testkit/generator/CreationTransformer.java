@@ -63,8 +63,7 @@ final class CreationTransformer {
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private static boolean isBooleanType(ClassData type) {
-        return (type.isPrimitive() && type.className().equals("boolean"))
-                || type.className().equals("Boolean");
+        return (type.isPrimitive() && type.className().equals("boolean"));
     }
 
     private static boolean isComplexType(ClassData type) {
