@@ -18,19 +18,23 @@ public class TestKitApp {
     public static void main(String[] args) {
         generate(
                 GodRecord.class,
-                GodClass.class
+                GodClass.class,
 
-//                PrimitiveAnnotatedService.class,  // primitives with annotations
-//                PrimitivePlainService.class,       // primitives without annotations
-//                PrimitiveMixedService.class,       // primitives mixed
-//
-//                // Object services
-//                ObjectAnnotatedService.class,      // objects with annotations
-//                ObjectPlainService.class,          // objects without annotations
-//                ObjectMixedService.class,          // objects mixed
-//
-//                // Original sample
-//                SampleService.class
+                PrimitiveAnnotatedService.class,  // primitives with annotations
+                PrimitivePlainService.class,       // primitives without annotations
+                PrimitiveMixedService.class,       // primitives mixed
+
+                // Object services
+                ObjectAnnotatedService.class,      // objects with annotations
+                ObjectPlainService.class,          // objects without annotations
+                ObjectMixedService.class,          // objects mixed
+
+                // Original sample
+                SampleService.class
+        );
+
+        generateAll(
+                SplitGodRecord.class
         );
     }
 
@@ -38,6 +42,17 @@ public class TestKitApp {
         for (Class<?> type : classes) {
             try {
                 Path written = TestKit.of(type).generateTest().writeTo(OUTPUT_DIR);
+                System.out.println("✓ " + type.getSimpleName() + " → " + written);
+            } catch (Exception e) {
+                System.err.println("✗ " + type.getSimpleName() + " → " + e.getMessage());
+            }
+        }
+    }
+
+    static void generateAll(Class<?>... classes) {
+        for (Class<?> type : classes) {
+            try {
+                Path written = TestKit.of(type).generateTests().writeTo(OUTPUT_DIR);
                 System.out.println("✓ " + type.getSimpleName() + " → " + written);
             } catch (Exception e) {
                 System.err.println("✗ " + type.getSimpleName() + " → " + e.getMessage());

@@ -1,5 +1,7 @@
 package com.paramichha.testkit.generator;
 
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import com.paramichha.testkit.CodeGenerator;
 import com.paramichha.testkit.GenerationResult;
 import com.paramichha.testkit.TestCodeData;
@@ -26,25 +28,37 @@ import java.util.stream.Collectors;
  */
 public final class SolidCodeGenerator implements CodeGenerator {
 
+    private Formatter formatter = new Formatter();
     public static final SolidCodeGenerator INSTANCE = new SolidCodeGenerator();
 
     private final FreshCoder<ClassCoderInfo> coder = new ClassCoder();
 
-    private SolidCodeGenerator() {}
+    private SolidCodeGenerator() {
+    }
 
     @Override
     public GenerationResult generate(TestCodeData payload) {
         if (payload.fixture() != null && payload.fixture().hasError())
             return placeholder(payload, payload.fixture().error());
         try {
-            ClassData       data   = ClassDataFactory.build(payload);
+            ClassData data = ClassDataFactory.build(payload);
             ClassDataConfig config = buildConfig(payload);
-            ClassCoderInfo  info   = ClassDataTransformer.transform(data, config);
-            String          source = coder.code(info);
-            return GenerationResult.of(data.className(), config.targetPackage(), source);
+            ClassCoderInfo info = ClassDataTransformer.transform(data, config);
+            String source = coder.code(info);
+            String formated = getFormatedSource(source);
+            return GenerationResult.of(data.className(), config.targetPackage(), formated);
         } catch (Exception e) {
             return placeholder(payload, e.getMessage());
         }
+    }
+
+    private String getFormatedSource(String source) {
+        try {
+            return formatter.formatSource(source);
+        } catch (FormatterException e) {
+            System.out.println("⚠️  Warning: google-java-format failed, returning unformatted source. Reason: " + e.getMessage());
+        }
+        return source;
     }
 
     @Override
@@ -52,9 +66,9 @@ public final class SolidCodeGenerator implements CodeGenerator {
         if (payload.fixture() != null && payload.fixture().hasError())
             return placeholder(payload, payload.fixture().error());
         try {
-            ClassData              data   = ClassDataFactory.build(payload);
-            ClassDataConfig        config = buildConfig(payload);
-            List<ClassCoderInfo>   infos  = ClassDataTransformer.transformSplit(data, config);
+            ClassData data = ClassDataFactory.build(payload);
+            ClassDataConfig config = buildConfig(payload);
+            List<ClassCoderInfo> infos = ClassDataTransformer.transformSplit(data, config);
             List<GenerationResult> results = infos.stream()
                     .map(info -> GenerationResult.of(info.name(), config.targetPackage(), coder.code(info)))
                     .collect(Collectors.toList());
@@ -67,11 +81,11 @@ public final class SolidCodeGenerator implements CodeGenerator {
     // ── Config assembly ───────────────────────────────────────────────────
 
     private ClassDataConfig buildConfig(TestCodeData payload) {
-        ClassInfo classInfo   = payload.classInfo();
-        boolean   hasJakarta  = payload.projectType().hasValidator()
+        ClassInfo classInfo = payload.classInfo();
+        boolean hasJakarta = payload.projectType().hasValidator()
                 && classInfo.fields().stream().anyMatch(f -> !f.validations().isEmpty());
-        boolean   isRecord    = classInfo.constructorStyle() == ConstructorStyle.RECORD;
-        String    instanceName = TestNames.toVariable(classInfo.simpleName());
+        boolean isRecord = classInfo.constructorStyle() == ConstructorStyle.RECORD;
+        String instanceName = TestNames.toVariable(classInfo.simpleName());
 
         ImportCollector imports = buildImports(classInfo, payload);
 
@@ -128,7 +142,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
 
     private GenerationResult placeholder(TestCodeData payload, String error) {
         String name = payload.classInfo().simpleName() + "Test";
-        String pkg  = payload.targetPackage();
+        String pkg = payload.targetPackage();
         System.err.println("✗ TestKit failed for "
                 + payload.classInfo().simpleName() + ": " + error);
         return GenerationResult.of(name, pkg,
