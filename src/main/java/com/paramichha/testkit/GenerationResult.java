@@ -2,6 +2,7 @@ package com.paramichha.testkit;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Output of {@link TestKit#generateTest()} or {@link TestKit#generateTests()}.
@@ -30,6 +31,18 @@ public record GenerationResult(List<JavaSourceCode> files) {
 
     public static GenerationResult of(String className, String packageName, String source) {
         return new GenerationResult(List.of(new JavaSourceCode(packageName, className, source)));
+    }
+
+    /**
+     * Flattens all files from all results into one GenerationResult.
+     * Used by split mode — each ClassCoderInfo produces its own GenerationResult,
+     * this merges them all into one deliverable.
+     */
+    public static GenerationResult ofAll(List<GenerationResult> results) {
+        List<JavaSourceCode> allFiles = results.stream()
+                .flatMap(r -> r.files().stream())
+                .collect(Collectors.toList());
+        return new GenerationResult(allFiles);
     }
 
     // ── Write — writes ALL files ──────────────────────────────────────────
