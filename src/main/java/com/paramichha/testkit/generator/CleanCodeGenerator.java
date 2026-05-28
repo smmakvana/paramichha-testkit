@@ -141,3 +141,4 @@ public final class CleanCodeGenerator implements CodeGenerator {
         return GenerationResult.of(name, pkg, source);
     }
 }
+
