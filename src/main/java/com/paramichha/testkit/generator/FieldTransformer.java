@@ -8,20 +8,20 @@ import java.util.stream.Collectors;
 
 /**
  * Transforms a {@link MemberData} into a nested {@link ClassCoderInfo}.
- * Knows: field test patterns — accepts, rejects, valid stream, invalid stream.
  */
 final class FieldTransformer {
 
     static ClassCoderInfo transform(MemberData member, ClassData classData,
                                     ClassDataConfig config) {
-        String className  = config.sourceClassName();
-        String name       = member.name();
-        String boxedType  = member.type().className();
-        String nestedName = TestNames.memberClass(className, name);
-        String acceptsM   = "testAccepts" + com.paramichha.utils.Texts.capitalize(name);
-        String rejectsM   = "testRejects" + com.paramichha.utils.Texts.capitalize(name);
-        String validSrc   = TestNames.validSource(name);
-        String invalidSrc = TestNames.invalidSource(name);
+        String className   = config.sourceClassName();
+        String name        = member.name();
+        String boxedType   = member.type().className();
+        String nestedName  = TestNames.memberClass(className, name);
+        String displayName = className + " Field " + name;
+        String acceptsM    = "testAccepts" + com.paramichha.utils.Texts.capitalize(name);
+        String rejectsM    = "testRejects" + com.paramichha.utils.Texts.capitalize(name);
+        String validSrc    = TestNames.validSource(name);
+        String invalidSrc  = TestNames.invalidSource(name);
 
         List<Object> validVals   = member.validValues().stream()
                 .filter(LiteralConverter::canSerialize).collect(Collectors.toList());
@@ -36,10 +36,9 @@ final class FieldTransformer {
             String assertion = member.isConstrained()
                     ? "assertThat(" + config.validatorField() + ".validate(obj)).isEmpty();"
                     : "assertThat(obj." + TestNames.getterName(name,
-                            isBooleanType(member.type()), config.isRecord())
-                            + "()).isEqualTo(" + name + ");";
+                    isBooleanType(member.type()), config.isRecord())
+                    + "()).isEqualTo(" + name + ");";
 
-            // accepts method
             methods.add(new MethodCoderInfo(
                     List.of("@ParameterizedTest(name = \"{0}\")",
                             "@MethodSource(\"" + validSrc + "\")",
@@ -49,7 +48,6 @@ final class FieldTransformer {
                             ParameterCoderInfo.of(boxedType, name)),
                     className + " obj = " + constructorWithVar + ";\n" + assertion));
 
-            // valid stream
             StringBuilder validBody = new StringBuilder("return Stream.of(\n");
             for (int j = 0; j < validVals.size(); j++) {
                 Object v   = validVals.get(j);
@@ -68,7 +66,6 @@ final class FieldTransformer {
         // Rejects test + invalid stream — always emitted
         {
             String constructorWithVar = buildConstructorWithVar(className, classData, member, config);
-
             String rejectsBody;
             if (!member.isConstrained()) {
                 rejectsBody = "// TODO: add constraints to " + name
@@ -94,7 +91,6 @@ final class FieldTransformer {
                             ParameterCoderInfo.of(boxedType, name)),
                     rejectsBody));
 
-            // invalid stream
             StringBuilder invalidBody = new StringBuilder();
             if (!member.isConstrained()) {
                 invalidBody.append("// TODO: add constraints to ").append(name)
@@ -123,7 +119,10 @@ final class FieldTransformer {
         }
 
         return ClassCoderInfo.nested(
-                List.of("@Nested", "@DisplayName(\"" + name + "\")"),
+                List.of("@Nested",
+                        "@DisplayName(\"" + displayName + "\")",
+                        "@Tag(\"field\")",
+                        "@TestMethodOrder(MethodOrderer.MethodName.class)"),
                 List.of(),
                 nestedName,
                 List.of(),
@@ -134,7 +133,7 @@ final class FieldTransformer {
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private static String buildConstructorWithVar(String className, ClassData classData,
-                                                   MemberData target, ClassDataConfig config) {
+                                                  MemberData target, ClassDataConfig config) {
         List<Object>     parts   = classData.validValues();
         List<MemberData> members = classData.members();
         StringBuilder    sb      = new StringBuilder("new ").append(className).append("(\n");
@@ -157,7 +156,8 @@ final class FieldTransformer {
     }
 
     private static boolean isBooleanType(ClassData type) {
-        return (type.isPrimitive() && type.className().equals("boolean"));
+        return (type.isPrimitive() && type.className().equals("boolean"))
+                || type.className().equals("Boolean");
     }
 
     private static String placeholderLiteral(ClassData type, String boxedType) {

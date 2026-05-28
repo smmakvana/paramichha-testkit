@@ -5,12 +5,14 @@ import java.util.List;
 
 /**
  * Transforms a {@link MethodData} into a nested {@link ClassCoderInfo}.
- * Delegates to {@link CommandTransformer}, {@link QueryTransformer}, {@link MutatorTransformer}
- * based on method kind.
+ * Delegates to {@link CommandTransformer}, {@link QueryTransformer}, {@link MutatorTransformer}.
  */
 final class MethodTransformer {
 
     static ClassCoderInfo transform(MethodData method, ClassDataConfig config) {
+        String className   = config.sourceClassName();
+        String displayName = className + " Method " + method.name() + "()";
+
         List<MethodCoderInfo> methods = switch (method.kind()) {
             case COMMAND     -> CommandTransformer.transform(method, config);
             case QUERY       -> QueryTransformer.transform(method, config);
@@ -29,7 +31,9 @@ final class MethodTransformer {
 
         return ClassCoderInfo.nested(
                 List.of("@Nested",
-                        "@DisplayName(\"" + method.displayName() + "\")"),
+                        "@DisplayName(\"" + displayName + "\")",
+                        "@Tag(\"method\")",
+                        "@TestMethodOrder(MethodOrderer.MethodName.class)"),
                 List.of(),
                 method.nestedClassName(),
                 List.copyOf(fields),

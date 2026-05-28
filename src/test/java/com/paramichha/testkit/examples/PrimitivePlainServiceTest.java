@@ -2,8 +2,11 @@ package com.paramichha.testkit.examples;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,7 +20,9 @@ class PrimitivePlainServiceTest {
       new PrimitivePlainService(1, 100L, -1.0d, (byte) 127, (short) 5, true);
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("PrimitivePlainService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceCreationTest {
 
     @Test
@@ -39,7 +44,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("quantity")
+  @DisplayName("PrimitivePlainService Field quantity")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
@@ -79,7 +86,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("PrimitivePlainService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -119,7 +128,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("rate")
+  @DisplayName("PrimitivePlainService Field rate")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceRateTest {
 
     @ParameterizedTest(name = "{0}")
@@ -156,7 +167,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("level")
+  @DisplayName("PrimitivePlainService Field level")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceLevelTest {
 
     @ParameterizedTest(name = "{0}")
@@ -194,7 +207,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("score")
+  @DisplayName("PrimitivePlainService Field score")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceScoreTest {
 
     @ParameterizedTest(name = "{0}")
@@ -234,7 +249,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("active")
+  @DisplayName("PrimitivePlainService Field active")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceActiveTest {
 
     @ParameterizedTest(name = "{0}")
@@ -268,7 +285,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("applyDiscount()")
+  @DisplayName("PrimitivePlainService Method applyDiscount()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceMethodApplyDiscountTest {
 
     @ParameterizedTest(name = "{0}")
@@ -284,7 +303,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("combine()")
+  @DisplayName("PrimitivePlainService Method combine()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceMethodCombineTest {
 
     @ParameterizedTest(name = "{0}")
@@ -300,7 +321,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("PrimitivePlainService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceMethodResetTest {
 
     @Test
@@ -311,7 +334,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("totalValue()")
+  @DisplayName("PrimitivePlainService Method totalValue()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceMethodTotalValueTest {
 
     @Test
@@ -328,7 +353,9 @@ class PrimitivePlainServiceTest {
   }
 
   @Nested
-  @DisplayName("transfer()")
+  @DisplayName("PrimitivePlainService Method transfer()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitivePlainServiceMethodTransferTest {
 
     @ParameterizedTest(name = "{0}")

@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,7 +26,9 @@ class ObjectPlainServiceTest {
           "hans.moen@gmail.com");
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("ObjectPlainService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceCreationTest {
 
     @Test
@@ -43,7 +48,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("name")
+  @DisplayName("ObjectPlainService Field name")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceNameTest {
 
     @ParameterizedTest(name = "{0}")
@@ -79,7 +86,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("ObjectPlainService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -120,7 +129,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("createdDate")
+  @DisplayName("ObjectPlainService Field createdDate")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceCreatedDateTest {
 
     @ParameterizedTest(name = "{0}")
@@ -156,7 +167,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("email")
+  @DisplayName("ObjectPlainService Field email")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceEmailTest {
 
     @ParameterizedTest(name = "{0}")
@@ -192,7 +205,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("applyTax()")
+  @DisplayName("ObjectPlainService Method applyTax()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceMethodApplyTaxTest {
 
     @ParameterizedTest(name = "{0}")
@@ -209,7 +224,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("copyFrom()")
+  @DisplayName("ObjectPlainService Method copyFrom()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceMethodCopyFromTest {
 
     @ParameterizedTest(name = "{0}")
@@ -225,7 +242,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("formatDisplay()")
+  @DisplayName("ObjectPlainService Method formatDisplay()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceMethodFormatDisplayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -242,7 +261,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("merge()")
+  @DisplayName("ObjectPlainService Method merge()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceMethodMergeTest {
 
     @ParameterizedTest(name = "{0}")
@@ -259,7 +280,9 @@ class ObjectPlainServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("ObjectPlainService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectPlainServiceMethodResetTest {
 
     @Test

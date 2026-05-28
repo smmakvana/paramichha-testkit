@@ -7,8 +7,11 @@ import jakarta.validation.constraints.Positive;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,7 +32,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("PrimitiveMixedService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceCreationTest {
 
     @Test
@@ -56,7 +61,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("quantity")
+  @DisplayName("PrimitiveMixedService Field quantity")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
@@ -96,7 +103,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("PrimitiveMixedService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -134,7 +143,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("rate")
+  @DisplayName("PrimitiveMixedService Field rate")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceRateTest {
 
     @ParameterizedTest(name = "{0}")
@@ -170,7 +181,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("level")
+  @DisplayName("PrimitiveMixedService Field level")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceLevelTest {
 
     @ParameterizedTest(name = "{0}")
@@ -208,7 +221,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("active")
+  @DisplayName("PrimitiveMixedService Field active")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceActiveTest {
 
     @ParameterizedTest(name = "{0}")
@@ -240,7 +255,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("applyDiscount()")
+  @DisplayName("PrimitiveMixedService Method applyDiscount()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceMethodApplyDiscountTest {
 
     @ParameterizedTest(name = "{0}")
@@ -270,7 +287,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("combine()")
+  @DisplayName("PrimitiveMixedService Method combine()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceMethodCombineTest {
 
     @ParameterizedTest(name = "{0}")
@@ -299,7 +318,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("PrimitiveMixedService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceMethodResetTest {
 
     @Test
@@ -317,7 +338,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("scaledRate()")
+  @DisplayName("PrimitiveMixedService Method scaledRate()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceMethodScaledRateTest {
 
     private record ScaledRateResult(@Positive Double value) {}
@@ -337,7 +360,9 @@ class PrimitiveMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("transfer()")
+  @DisplayName("PrimitiveMixedService Method transfer()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceMethodTransferTest {
 
     @ParameterizedTest(name = "{0}")

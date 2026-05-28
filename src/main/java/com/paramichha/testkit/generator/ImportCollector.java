@@ -31,7 +31,10 @@ final class ImportCollector {
             "java.util.stream.Stream",
             "static org.assertj.core.api.Assertions.assertThat",
             "static org.assertj.core.api.Assertions.assertThatCode",
-            "static org.assertj.core.api.Assertions.assertThatThrownBy"
+            "static org.assertj.core.api.Assertions.assertThatThrownBy",
+            "org.junit.jupiter.api.Tag",
+            "org.junit.jupiter.api.TestMethodOrder",
+            "org.junit.jupiter.api.MethodOrderer"
     );
 
     private final TreeSet<String> imports = new TreeSet<>(FIXED);

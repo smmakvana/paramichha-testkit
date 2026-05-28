@@ -10,8 +10,11 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,7 +34,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("SampleService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceCreationTest {
 
     @Test
@@ -56,7 +61,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("name")
+  @DisplayName("SampleService Field name")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceNameTest {
 
     @ParameterizedTest(name = "{0}")
@@ -89,7 +96,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("quantity")
+  @DisplayName("SampleService Field quantity")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
@@ -128,7 +137,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("SampleService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -166,7 +177,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("applyDiscount()")
+  @DisplayName("SampleService Method applyDiscount()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodApplyDiscountTest {
 
     private record ApplyDiscountResult(@NotNull @Positive BigDecimal value) {}
@@ -202,7 +215,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("combine()")
+  @DisplayName("SampleService Method combine()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodCombineTest {
 
     @ParameterizedTest(name = "{0}")
@@ -218,7 +233,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("describe()")
+  @DisplayName("SampleService Method describe()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodDescribeTest {
 
     private record DescribeResult(@NotBlank String value) {}
@@ -238,7 +255,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("encode()")
+  @DisplayName("SampleService Method encode()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodEncodeTest {
 
     @ParameterizedTest(name = "{0}")
@@ -255,7 +274,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("formatName()")
+  @DisplayName("SampleService Method formatName()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodFormatNameTest {
 
     @ParameterizedTest(name = "{0}")
@@ -285,7 +306,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("merge()")
+  @DisplayName("SampleService Method merge()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodMergeTest {
 
     @ParameterizedTest(name = "{0}")
@@ -318,7 +341,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("multiply()")
+  @DisplayName("SampleService Method multiply()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodMultiplyTest {
 
     @ParameterizedTest(name = "{0}")
@@ -334,7 +359,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("SampleService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodResetTest {
 
     @Test
@@ -352,7 +379,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("swap()")
+  @DisplayName("SampleService Method swap()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodSwapTest {
 
     @ParameterizedTest(name = "{0}")
@@ -368,7 +397,9 @@ class SampleServiceTest {
   }
 
   @Nested
-  @DisplayName("transferTo()")
+  @DisplayName("SampleService Method transferTo()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodTransferToTest {
 
     @ParameterizedTest(name = "{0}")

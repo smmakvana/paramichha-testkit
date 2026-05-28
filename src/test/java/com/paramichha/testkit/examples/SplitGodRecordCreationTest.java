@@ -1,0 +1,104 @@
+package com.paramichha.testkit.examples;
+
+import java.time.DayOfWeek;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayName("SplitGodRecord Creation")
+@Tag("creation")
+@TestMethodOrder(MethodOrderer.MethodName.class)
+class SplitGodRecordCreationTest {
+
+  SplitGodRecord splitGodRecord =
+      new SplitGodRecord(
+          (byte) 127,
+          (short) 330,
+          330,
+          330L,
+          -1.0f,
+          -1.0d,
+          true,
+          'U',
+          (byte) 127,
+          (short) 330,
+          330,
+          330L,
+          -1.0f,
+          -1.0d,
+          true,
+          'U',
+          new byte[] {(byte) 127, (byte) 127},
+          new short[] {(short) 330, (short) 189},
+          new int[] {330, 189},
+          new long[] {330L, 189L},
+          new float[] {-1.0f, -1.0f},
+          new double[] {-1.0d, -1.0d},
+          new boolean[] {true, true},
+          new char[] {'U', 'P'},
+          new Byte[] {(byte) 127, (byte) 127},
+          new Short[] {(short) 330, (short) 189},
+          new Integer[] {330, 189},
+          new Long[] {330L, 189L},
+          new Float[] {-1.0f, -1.0f},
+          new Double[] {-1.0d, -1.0d},
+          new Boolean[] {true, true},
+          new Character[] {'U', 'P'},
+          DayOfWeek.MONDAY,
+          List.of("suscipit"),
+          Set.of("labore", "suscipit"),
+          (Map) null);
+
+  @Test
+  @DisplayName("can be created")
+  void testCanBeCreated() {
+    assertThat(splitGodRecord).isNotNull();
+  }
+
+  @Test
+  @DisplayName("holds expected values")
+  void testHoldsExpectedValues() {
+    assertThat(splitGodRecord.byteValue()).isEqualTo((byte) 127);
+    assertThat(splitGodRecord.shortValue()).isEqualTo((short) 330);
+    assertThat(splitGodRecord.intValue()).isEqualTo(330);
+    assertThat(splitGodRecord.longValue()).isEqualTo(330L);
+    assertThat(splitGodRecord.floatValue()).isEqualTo(-1.0f);
+    assertThat(splitGodRecord.doubleValue()).isEqualTo(-1.0d);
+    assertThat(splitGodRecord.booleanValue()).isEqualTo(true);
+    assertThat(splitGodRecord.charValue()).isEqualTo('U');
+    assertThat(splitGodRecord.byteWrapper()).isEqualTo((byte) 127);
+    assertThat(splitGodRecord.shortWrapper()).isEqualTo((short) 330);
+    assertThat(splitGodRecord.intWrapper()).isEqualTo(330);
+    assertThat(splitGodRecord.longWrapper()).isEqualTo(330L);
+    assertThat(splitGodRecord.floatWrapper()).isEqualTo(-1.0f);
+    assertThat(splitGodRecord.doubleWrapper()).isEqualTo(-1.0d);
+    assertThat(splitGodRecord.booleanWrapper()).isEqualTo(true);
+    assertThat(splitGodRecord.charWrapper()).isEqualTo('U');
+    assertThat(splitGodRecord.byteArray()).isEqualTo(new byte[] {(byte) 127, (byte) 127});
+    assertThat(splitGodRecord.shortArray()).isEqualTo(new short[] {(short) 330, (short) 189});
+    assertThat(splitGodRecord.intArray()).isEqualTo(new int[] {330, 189});
+    assertThat(splitGodRecord.longArray()).isEqualTo(new long[] {330L, 189L});
+    assertThat(splitGodRecord.floatArray()).isEqualTo(new float[] {-1.0f, -1.0f});
+    assertThat(splitGodRecord.doubleArray()).isEqualTo(new double[] {-1.0d, -1.0d});
+    assertThat(splitGodRecord.booleanArray()).isEqualTo(new boolean[] {true, true});
+    assertThat(splitGodRecord.charArray()).isEqualTo(new char[] {'U', 'P'});
+    assertThat(splitGodRecord.byteWrapperArray()).isEqualTo(new Byte[] {(byte) 127, (byte) 127});
+    assertThat(splitGodRecord.shortWrapperArray())
+        .isEqualTo(new Short[] {(short) 330, (short) 189});
+    assertThat(splitGodRecord.intWrapperArray()).isEqualTo(new Integer[] {330, 189});
+    assertThat(splitGodRecord.longWrapperArray()).isEqualTo(new Long[] {330L, 189L});
+    assertThat(splitGodRecord.floatWrapperArray()).isEqualTo(new Float[] {-1.0f, -1.0f});
+    assertThat(splitGodRecord.doubleWrapperArray()).isEqualTo(new Double[] {-1.0d, -1.0d});
+    assertThat(splitGodRecord.booleanWrapperArray()).isEqualTo(new Boolean[] {true, true});
+    assertThat(splitGodRecord.charWrapperArray()).isEqualTo(new Character[] {'U', 'P'});
+    assertThat(splitGodRecord.dayOfWeek()).isEqualTo(DayOfWeek.MONDAY);
+    assertThat(splitGodRecord.list()).isEqualTo(List.of("suscipit"));
+    assertThat(splitGodRecord.set()).isEqualTo(Set.of("labore", "suscipit"));
+  }
+}

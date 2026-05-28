@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -56,7 +59,9 @@ class GodClassTest {
           (Map) null);
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("GodClass Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassCreationTest {
 
     @Test
@@ -107,7 +112,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("byteValue")
+  @DisplayName("GodClass Field byteValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassByteValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -219,7 +226,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("shortValue")
+  @DisplayName("GodClass Field shortValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassShortValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -331,7 +340,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("intValue")
+  @DisplayName("GodClass Field intValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassIntValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -443,7 +454,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("longValue")
+  @DisplayName("GodClass Field longValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassLongValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -555,7 +568,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("floatValue")
+  @DisplayName("GodClass Field floatValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassFloatValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -664,7 +679,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("doubleValue")
+  @DisplayName("GodClass Field doubleValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassDoubleValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -773,7 +790,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("booleanValue")
+  @DisplayName("GodClass Field booleanValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassBooleanValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -880,7 +899,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("charValue")
+  @DisplayName("GodClass Field charValue")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassCharValueTest {
 
     @ParameterizedTest(name = "{0}")
@@ -986,7 +1007,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("byteWrapper")
+  @DisplayName("GodClass Field byteWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassByteWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1100,7 +1123,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("shortWrapper")
+  @DisplayName("GodClass Field shortWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassShortWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1214,7 +1239,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("intWrapper")
+  @DisplayName("GodClass Field intWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassIntWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1328,7 +1355,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("longWrapper")
+  @DisplayName("GodClass Field longWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassLongWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1442,7 +1471,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("floatWrapper")
+  @DisplayName("GodClass Field floatWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassFloatWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1553,7 +1584,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("doubleWrapper")
+  @DisplayName("GodClass Field doubleWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassDoubleWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1664,7 +1697,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("booleanWrapper")
+  @DisplayName("GodClass Field booleanWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassBooleanWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1709,7 +1744,7 @@ class GodClassTest {
               List.of("voluptates"),
               Set.of("voluptates", "consectetur"),
               (Map) null);
-      assertThat(obj.getBooleanWrapper()).isEqualTo(booleanWrapper);
+      assertThat(obj.isBooleanWrapper()).isEqualTo(booleanWrapper);
     }
 
     static Stream<Arguments> validBooleanWrappers() {
@@ -1774,7 +1809,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("charWrapper")
+  @DisplayName("GodClass Field charWrapper")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassCharWrapperTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1880,7 +1917,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("byteArray")
+  @DisplayName("GodClass Field byteArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassByteArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -1986,7 +2025,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("shortArray")
+  @DisplayName("GodClass Field shortArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassShortArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2092,7 +2133,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("intArray")
+  @DisplayName("GodClass Field intArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassIntArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2198,7 +2241,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("longArray")
+  @DisplayName("GodClass Field longArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassLongArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2304,7 +2349,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("floatArray")
+  @DisplayName("GodClass Field floatArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassFloatArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2410,7 +2457,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("doubleArray")
+  @DisplayName("GodClass Field doubleArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassDoubleArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2516,7 +2565,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("booleanArray")
+  @DisplayName("GodClass Field booleanArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassBooleanArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2622,7 +2673,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("charArray")
+  @DisplayName("GodClass Field charArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassCharArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2728,7 +2781,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("byteWrapperArray")
+  @DisplayName("GodClass Field byteWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassByteWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2835,7 +2890,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("shortWrapperArray")
+  @DisplayName("GodClass Field shortWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassShortWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -2942,7 +2999,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("intWrapperArray")
+  @DisplayName("GodClass Field intWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassIntWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3048,7 +3107,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("longWrapperArray")
+  @DisplayName("GodClass Field longWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassLongWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3154,7 +3215,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("floatWrapperArray")
+  @DisplayName("GodClass Field floatWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassFloatWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3260,7 +3323,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("doubleWrapperArray")
+  @DisplayName("GodClass Field doubleWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassDoubleWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3366,7 +3431,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("booleanWrapperArray")
+  @DisplayName("GodClass Field booleanWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassBooleanWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3472,7 +3539,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("charWrapperArray")
+  @DisplayName("GodClass Field charWrapperArray")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassCharWrapperArrayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3578,7 +3647,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("dayOfWeek")
+  @DisplayName("GodClass Field dayOfWeek")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassDayOfWeekTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3691,7 +3762,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("list")
+  @DisplayName("GodClass Field list")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassListTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3798,7 +3871,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("set")
+  @DisplayName("GodClass Field set")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassSetTest {
 
     @ParameterizedTest(name = "{0}")
@@ -3904,7 +3979,9 @@ class GodClassTest {
   }
 
   @Nested
-  @DisplayName("map")
+  @DisplayName("GodClass Field map")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class GodClassMapTest {
 
     @ParameterizedTest(name = "{0}")

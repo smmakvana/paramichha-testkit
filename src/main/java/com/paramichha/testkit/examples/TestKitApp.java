@@ -34,6 +34,7 @@ public class TestKitApp {
         );
 
         generateAll(
+                Eclipse.class,
                 SplitGodRecord.class
         );
     }

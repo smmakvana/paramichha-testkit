@@ -9,8 +9,11 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,7 +38,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("ObjectMixedService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceCreationTest {
 
     @Test
@@ -61,7 +66,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("name")
+  @DisplayName("ObjectMixedService Field name")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceNameTest {
 
     @ParameterizedTest(name = "{0}")
@@ -104,7 +111,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("ObjectMixedService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -145,7 +154,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("createdDate")
+  @DisplayName("ObjectMixedService Field createdDate")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceCreatedDateTest {
 
     @ParameterizedTest(name = "{0}")
@@ -185,7 +196,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("email")
+  @DisplayName("ObjectMixedService Field email")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceEmailTest {
 
     @ParameterizedTest(name = "{0}")
@@ -221,7 +234,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("copyFrom()")
+  @DisplayName("ObjectMixedService Method copyFrom()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceMethodCopyFromTest {
 
     @ParameterizedTest(name = "{0}")
@@ -250,7 +265,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("formatDisplay()")
+  @DisplayName("ObjectMixedService Method formatDisplay()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceMethodFormatDisplayTest {
 
     @ParameterizedTest(name = "{0}")
@@ -281,7 +298,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("merge()")
+  @DisplayName("ObjectMixedService Method merge()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceMethodMergeTest {
 
     @ParameterizedTest(name = "{0}")
@@ -310,7 +329,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("ObjectMixedService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceMethodResetTest {
 
     @Test
@@ -328,7 +349,9 @@ class ObjectMixedServiceTest {
   }
 
   @Nested
-  @DisplayName("resolvedPrice()")
+  @DisplayName("ObjectMixedService Method resolvedPrice()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceMethodResolvedPriceTest {
 
     private record ResolvedPriceResult(@NotNull BigDecimal value) {}

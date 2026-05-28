@@ -7,17 +7,19 @@ import java.util.List;
 
 /**
  * Transforms {@link ClassData} into the Creation nested {@link ClassCoderInfo}.
- * Knows: creation test patterns — canBeCreated, holdsExpectedValues, isValid.
  */
 final class CreationTransformer {
 
     static ClassCoderInfo transform(ClassData data, ClassDataConfig config) {
         List<MethodCoderInfo> methods = new ArrayList<>();
-        String instanceName = config.instanceName();
+        String instanceName  = config.instanceName();
+        String className     = config.sourceClassName();
+        String displayName   = className + " Creation";
 
         // testCanBeCreated
         methods.add(MethodCoderInfo.of(
-                List.of("@Test", "@DisplayName(\"can be created\")"),
+                List.of("@Test",
+                        "@DisplayName(\"can be created\")"),
                 "void", "testCanBeCreated",
                 "assertThat(" + instanceName + ").isNotNull();"));
 
@@ -33,37 +35,40 @@ final class CreationTransformer {
             String accessor = config.isRecord()
                     ? instanceName + "." + m.name() + "()"
                     : instanceName + "." + TestNames.getterName(
-                            m.name(), isBooleanType(m.type()), config.isRecord()) + "()";
+                    m.name(), isBooleanType(m.type()), config.isRecord()) + "()";
             holdsBody.append("assertThat(").append(accessor)
                     .append(").isEqualTo(").append(LiteralConverter.toLiteral(val)).append(");\n");
         }
         methods.add(MethodCoderInfo.of(
-                List.of("@Test", "@DisplayName(\"holds expected values\")"),
+                List.of("@Test",
+                        "@DisplayName(\"holds expected values\")"),
                 "void", "testHoldsExpectedValues",
                 holdsBody.toString().stripTrailing()));
 
-        // testIsValid — only if Jakarta + constrained
+        // testIsValid
         if (config.hasJakarta() && data.isConstrained()) {
             methods.add(MethodCoderInfo.of(
-                    List.of("@Test", "@DisplayName(\"is valid (no constraint violations)\")"),
+                    List.of("@Test",
+                            "@DisplayName(\"is valid (no constraint violations)\")"),
                     "void", "testIsValid",
                     "assertThat(" + config.validatorField()
-                    + ".validate(" + instanceName + ")).isEmpty();"));
+                            + ".validate(" + instanceName + ")).isEmpty();"));
         }
 
         return ClassCoderInfo.nested(
-                List.of("@Nested", "@DisplayName(\"Creation\")"),
+                List.of("@Nested",
+                        "@DisplayName(\"" + displayName + "\")",
+                        "@Tag(\"creation\")",
+                        "@TestMethodOrder(MethodOrderer.MethodName.class)"),
                 List.of(),
-                config.sourceClassName() + "CreationTest",
+                className + "CreationTest",
                 List.of(),
                 List.copyOf(methods),
                 List.of());
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
-
     private static boolean isBooleanType(ClassData type) {
-        return (type.isPrimitive() && type.className().equals("boolean"));
+        return type.isPrimitive() && type.className().equals("boolean");
     }
 
     private static boolean isComplexType(ClassData type) {

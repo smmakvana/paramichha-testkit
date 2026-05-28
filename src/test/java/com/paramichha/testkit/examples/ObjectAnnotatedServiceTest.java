@@ -11,8 +11,11 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,7 +40,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("ObjectAnnotatedService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceCreationTest {
 
     @Test
@@ -63,7 +68,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("name")
+  @DisplayName("ObjectAnnotatedService Field name")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceNameTest {
 
     @ParameterizedTest(name = "{0}")
@@ -100,7 +107,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("ObjectAnnotatedService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -142,7 +151,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("createdDate")
+  @DisplayName("ObjectAnnotatedService Field createdDate")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceCreatedDateTest {
 
     @ParameterizedTest(name = "{0}")
@@ -181,7 +192,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("email")
+  @DisplayName("ObjectAnnotatedService Field email")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceEmailTest {
 
     @ParameterizedTest(name = "{0}")
@@ -218,7 +231,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("applyTax()")
+  @DisplayName("ObjectAnnotatedService Method applyTax()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodApplyTaxTest {
 
     private record ApplyTaxResult(@NotNull @Positive BigDecimal value) {}
@@ -254,7 +269,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("copyFrom()")
+  @DisplayName("ObjectAnnotatedService Method copyFrom()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodCopyFromTest {
 
     @ParameterizedTest(name = "{0}")
@@ -287,7 +304,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("formatDisplay()")
+  @DisplayName("ObjectAnnotatedService Method formatDisplay()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodFormatDisplayTest {
 
     private record FormatDisplayResult(@NotBlank String value) {}
@@ -321,7 +340,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("merge()")
+  @DisplayName("ObjectAnnotatedService Method merge()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodMergeTest {
 
     @ParameterizedTest(name = "{0}")
@@ -355,7 +376,9 @@ class ObjectAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("ObjectAnnotatedService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodResetTest {
 
     @Test

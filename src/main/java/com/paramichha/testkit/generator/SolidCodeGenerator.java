@@ -13,52 +13,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Drop-in replacement for {@link SolidCodeGenerator}.
+ * Production code generator using the FreshCoder pipeline.
  *
- * <p>Uses the new recursive {@link ClassData} pipeline:
  * <pre>
  * TestCodeData
- *   → ClassDataFactory      (ALL DataFactory calls, builds recursive tree)
+ *   → ClassDataFactory      (ALL DataFactory calls)
  *   → ClassData             (pure data)
  *   → ClassDataConfig       (template-resolved config)
  *   → ClassDataTransformer  (ClassData → ClassCoderInfo)
  *   → ClassCoder            (ClassCoderInfo → String)
+ *   → google-java-format    (String → formatted String)
  *   → GenerationResult
  * </pre>
  */
 public final class SolidCodeGenerator implements CodeGenerator {
 
-    private Formatter formatter = new Formatter();
     public static final SolidCodeGenerator INSTANCE = new SolidCodeGenerator();
 
-    private final FreshCoder<ClassCoderInfo> coder = new ClassCoder();
+    private final FreshCoder<ClassCoderInfo> coder      = new ClassCoder();
+    private final Formatter                  formatter   = new Formatter();
 
-    private SolidCodeGenerator() {
-    }
+    private SolidCodeGenerator() {}
 
     @Override
     public GenerationResult generate(TestCodeData payload) {
         if (payload.fixture() != null && payload.fixture().hasError())
             return placeholder(payload, payload.fixture().error());
         try {
-            ClassData data = ClassDataFactory.build(payload);
+            ClassData       data   = ClassDataFactory.build(payload);
             ClassDataConfig config = buildConfig(payload);
-            ClassCoderInfo info = ClassDataTransformer.transform(data, config);
-            String source = coder.code(info);
-            String formated = getFormatedSource(source);
-            return GenerationResult.of(data.className(), config.targetPackage(), formated);
+            ClassCoderInfo  info   = ClassDataTransformer.transform(data, config);
+            String          source = cleanCode(coder.code(info));
+            return GenerationResult.of(data.className(), config.targetPackage(), source);
         } catch (Exception e) {
             return placeholder(payload, e.getMessage());
         }
-    }
-
-    private String getFormatedSource(String source) {
-        try {
-            return formatter.formatSource(source);
-        } catch (FormatterException e) {
-            System.out.println("⚠️  Warning: google-java-format failed, returning unformatted source. Reason: " + e.getMessage());
-        }
-        return source;
     }
 
     @Override
@@ -66,11 +55,14 @@ public final class SolidCodeGenerator implements CodeGenerator {
         if (payload.fixture() != null && payload.fixture().hasError())
             return placeholder(payload, payload.fixture().error());
         try {
-            ClassData data = ClassDataFactory.build(payload);
-            ClassDataConfig config = buildConfig(payload);
-            List<ClassCoderInfo> infos = ClassDataTransformer.transformSplit(data, config);
+            ClassData            data    = ClassDataFactory.build(payload);
+            ClassDataConfig      config  = buildConfig(payload);
+            List<ClassCoderInfo> infos   = ClassDataTransformer.transformSplit(data, config);
             List<GenerationResult> results = infos.stream()
-                    .map(info -> GenerationResult.of(info.name(), config.targetPackage(), coder.code(info)))
+                    .map(info -> GenerationResult.of(
+                            info.name(),
+                            config.targetPackage(),
+                            cleanCode(coder.code(info))))
                     .collect(Collectors.toList());
             return GenerationResult.ofAll(results);
         } catch (Exception e) {
@@ -78,14 +70,26 @@ public final class SolidCodeGenerator implements CodeGenerator {
         }
     }
 
+    // ── Formatting ────────────────────────────────────────────────────────
+
+    private String cleanCode(String source) {
+        try {
+            return formatter.formatSource(source);
+        } catch (FormatterException e) {
+            // If formatting fails return unformatted — never break generation
+            System.err.println("⚠ google-java-format failed: " + e.getMessage());
+            return source;
+        }
+    }
+
     // ── Config assembly ───────────────────────────────────────────────────
 
     private ClassDataConfig buildConfig(TestCodeData payload) {
-        ClassInfo classInfo = payload.classInfo();
-        boolean hasJakarta = payload.projectType().hasValidator()
+        ClassInfo classInfo    = payload.classInfo();
+        boolean   hasJakarta   = payload.projectType().hasValidator()
                 && classInfo.fields().stream().anyMatch(f -> !f.validations().isEmpty());
-        boolean isRecord = classInfo.constructorStyle() == ConstructorStyle.RECORD;
-        String instanceName = TestNames.toVariable(classInfo.simpleName());
+        boolean   isRecord     = classInfo.constructorStyle() == ConstructorStyle.RECORD;
+        String    instanceName = TestNames.toVariable(classInfo.simpleName());
 
         ImportCollector imports = buildImports(classInfo, payload);
 
@@ -103,8 +107,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
                 classInfo.utilityClass(),
                 isRecord,
                 payload.template().validatorField,
-                payload.template().validatorSetup
-        );
+                payload.template().validatorSetup);
     }
 
     private ImportCollector buildImports(ClassInfo classInfo, TestCodeData payload) {
@@ -142,7 +145,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
 
     private GenerationResult placeholder(TestCodeData payload, String error) {
         String name = payload.classInfo().simpleName() + "Test";
-        String pkg = payload.targetPackage();
+        String pkg  = payload.targetPackage();
         System.err.println("✗ TestKit failed for "
                 + payload.classInfo().simpleName() + ": " + error);
         return GenerationResult.of(name, pkg,

@@ -9,8 +9,11 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,7 +34,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("Creation")
+  @DisplayName("PrimitiveAnnotatedService Creation")
+  @Tag("creation")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceCreationTest {
 
     @Test
@@ -59,7 +64,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("quantity")
+  @DisplayName("PrimitiveAnnotatedService Field quantity")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceQuantityTest {
 
     @ParameterizedTest(name = "{0}")
@@ -100,7 +107,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("price")
+  @DisplayName("PrimitiveAnnotatedService Field price")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServicePriceTest {
 
     @ParameterizedTest(name = "{0}")
@@ -141,7 +150,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("rate")
+  @DisplayName("PrimitiveAnnotatedService Field rate")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceRateTest {
 
     @ParameterizedTest(name = "{0}")
@@ -179,7 +190,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("level")
+  @DisplayName("PrimitiveAnnotatedService Field level")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceLevelTest {
 
     @ParameterizedTest(name = "{0}")
@@ -220,7 +233,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("score")
+  @DisplayName("PrimitiveAnnotatedService Field score")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceScoreTest {
 
     @ParameterizedTest(name = "{0}")
@@ -258,7 +273,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("active")
+  @DisplayName("PrimitiveAnnotatedService Field active")
+  @Tag("field")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceActiveTest {
 
     @ParameterizedTest(name = "{0}")
@@ -292,7 +309,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("applyDiscount()")
+  @DisplayName("PrimitiveAnnotatedService Method applyDiscount()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodApplyDiscountTest {
 
     private record ApplyDiscountResult(@Positive Double value) {}
@@ -326,7 +345,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("combine()")
+  @DisplayName("PrimitiveAnnotatedService Method combine()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodCombineTest {
 
     private record CombineResult(@PositiveOrZero Integer value) {}
@@ -360,7 +381,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("reset()")
+  @DisplayName("PrimitiveAnnotatedService Method reset()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodResetTest {
 
     @Test
@@ -378,7 +401,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("totalValue()")
+  @DisplayName("PrimitiveAnnotatedService Method totalValue()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodTotalValueTest {
 
     private record TotalValueResult(@Min(value = 0L) Long value) {}
@@ -400,7 +425,9 @@ class PrimitiveAnnotatedServiceTest {
   }
 
   @Nested
-  @DisplayName("transfer()")
+  @DisplayName("PrimitiveAnnotatedService Method transfer()")
+  @Tag("method")
+  @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodTransferTest {
 
     @ParameterizedTest(name = "{0}")
