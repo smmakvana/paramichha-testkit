@@ -1,7 +1,7 @@
 package com.paramichha.testkit;
 
 import com.paramichha.datafactory.GenerationMode;
-import com.paramichha.testkit.generator.CleanCodeGenerator;
+import com.paramichha.testkit.generator.SolidCodeGenerator;
 import com.paramichha.testkit.model.ClassInfo;
 import com.paramichha.testkit.model.TestFixture;
 
@@ -28,7 +28,7 @@ public final class TestKit {
     private ProjectType projectType = ProjectType.detect();
     private GenerationMode mode = GenerationMode.PRODUCTION;
     private Long seed = null;
-    private final CodeGenerator generator = CleanCodeGenerator.INSTANCE;
+    private final CodeGenerator generator = SolidCodeGenerator.INSTANCE;
     private final ClassReader reader = ReflectionClassReader.INSTANCE;
     private final TestDataProvider dataProvider = DefaultTestDataProvider.INSTANCE;
 
