@@ -1744,7 +1744,7 @@ class GodClassTest {
               List.of("voluptates"),
               Set.of("voluptates", "consectetur"),
               (Map) null);
-      assertThat(obj.isBooleanWrapper()).isEqualTo(booleanWrapper);
+      assertThat(obj.getBooleanWrapper()).isEqualTo(booleanWrapper);
     }
 
     static Stream<Arguments> validBooleanWrappers() {

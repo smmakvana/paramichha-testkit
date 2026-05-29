@@ -156,8 +156,7 @@ final class FieldTransformer {
     }
 
     private static boolean isBooleanType(ClassData type) {
-        return (type.isPrimitive() && type.className().equals("boolean"))
-                || type.className().equals("Boolean");
+        return (type.isPrimitive() && type.className().equals("boolean"));
     }
 
     private static String placeholderLiteral(ClassData type, String boxedType) {
