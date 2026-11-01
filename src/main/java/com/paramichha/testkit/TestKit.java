@@ -28,6 +28,7 @@ public final class TestKit {
     private ProjectType projectType = ProjectType.detect();
     private GenerationMode mode = GenerationMode.PRODUCTION;
     private Long seed = null;
+    private boolean methodTests = true;
     private final CodeGenerator generator = SolidCodeGenerator.INSTANCE;
     private final ClassReader reader = ReflectionClassReader.INSTANCE;
     private final TestDataProvider dataProvider = DefaultTestDataProvider.INSTANCE;
@@ -90,6 +91,15 @@ public final class TestKit {
         return this;
     }
 
+    /**
+     * Whether to generate tests for the class's public methods (default {@code true}).
+     * With {@code false}, only creation and field tests are generated.
+     */
+    public TestKit withMethodTests(boolean methodTests) {
+        this.methodTests = methodTests;
+        return this;
+    }
+
     // ── Terminal — pipeline executes here ─────────────────────────────────
 
     public GenerationResult generateTest() {
@@ -105,11 +115,25 @@ public final class TestKit {
     private TestCodeData buildPayload() {
         // Step 1 — resolve ClassInfo
         ClassInfo resolved = classInfo != null ? classInfo : reader.read(type);
+        if (!methodTests) resolved = withoutMethods(resolved);
 
         // Step 2 — load values via DataFactory
         TestFixture fixture = dataProvider.provide(resolved.type(), mode, seed);
 
         // Step 3 — assemble pipeline context
         return new TestCodeData(resolved, fixture, targetPackage, template, projectType, mode, seed);
+    }
+
+    /** The same class, seen without methods — so no method tests are generated. */
+    private static ClassInfo withoutMethods(ClassInfo c) {
+        return new ClassInfo() {
+            @Override public String simpleName()                  { return c.simpleName(); }
+            @Override public String packageName()                 { return c.packageName(); }
+            @Override public com.paramichha.testkit.model.ConstructorStyle constructorStyle() { return c.constructorStyle(); }
+            @Override public java.util.List<com.paramichha.testkit.model.FieldInfo> fields() { return c.fields(); }
+            @Override public java.util.List<com.paramichha.testkit.model.MethodInfo> methods() { return java.util.List.of(); }
+            @Override public boolean utilityClass()               { return c.utilityClass(); }
+            @Override public Class<?> type()                      { return c.type(); }
+        };
     }
 }
