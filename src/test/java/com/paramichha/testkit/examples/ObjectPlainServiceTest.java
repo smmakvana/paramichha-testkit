@@ -66,23 +66,6 @@ class ObjectPlainServiceTest {
     static Stream<Arguments> validNames() {
       return Stream.of(Arguments.of("name 0", "Judi Gaylord"));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidNames")
-    @DisplayName("rejects invalid value")
-    void testRejectsName(String description, String name) {
-      // TODO: add constraints to name, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      ObjectPlainService obj =
-          new ObjectPlainService(
-              name, new BigDecimal("-1.00"), LocalDate.of(2024, 1, 15), "hans.moen@gmail.com");
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidNames() {
-      // TODO: add constraints to name, or delete this test
-      return Stream.of(Arguments.of("null name", (String) null), Arguments.of("blank name", ""));
-    }
   }
 
   @Nested
@@ -107,25 +90,6 @@ class ObjectPlainServiceTest {
           Arguments.of("valid price 2", new BigDecimal("0.00")),
           Arguments.of("valid price 3", new BigDecimal("847.35")));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidPrices")
-    @DisplayName("rejects invalid value")
-    void testRejectsPrice(String description, BigDecimal price) {
-      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      ObjectPlainService obj =
-          new ObjectPlainService(
-              "Judi Gaylord", price, LocalDate.of(2024, 1, 15), "hans.moen@gmail.com");
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidPrices() {
-      // TODO: add constraints to price, or delete this test
-      return Stream.of(
-          Arguments.of("null price", (BigDecimal) null),
-          Arguments.of("invalid price 2", new BigDecimal("-1")));
-    }
   }
 
   @Nested
@@ -147,23 +111,6 @@ class ObjectPlainServiceTest {
     static Stream<Arguments> validCreatedDates() {
       return Stream.of(Arguments.of("valid createdDate 1", LocalDate.of(2024, 1, 15)));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidCreatedDates")
-    @DisplayName("rejects invalid value")
-    void testRejectsCreatedDate(String description, LocalDate createdDate) {
-      // TODO: add constraints to createdDate, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      ObjectPlainService obj =
-          new ObjectPlainService(
-              "Judi Gaylord", new BigDecimal("-1.00"), createdDate, "hans.moen@gmail.com");
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidCreatedDates() {
-      // TODO: add constraints to createdDate, or delete this test
-      return Stream.of(Arguments.of("null createdDate", (LocalDate) null));
-    }
   }
 
   @Nested
@@ -184,23 +131,6 @@ class ObjectPlainServiceTest {
 
     static Stream<Arguments> validEmails() {
       return Stream.of(Arguments.of("email 0", "hans.moen@gmail.com"));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidEmails")
-    @DisplayName("rejects invalid value")
-    void testRejectsEmail(String description, String email) {
-      // TODO: add constraints to email, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      ObjectPlainService obj =
-          new ObjectPlainService(
-              "Judi Gaylord", new BigDecimal("-1.00"), LocalDate.of(2024, 1, 15), email);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidEmails() {
-      // TODO: add constraints to email, or delete this test
-      return Stream.of(Arguments.of("null email", (String) null), Arguments.of("blank email", ""));
     }
   }
 

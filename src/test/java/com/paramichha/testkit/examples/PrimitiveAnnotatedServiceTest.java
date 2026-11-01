@@ -61,6 +61,33 @@ class PrimitiveAnnotatedServiceTest {
     void testIsValid() {
       assertThat(validator.validate(primitiveAnnotatedService)).isEmpty();
     }
+
+    @Test
+    @DisplayName("constructor arguments are valid")
+    void testConstructorArgumentsAreValid() {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        short.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, 100L, 1.5d, (byte) 63, (short) 5, true}))
+          .isEmpty();
+    }
   }
 
   @Nested
@@ -73,6 +100,28 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        short.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {quantity, 100L, 1.5d, (byte) 63, (short) 5, true}))
+          .isEmpty();
       PrimitiveAnnotatedService obj =
           new PrimitiveAnnotatedService(quantity, 100L, 1.5d, (byte) 63, (short) 5, true);
       assertThat(validator.validate(obj)).isEmpty();
@@ -81,29 +130,50 @@ class PrimitiveAnnotatedServiceTest {
     static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
-          Arguments.of("valid quantity 2", 1),
-          Arguments.of("valid quantity 3", 2),
-          Arguments.of("valid quantity 4", 50),
-          Arguments.of("valid quantity 5", 99),
-          Arguments.of("valid quantity 6", 100));
+          Arguments.of("valid quantity 2", 2),
+          Arguments.of("valid quantity 3", 50),
+          Arguments.of("valid quantity 4", 99),
+          Arguments.of("valid quantity 5", 100));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidQuantities")
     @DisplayName("rejects invalid value")
     void testRejectsQuantity(String description, int quantity) {
-      try {
-        PrimitiveAnnotatedService obj =
-            new PrimitiveAnnotatedService(quantity, 100L, 1.5d, (byte) 63, (short) 5, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class,
+                                    long.class,
+                                    double.class,
+                                    byte.class,
+                                    short.class,
+                                    boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {quantity, 100L, 1.5d, (byte) 63, (short) 5, true});
+      // the violation must be on parameter 'quantity', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".quantity")
+                      || v.getPropertyPath().toString().endsWith(".arg0"));
     }
 
     static Stream<Arguments> invalidQuantities() {
       return Stream.of(
-          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 101));
+          Arguments.of("invalid quantity 1", 0),
+          Arguments.of("invalid quantity 2", 101),
+          Arguments.of("invalid quantity 3", -2147483648),
+          Arguments.of("invalid quantity 4", 2147483647));
     }
   }
 
@@ -117,6 +187,28 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("validPrices")
     @DisplayName("accepts valid value")
     void testAcceptsPrice(String description, long price) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        short.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, price, 1.5d, (byte) 63, (short) 5, true}))
+          .isEmpty();
       PrimitiveAnnotatedService obj =
           new PrimitiveAnnotatedService(1, price, 1.5d, (byte) 63, (short) 5, true);
       assertThat(validator.validate(obj)).isEmpty();
@@ -136,18 +228,40 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("invalidPrices")
     @DisplayName("rejects invalid value")
     void testRejectsPrice(String description, long price) {
-      try {
-        PrimitiveAnnotatedService obj =
-            new PrimitiveAnnotatedService(1, price, 1.5d, (byte) 63, (short) 5, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class,
+                                    long.class,
+                                    double.class,
+                                    byte.class,
+                                    short.class,
+                                    boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {1, price, 1.5d, (byte) 63, (short) 5, true});
+      // the violation must be on parameter 'price', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".price")
+                      || v.getPropertyPath().toString().endsWith(".arg1"));
     }
 
     static Stream<Arguments> invalidPrices() {
       return Stream.of(
-          Arguments.of("invalid price 1", -1L), Arguments.of("invalid price 2", 1000000L));
+          Arguments.of("invalid price 1", -1L),
+          Arguments.of("invalid price 2", 1000000L),
+          Arguments.of("invalid price 3", -9223372036854775808L),
+          Arguments.of("invalid price 4", 9223372036854775807L));
     }
   }
 
@@ -161,6 +275,28 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("validRates")
     @DisplayName("accepts valid value")
     void testAcceptsRate(String description, double rate) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        short.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, 100L, rate, (byte) 63, (short) 5, true}))
+          .isEmpty();
       PrimitiveAnnotatedService obj =
           new PrimitiveAnnotatedService(1, 100L, rate, (byte) 63, (short) 5, true);
       assertThat(validator.validate(obj)).isEmpty();
@@ -177,13 +313,32 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("invalidRates")
     @DisplayName("rejects invalid value")
     void testRejectsRate(String description, double rate) {
-      try {
-        PrimitiveAnnotatedService obj =
-            new PrimitiveAnnotatedService(1, 100L, rate, (byte) 63, (short) 5, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class,
+                                    long.class,
+                                    double.class,
+                                    byte.class,
+                                    short.class,
+                                    boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {1, 100L, rate, (byte) 63, (short) 5, true});
+      // the violation must be on parameter 'rate', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".rate")
+                      || v.getPropertyPath().toString().endsWith(".arg2"));
     }
 
     static Stream<Arguments> invalidRates() {
@@ -201,6 +356,28 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("validLevels")
     @DisplayName("accepts valid value")
     void testAcceptsLevel(String description, byte level) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        short.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, 100L, 1.5d, level, (short) 5, true}))
+          .isEmpty();
       PrimitiveAnnotatedService obj =
           new PrimitiveAnnotatedService(1, 100L, 1.5d, level, (short) 5, true);
       assertThat(validator.validate(obj)).isEmpty();
@@ -211,22 +388,40 @@ class PrimitiveAnnotatedServiceTest {
           Arguments.of("valid level 1", (byte) 63),
           Arguments.of("valid level 2", (byte) 0),
           Arguments.of("valid level 3", (byte) 1),
-          Arguments.of("valid level 4", (byte) 63),
-          Arguments.of("valid level 5", (byte) 126),
-          Arguments.of("valid level 6", (byte) 127));
+          Arguments.of("valid level 4", (byte) 126),
+          Arguments.of("valid level 5", (byte) 127));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidLevels")
     @DisplayName("rejects invalid value")
     void testRejectsLevel(String description, byte level) {
-      try {
-        PrimitiveAnnotatedService obj =
-            new PrimitiveAnnotatedService(1, 100L, 1.5d, level, (short) 5, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class,
+                                    long.class,
+                                    double.class,
+                                    byte.class,
+                                    short.class,
+                                    boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {1, 100L, 1.5d, level, (short) 5, true});
+      // the violation must be on parameter 'level', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".level")
+                      || v.getPropertyPath().toString().endsWith(".arg3"));
     }
 
     static Stream<Arguments> invalidLevels() {
@@ -245,6 +440,28 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("validScores")
     @DisplayName("accepts valid value")
     void testAcceptsScore(String description, short score) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        short.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, 100L, 1.5d, (byte) 63, score, true}))
+          .isEmpty();
       PrimitiveAnnotatedService obj =
           new PrimitiveAnnotatedService(1, 100L, 1.5d, (byte) 63, score, true);
       assertThat(validator.validate(obj)).isEmpty();
@@ -261,17 +478,38 @@ class PrimitiveAnnotatedServiceTest {
     @MethodSource("invalidScores")
     @DisplayName("rejects invalid value")
     void testRejectsScore(String description, short score) {
-      try {
-        PrimitiveAnnotatedService obj =
-            new PrimitiveAnnotatedService(1, 100L, 1.5d, (byte) 63, score, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class,
+                                    long.class,
+                                    double.class,
+                                    byte.class,
+                                    short.class,
+                                    boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {1, 100L, 1.5d, (byte) 63, score, true});
+      // the violation must be on parameter 'score', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".score")
+                      || v.getPropertyPath().toString().endsWith(".arg4"));
     }
 
     static Stream<Arguments> invalidScores() {
-      return Stream.of(Arguments.of("invalid score 1", (short) -1));
+      return Stream.of(
+          Arguments.of("invalid score 1", (short) -1),
+          Arguments.of("invalid score 2", (short) -32768));
     }
   }
 
@@ -292,22 +530,6 @@ class PrimitiveAnnotatedServiceTest {
 
     static Stream<Arguments> validActives() {
       return Stream.of(Arguments.of("valid active 1", true), Arguments.of("valid active 2", false));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidActives")
-    @DisplayName("rejects invalid value")
-    void testRejectsActive(String description, boolean active) {
-      // TODO: add constraints to active, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitiveAnnotatedService obj =
-          new PrimitiveAnnotatedService(1, 100L, 1.5d, (byte) 63, (short) 5, active);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidActives() {
-      // TODO: add constraints to active, or delete this test
-      return Stream.of(Arguments.of("invalid active 1", false));
     }
   }
 

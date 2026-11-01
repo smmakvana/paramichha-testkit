@@ -102,11 +102,18 @@ final class ClassDataFactory {
                         // which used to drop every invalid value for primitive fields
                         .filter(v -> v == null || boxed(rawType).isAssignableFrom(v.getClass()))
                         .collect(Collectors.toList());
+                invalidVals = distinct(withTypeExtremes(rawType, field, invalidVals));
+                validVals   = distinct(validVals);
                 ClassData fieldType = classDataForType(rawType, field.genericType());
+                boolean propertyConstrained    = !field.propertyValidations().isEmpty() || field.hasIndirectConstraints();
+                boolean constructorConstrained = !field.constructorValidations().isEmpty();
+                List<String> conflicts = com.paramichha.datafactory.constraint.ConstraintConflicts.find(
+                        com.paramichha.datafactory.constraint.AnnotationResolver.analyze(
+                                field.name(), rawType, field.validations()));
                 result.add(new DefaultMemberData(
-                        field.name(), fieldType,
-                        field.isConstrained(), field.required(),
-                        validVals, invalidVals));
+                        field.name(), fieldType, field.required(),
+                        validVals, invalidVals,
+                        propertyConstrained, constructorConstrained, field.constructorIndex(), conflicts));
             } catch (Exception ignored) {
                 ClassData fieldType = classDataForType(field.rawType(), field.genericType());
                 result.add(new DefaultMemberData(
@@ -470,6 +477,48 @@ final class ClassDataFactory {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * For integer fields with a bound, add the type's extreme beyond that bound as a second
+     * invalid value: {@code @Positive int} → also {@code Integer.MIN_VALUE}, {@code @Max(5)} → also
+     * {@code Integer.MAX_VALUE}. DataFactory gives the value just outside the bound; the extreme
+     * catches checks that only reject values close to it (and gives @Positive a negative case).
+     */
+    private static List<Object> withTypeExtremes(Class<?> rawType, FieldInfo field, List<Object> invalid) {
+        Class<?> t = boxed(rawType);
+        long typeMin, typeMax;
+        if      (t == Integer.class) { typeMin = Integer.MIN_VALUE; typeMax = Integer.MAX_VALUE; }
+        else if (t == Long.class)    { typeMin = Long.MIN_VALUE;    typeMax = Long.MAX_VALUE;    }
+        else if (t == Short.class)   { typeMin = Short.MIN_VALUE;   typeMax = Short.MAX_VALUE;   }
+        else if (t == Byte.class)    { typeMin = Byte.MIN_VALUE;    typeMax = Byte.MAX_VALUE;    }
+        else return invalid;
+        var bounds = com.paramichha.datafactory.constraint.AnnotationResolver
+                .analyze(field.name(), rawType, field.validations()).bounds();
+        if (bounds.isContradictory()) return invalid;
+        List<Object> out = new ArrayList<>(invalid);
+        Long min = bounds.min(), max = bounds.max();
+        if (min != null && min - 1 > typeMin) addIfAbsent(out, cast(t, typeMin));
+        if (max != null && max + 1 < typeMax) addIfAbsent(out, cast(t, typeMax));
+        return out;
+    }
+
+    /** Keeps the first occurrence of each value, in order (DataFactory can repeat a boundary). */
+    private static List<Object> distinct(List<Object> values) {
+        List<Object> out = new ArrayList<>();
+        for (Object v : values) if (!out.contains(v)) out.add(v);
+        return out;
+    }
+
+    private static void addIfAbsent(List<Object> values, Object v) {
+        if (!values.contains(v)) values.add(v);
+    }
+
+    private static Object cast(Class<?> t, long v) {
+        if (t == Integer.class) return (int) v;
+        if (t == Short.class)   return (short) v;
+        if (t == Byte.class)    return (byte) v;
+        return v;
+    }
+
     private static Class<?> boxed(Class<?> t) {
         if (!t.isPrimitive()) return t;
         if (t == int.class)     return Integer.class;

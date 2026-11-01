@@ -12,6 +12,31 @@ public final class ReflectionFieldInfo implements FieldInfo {
     private final List<Annotation> validations;
     private final boolean required;
     private final boolean hasIndirectConstraints;
+    private final List<Annotation> propertyValidations;
+    private final List<Annotation> constructorValidations;
+    private final int constructorIndex;
+
+    /**
+     * @param propertyValidations    field and getter constraints — checked by {@code Validator.validate}
+     * @param constructorValidations constraints on the constructor parameter that sets this field
+     * @param constructorIndex       that parameter's index, or -1
+     */
+    public ReflectionFieldInfo(String name, Class<?> rawType, Type genericType,
+                               List<Annotation> propertyValidations,
+                               List<Annotation> constructorValidations, int constructorIndex,
+                               boolean required, boolean hasIndirectConstraints) {
+        this.name = name;
+        this.rawType = rawType;
+        this.genericType = genericType;
+        List<Annotation> all = new java.util.ArrayList<>(propertyValidations);
+        for (Annotation a : constructorValidations) if (!all.contains(a)) all.add(a);
+        this.validations = java.util.List.copyOf(all);
+        this.propertyValidations = java.util.List.copyOf(propertyValidations);
+        this.constructorValidations = java.util.List.copyOf(constructorValidations);
+        this.constructorIndex = constructorIndex;
+        this.required = required;
+        this.hasIndirectConstraints = hasIndirectConstraints;
+    }
 
     public ReflectionFieldInfo(
             String name,
@@ -27,7 +52,14 @@ public final class ReflectionFieldInfo implements FieldInfo {
         this.validations = validations;
         this.required = required;
         this.hasIndirectConstraints = hasIndirectConstraints;
+        this.propertyValidations = validations;
+        this.constructorValidations = java.util.List.of();
+        this.constructorIndex = -1;
     }
+
+    @Override public List<Annotation> propertyValidations()    { return propertyValidations; }
+    @Override public List<Annotation> constructorValidations() { return constructorValidations; }
+    @Override public int constructorIndex()                    { return constructorIndex; }
 
     public ReflectionFieldInfo(String name, Class<?> rawType, Type genericType,
                                List<Annotation> validations, boolean required) {

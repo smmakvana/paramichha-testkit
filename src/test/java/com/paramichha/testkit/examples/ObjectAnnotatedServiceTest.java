@@ -65,6 +65,36 @@ class ObjectAnnotatedServiceTest {
     void testIsValid() {
       assertThat(validator.validate(objectAnnotatedService)).isEmpty();
     }
+
+    @Test
+    @DisplayName("constructor arguments are valid")
+    void testConstructorArgumentsAreValid() {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              ObjectAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        "Annabell Lynch",
+                        new BigDecimal("1.50"),
+                        LocalDate.of(2020, 6, 15),
+                        "don.thiel@yahoo.com"
+                      }))
+          .isEmpty();
+    }
   }
 
   @Nested
@@ -77,6 +107,31 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("validNames")
     @DisplayName("accepts valid value")
     void testAcceptsName(String description, String name) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              ObjectAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        name,
+                        new BigDecimal("1.50"),
+                        LocalDate.of(2020, 6, 15),
+                        "don.thiel@yahoo.com"
+                      }))
+          .isEmpty();
       ObjectAnnotatedService obj =
           new ObjectAnnotatedService(
               name, new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com");
@@ -91,14 +146,29 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("invalidNames")
     @DisplayName("rejects invalid value")
     void testRejectsName(String description, String name) {
-      try {
-        ObjectAnnotatedService obj =
-            new ObjectAnnotatedService(
-                name, new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com");
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(ObjectAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    String.class, BigDecimal.class, LocalDate.class, String.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {
+                    name, new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com"
+                  });
+      // the violation must be on parameter 'name', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".name")
+                      || v.getPropertyPath().toString().endsWith(".arg0"));
     }
 
     static Stream<Arguments> invalidNames() {
@@ -116,6 +186,28 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("validPrices")
     @DisplayName("accepts valid value")
     void testAcceptsPrice(String description, BigDecimal price) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              ObjectAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        "Annabell Lynch", price, LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com"
+                      }))
+          .isEmpty();
       ObjectAnnotatedService obj =
           new ObjectAnnotatedService(
               "Annabell Lynch", price, LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com");
@@ -133,14 +225,29 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("invalidPrices")
     @DisplayName("rejects invalid value")
     void testRejectsPrice(String description, BigDecimal price) {
-      try {
-        ObjectAnnotatedService obj =
-            new ObjectAnnotatedService(
-                "Annabell Lynch", price, LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com");
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(ObjectAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    String.class, BigDecimal.class, LocalDate.class, String.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {
+                    "Annabell Lynch", price, LocalDate.of(2020, 6, 15), "don.thiel@yahoo.com"
+                  });
+      // the violation must be on parameter 'price', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".price")
+                      || v.getPropertyPath().toString().endsWith(".arg1"));
     }
 
     static Stream<Arguments> invalidPrices() {
@@ -160,6 +267,28 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("validCreatedDates")
     @DisplayName("accepts valid value")
     void testAcceptsCreatedDate(String description, LocalDate createdDate) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              ObjectAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        "Annabell Lynch", new BigDecimal("1.50"), createdDate, "don.thiel@yahoo.com"
+                      }))
+          .isEmpty();
       ObjectAnnotatedService obj =
           new ObjectAnnotatedService(
               "Annabell Lynch", new BigDecimal("1.50"), createdDate, "don.thiel@yahoo.com");
@@ -174,14 +303,29 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("invalidCreatedDates")
     @DisplayName("rejects invalid value")
     void testRejectsCreatedDate(String description, LocalDate createdDate) {
-      try {
-        ObjectAnnotatedService obj =
-            new ObjectAnnotatedService(
-                "Annabell Lynch", new BigDecimal("1.50"), createdDate, "don.thiel@yahoo.com");
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(ObjectAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    String.class, BigDecimal.class, LocalDate.class, String.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {
+                    "Annabell Lynch", new BigDecimal("1.50"), createdDate, "don.thiel@yahoo.com"
+                  });
+      // the violation must be on parameter 'createdDate', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".createdDate")
+                      || v.getPropertyPath().toString().endsWith(".arg2"));
     }
 
     static Stream<Arguments> invalidCreatedDates() {
@@ -201,6 +345,28 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("validEmails")
     @DisplayName("accepts valid value")
     void testAcceptsEmail(String description, String email) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(
+                              ObjectAnnotatedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        "Annabell Lynch", new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), email
+                      }))
+          .isEmpty();
       ObjectAnnotatedService obj =
           new ObjectAnnotatedService(
               "Annabell Lynch", new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), email);
@@ -215,14 +381,29 @@ class ObjectAnnotatedServiceTest {
     @MethodSource("invalidEmails")
     @DisplayName("rejects invalid value")
     void testRejectsEmail(String description, String email) {
-      try {
-        ObjectAnnotatedService obj =
-            new ObjectAnnotatedService(
-                "Annabell Lynch", new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), email);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(ObjectAnnotatedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    String.class, BigDecimal.class, LocalDate.class, String.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {
+                    "Annabell Lynch", new BigDecimal("1.50"), LocalDate.of(2020, 6, 15), email
+                  });
+      // the violation must be on parameter 'email', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".email")
+                      || v.getPropertyPath().toString().endsWith(".arg3"));
     }
 
     static Stream<Arguments> invalidEmails() {

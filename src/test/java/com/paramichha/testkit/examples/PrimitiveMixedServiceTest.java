@@ -58,6 +58,31 @@ class PrimitiveMixedServiceTest {
     void testIsValid() {
       assertThat(validator.validate(primitiveMixedService)).isEmpty();
     }
+
+    @Test
+    @DisplayName("constructor arguments are valid")
+    void testConstructorArgumentsAreValid() {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(PrimitiveMixedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, 100L, 1.5d, (byte) 127, true}))
+          .isEmpty();
+    }
   }
 
   @Nested
@@ -70,6 +95,26 @@ class PrimitiveMixedServiceTest {
     @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(PrimitiveMixedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {quantity, 100L, 1.5d, (byte) 127, true}))
+          .isEmpty();
       PrimitiveMixedService obj = new PrimitiveMixedService(quantity, 100L, 1.5d, (byte) 127, true);
       assertThat(validator.validate(obj)).isEmpty();
     }
@@ -77,29 +122,45 @@ class PrimitiveMixedServiceTest {
     static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
-          Arguments.of("valid quantity 2", 1),
-          Arguments.of("valid quantity 3", 2),
-          Arguments.of("valid quantity 4", 500),
-          Arguments.of("valid quantity 5", 999),
-          Arguments.of("valid quantity 6", 1000));
+          Arguments.of("valid quantity 2", 2),
+          Arguments.of("valid quantity 3", 500),
+          Arguments.of("valid quantity 4", 999),
+          Arguments.of("valid quantity 5", 1000));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidQuantities")
     @DisplayName("rejects invalid value")
     void testRejectsQuantity(String description, int quantity) {
-      try {
-        PrimitiveMixedService obj =
-            new PrimitiveMixedService(quantity, 100L, 1.5d, (byte) 127, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveMixedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class, long.class, double.class, byte.class, boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {quantity, 100L, 1.5d, (byte) 127, true});
+      // the violation must be on parameter 'quantity', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".quantity")
+                      || v.getPropertyPath().toString().endsWith(".arg0"));
     }
 
     static Stream<Arguments> invalidQuantities() {
       return Stream.of(
-          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 1001));
+          Arguments.of("invalid quantity 1", 0),
+          Arguments.of("invalid quantity 2", 1001),
+          Arguments.of("invalid quantity 3", -2147483648),
+          Arguments.of("invalid quantity 4", 2147483647));
     }
   }
 
@@ -126,21 +187,6 @@ class PrimitiveMixedServiceTest {
           Arguments.of("valid price 5", 9223372036854775806L),
           Arguments.of("valid price 6", 9223372036854775807L));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidPrices")
-    @DisplayName("rejects invalid value")
-    void testRejectsPrice(String description, long price) {
-      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitiveMixedService obj = new PrimitiveMixedService(1, price, 1.5d, (byte) 127, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidPrices() {
-      // TODO: add constraints to price, or delete this test
-      return Stream.of(Arguments.of("invalid price 1", -1L));
-    }
   }
 
   @Nested
@@ -153,6 +199,26 @@ class PrimitiveMixedServiceTest {
     @MethodSource("validRates")
     @DisplayName("accepts valid value")
     void testAcceptsRate(String description, double rate) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(PrimitiveMixedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        int.class,
+                                        long.class,
+                                        double.class,
+                                        byte.class,
+                                        boolean.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {1, 100L, rate, (byte) 127, true}))
+          .isEmpty();
       PrimitiveMixedService obj = new PrimitiveMixedService(1, 100L, rate, (byte) 127, true);
       assertThat(validator.validate(obj)).isEmpty();
     }
@@ -168,12 +234,27 @@ class PrimitiveMixedServiceTest {
     @MethodSource("invalidRates")
     @DisplayName("rejects invalid value")
     void testRejectsRate(String description, double rate) {
-      try {
-        PrimitiveMixedService obj = new PrimitiveMixedService(1, 100L, rate, (byte) 127, true);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(PrimitiveMixedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    int.class, long.class, double.class, byte.class, boolean.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {1, 100L, rate, (byte) 127, true});
+      // the violation must be on parameter 'rate', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".rate")
+                      || v.getPropertyPath().toString().endsWith(".arg2"));
     }
 
     static Stream<Arguments> invalidRates() {
@@ -201,23 +282,7 @@ class PrimitiveMixedServiceTest {
           Arguments.of("valid level 2", (byte) -128),
           Arguments.of("valid level 3", (byte) -127),
           Arguments.of("valid level 4", (byte) 0),
-          Arguments.of("valid level 5", (byte) 126),
-          Arguments.of("valid level 6", (byte) 127));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLevels")
-    @DisplayName("rejects invalid value")
-    void testRejectsLevel(String description, byte level) {
-      // TODO: add constraints to level, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitiveMixedService obj = new PrimitiveMixedService(1, 100L, 1.5d, level, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLevels() {
-      // TODO: add constraints to level, or delete this test
-      return Stream.of(Arguments.of("invalid level 1", (byte) -1));
+          Arguments.of("valid level 5", (byte) 126));
     }
   }
 
@@ -237,21 +302,6 @@ class PrimitiveMixedServiceTest {
 
     static Stream<Arguments> validActives() {
       return Stream.of(Arguments.of("valid active 1", true), Arguments.of("valid active 2", false));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidActives")
-    @DisplayName("rejects invalid value")
-    void testRejectsActive(String description, boolean active) {
-      // TODO: add constraints to active, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitiveMixedService obj = new PrimitiveMixedService(1, 100L, 1.5d, (byte) 127, active);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidActives() {
-      // TODO: add constraints to active, or delete this test
-      return Stream.of(Arguments.of("invalid active 1", false));
     }
   }
 

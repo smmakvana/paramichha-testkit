@@ -45,14 +45,26 @@ final class CreationTransformer {
                 "void", "testHoldsExpectedValues",
                 holdsBody.toString().stripTrailing()));
 
-        // testIsValid
-        if (config.hasJakarta() && data.isConstrained()) {
+        // testIsValid — only meaningful when validate(obj) has constraints to check
+        boolean propertyConstraints = data.members().stream().anyMatch(MemberData::isPropertyConstrained);
+        if (config.hasJakarta() && propertyConstraints) {
             methods.add(MethodCoderInfo.of(
                     List.of("@Test",
                             "@DisplayName(\"is valid (no constraint violations)\")"),
                     "void", "testIsValid",
                     "assertThat(" + config.validatorField()
                             + ".validate(" + instanceName + ")).isEmpty();"));
+        }
+
+        // Constructor-parameter constraints: validate() never sees them, check the fixture's arguments
+        boolean constructorConstraints = data.members().stream().anyMatch(MemberData::isConstructorConstrained);
+        if (config.hasJakarta() && constructorConstraints) {
+            methods.add(MethodCoderInfo.of(
+                    List.of("@Test",
+                            "@DisplayName(\"constructor arguments are valid\")"),
+                    "void", "testConstructorArgumentsAreValid",
+                    "assertThat(" + FieldTransformer.constructorViolations(
+                            className, data, null, config.validatorField()) + ").isEmpty();"));
         }
 
         return ClassCoderInfo.nested(
