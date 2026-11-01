@@ -87,6 +87,7 @@ method, grouped by kind: command, mutator, query, transformer, operation.
 - **Records, Lombok, all-args constructors, JavaBeans** — the constructor style is detected; objects passed as
   arguments are written as `new Foo(…)` calls.
 - **Unannotated fields aren't skipped** — they get a test with a `// TODO: add constraints` note, so gaps are visible.
+- **Method tests on or off** — `withMethodTests(false)` generates only creation and field tests.
 - **Generation modes** — `withMode(GenerationMode.PRODUCTION)` (default) or `DEV`, see DataFactory.
 - **Pluggable** — `withTemplate(...)` controls naming; `withProjectType(SPRING | JAKARTA | PLAIN_JAVA)` is detected
   from the classpath when not set.
