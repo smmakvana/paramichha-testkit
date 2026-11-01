@@ -44,6 +44,6 @@ class EclipseFieldRTest {
 
   static Stream<Arguments> invalidRs() {
     // TODO: add constraints to r, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0.0f));
+    return Stream.of(Arguments.of("invalid r 1", -1.0f));
   }
 }

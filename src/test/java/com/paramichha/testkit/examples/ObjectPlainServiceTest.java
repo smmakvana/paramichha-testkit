@@ -237,7 +237,15 @@ class ObjectPlainServiceTest {
     }
 
     static Stream<Arguments> validCopyFromInputs() {
-      return Stream.of(Arguments.of("valid copyFrom", (ObjectPlainService) null, (String) null));
+      return Stream.of(
+          Arguments.of(
+              "valid copyFrom",
+              new ObjectPlainService(
+                  "Basil Hermiston",
+                  new BigDecimal("-1.00"),
+                  LocalDate.of(2024, 1, 15),
+                  "eleonora.halvorson@yahoo.com"),
+              (String) null));
     }
   }
 
@@ -275,7 +283,15 @@ class ObjectPlainServiceTest {
     }
 
     static Stream<Arguments> validMergeInputs() {
-      return Stream.of(Arguments.of("valid merge", (ObjectPlainService) null, (String) null));
+      return Stream.of(
+          Arguments.of(
+              "valid merge",
+              new ObjectPlainService(
+                  "Clemencia Cartwright MD",
+                  new BigDecimal("-1.00"),
+                  LocalDate.of(2024, 1, 15),
+                  "karlyn.dare@hotmail.com"),
+              (String) null));
     }
   }
 

@@ -8,6 +8,7 @@ import com.paramichha.datafactory.catalog.annotation.numeric.NumericConstraintAl
 import com.paramichha.datafactory.catalog.number.NumberRecord;
 import com.paramichha.datafactory.catalog.nested.NestedRecord;
 import com.paramichha.datafactory.catalog.realworld.registration.UserRegistration;
+import com.paramichha.testkit.fixture.PlainRecord;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,7 @@ class TestKitTest {
             String src = TestKit.of(NumericConstraintRecord.class)
                     .withPackage("com.example").generateTest().asString();
             assertThat(src).contains("@Nested");
-            assertThat(src).contains("in NumericConstraintRecord");
+            assertThat(src).contains("NumericConstraintRecord Field");
         }
 
         @Test
@@ -90,7 +91,7 @@ class TestKitTest {
 
         @Test
         void unannotatedClassHasNoValidator() {
-            String src = TestKit.of(NumberRecord.class)
+            String src = TestKit.of(PlainRecord.class)
                     .withPackage("com.example").generateTest().asString();
             assertThat(src).doesNotContain("setUpValidator");
             assertThat(src).doesNotContain("Validation.buildDefaultValidatorFactory");
@@ -100,12 +101,12 @@ class TestKitTest {
         void annotatedFieldHasRejectTest() {
             String src = TestKit.of(EmailRecord.class)
                     .withPackage("com.example").generateTest().asString();
-            assertThat(src).contains("rejectsEmail");
+            assertThat(src).contains("testRejectsEmail");
         }
 
         @Test
         void unannotatedFieldRejectIsCommentedOut() {
-            String src = TestKit.of(NumberRecord.class)
+            String src = TestKit.of(PlainRecord.class)
                     .withPackage("com.example").generateTest().asString();
             assertThat(src).contains("// TODO");
         }
@@ -130,7 +131,10 @@ class TestKitTest {
         void numericBoundaryValuesPresent() {
             String src = TestKit.of(NumericConstraintAllArgs.class)
                     .withPackage("com.example").generateTest().asString();
-            assertThat(src).containsAnyOf("18", "19", "20");
+            // quantity is @Min(1) @Max(100): the max and the first value above it
+            assertThat(src).contains("100").contains("101");
+            // primitive constrained fields must get real invalid values, not a placeholder
+            assertThat(src).contains("invalid quantity").doesNotContain("no constraints defined");
         }
     }
 

@@ -221,7 +221,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidByteValues() {
       // TODO: add constraints to byteValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
+      return Stream.of(Arguments.of("invalid byteValue 1", (byte) -1));
     }
   }
 
@@ -335,7 +335,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidShortValues() {
       // TODO: add constraints to shortValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", (short) 0));
+      return Stream.of(Arguments.of("invalid shortValue 1", (short) -1));
     }
   }
 
@@ -449,7 +449,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidIntValues() {
       // TODO: add constraints to intValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+      return Stream.of(Arguments.of("invalid intValue 1", -1));
     }
   }
 
@@ -563,7 +563,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidLongValues() {
       // TODO: add constraints to longValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
+      return Stream.of(Arguments.of("invalid longValue 1", -1L));
     }
   }
 
@@ -674,7 +674,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidFloatValues() {
       // TODO: add constraints to floatValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0f));
+      return Stream.of(Arguments.of("invalid floatValue 1", -1.0f));
     }
   }
 
@@ -785,7 +785,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidDoubleValues() {
       // TODO: add constraints to doubleValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
+      return Stream.of(Arguments.of("invalid doubleValue 1", -1.0d));
     }
   }
 
@@ -894,7 +894,7 @@ class GodRecordTest {
 
     static Stream<Arguments> invalidBooleanValues() {
       // TODO: add constraints to booleanValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", false));
+      return Stream.of(Arguments.of("invalid booleanValue 1", false));
     }
   }
 

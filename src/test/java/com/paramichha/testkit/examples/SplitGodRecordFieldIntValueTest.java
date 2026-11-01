@@ -162,6 +162,6 @@ class SplitGodRecordFieldIntValueTest {
 
   static Stream<Arguments> invalidIntValues() {
     // TODO: add constraints to intValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+    return Stream.of(Arguments.of("invalid intValue 1", -1));
   }
 }

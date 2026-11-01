@@ -162,6 +162,6 @@ class SplitGodRecordFieldShortValueTest {
 
   static Stream<Arguments> invalidShortValues() {
     // TODO: add constraints to shortValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", (short) 0));
+    return Stream.of(Arguments.of("invalid shortValue 1", (short) -1));
   }
 }

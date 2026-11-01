@@ -256,7 +256,15 @@ class ObjectMixedServiceTest {
     }
 
     static Stream<Arguments> validCopyFromInputs() {
-      return Stream.of(Arguments.of("valid copyFrom", (ObjectMixedService) null, (String) null));
+      return Stream.of(
+          Arguments.of(
+              "valid copyFrom",
+              new ObjectMixedService(
+                  "Jolanda Cormier",
+                  new BigDecimal("-1.00"),
+                  LocalDate.of(2024, 1, 15),
+                  "marcelino.torphy@gmail.com"),
+              (String) null));
     }
 
     static Stream<Arguments> invalidCopyFromInputs() {
@@ -320,7 +328,15 @@ class ObjectMixedServiceTest {
     }
 
     static Stream<Arguments> validMergeInputs() {
-      return Stream.of(Arguments.of("valid merge", (ObjectMixedService) null, (String) null));
+      return Stream.of(
+          Arguments.of(
+              "valid merge",
+              new ObjectMixedService(
+                  "Ms. Kamilah Cummerata",
+                  new BigDecimal("-1.00"),
+                  LocalDate.of(2024, 1, 15),
+                  "anton.hoeger@yahoo.com"),
+              (String) null));
     }
 
     static Stream<Arguments> invalidMergeInputs() {

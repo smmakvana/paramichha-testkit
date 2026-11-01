@@ -98,7 +98,8 @@ class PrimitiveMixedServiceTest {
     }
 
     static Stream<Arguments> invalidQuantities() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+      return Stream.of(
+          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 1001));
     }
   }
 
@@ -138,7 +139,7 @@ class PrimitiveMixedServiceTest {
 
     static Stream<Arguments> invalidPrices() {
       // TODO: add constraints to price, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
+      return Stream.of(Arguments.of("invalid price 1", -1L));
     }
   }
 
@@ -176,7 +177,7 @@ class PrimitiveMixedServiceTest {
     }
 
     static Stream<Arguments> invalidRates() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
+      return Stream.of(Arguments.of("invalid rate 1", 0.0d));
     }
   }
 
@@ -216,7 +217,7 @@ class PrimitiveMixedServiceTest {
 
     static Stream<Arguments> invalidLevels() {
       // TODO: add constraints to level, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
+      return Stream.of(Arguments.of("invalid level 1", (byte) -1));
     }
   }
 
@@ -250,7 +251,7 @@ class PrimitiveMixedServiceTest {
 
     static Stream<Arguments> invalidActives() {
       // TODO: add constraints to active, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", false));
+      return Stream.of(Arguments.of("invalid active 1", false));
     }
   }
 

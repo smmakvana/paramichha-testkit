@@ -98,7 +98,9 @@ final class ClassDataFactory {
                 List<Object> invalidVals = castList(iw.invalidValuesFor(
                         fixture != null ? fixture.type() : classInfo.type(), field))
                         .stream()
-                        .filter(v -> v == null || rawType.isAssignableFrom(v.getClass()))
+                        // compare against the boxed type: int.class.isAssignableFrom(Integer.class) is false,
+                        // which used to drop every invalid value for primitive fields
+                        .filter(v -> v == null || boxed(rawType).isAssignableFrom(v.getClass()))
                         .collect(Collectors.toList());
                 ClassData fieldType = classDataForType(rawType, field.genericType());
                 result.add(new DefaultMemberData(
@@ -468,6 +470,19 @@ final class ClassDataFactory {
     }
 
     @SuppressWarnings("unchecked")
+    private static Class<?> boxed(Class<?> t) {
+        if (!t.isPrimitive()) return t;
+        if (t == int.class)     return Integer.class;
+        if (t == long.class)    return Long.class;
+        if (t == double.class)  return Double.class;
+        if (t == float.class)   return Float.class;
+        if (t == short.class)   return Short.class;
+        if (t == byte.class)    return Byte.class;
+        if (t == char.class)    return Character.class;
+        if (t == boolean.class) return Boolean.class;
+        return Void.class;
+    }
+
     private static List<Object> castList(List<?> list) {
         return new ArrayList<>((List<Object>) list);
     }

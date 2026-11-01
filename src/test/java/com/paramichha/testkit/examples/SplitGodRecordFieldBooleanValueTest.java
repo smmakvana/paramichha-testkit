@@ -157,6 +157,6 @@ class SplitGodRecordFieldBooleanValueTest {
 
   static Stream<Arguments> invalidBooleanValues() {
     // TODO: add constraints to booleanValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", false));
+    return Stream.of(Arguments.of("invalid booleanValue 1", false));
   }
 }
