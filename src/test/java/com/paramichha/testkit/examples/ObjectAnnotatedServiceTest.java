@@ -242,8 +242,8 @@ class ObjectAnnotatedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyTaxInputs")
     @DisplayName("applyTax accepts valid input")
-    void testAcceptsValidInput(String description, BigDecimal arg0) {
-      BigDecimal result = objectAnnotatedService.applyTax(arg0);
+    void testAcceptsValidInput(String description, BigDecimal taxRate) {
+      BigDecimal result = objectAnnotatedService.applyTax(taxRate);
       DataValidation.notNull(result);
       DataValidation.positive(result);
     }
@@ -251,10 +251,11 @@ class ObjectAnnotatedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidApplyTaxInputs")
     @DisplayName("applyTax rejects invalid input")
-    void testRejectsInvalidInput(String description, BigDecimal arg0) {
-      // Enforce @DecimalMin: DataValidation.decimalMin("0.0", arg0);
-      // Enforce @DecimalMax: DataValidation.decimalMax("1.0", arg0);
-      assertThatThrownBy(() -> objectAnnotatedService.applyTax(arg0)).isInstanceOf(Exception.class);
+    void testRejectsInvalidInput(String description, BigDecimal taxRate) {
+      // Enforce @DecimalMin: DataValidation.decimalMin("0.0", taxRate);
+      // Enforce @DecimalMax: DataValidation.decimalMax("1.0", taxRate);
+      assertThatThrownBy(() -> objectAnnotatedService.applyTax(taxRate))
+          .isInstanceOf(Exception.class);
     }
 
     static Stream<Arguments> validApplyTaxInputs() {
@@ -263,8 +264,8 @@ class ObjectAnnotatedServiceTest {
 
     static Stream<Arguments> invalidApplyTaxInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", new BigDecimal("-1")),
-          Arguments.of("invalid arg0", new BigDecimal("2")));
+          Arguments.of("invalid taxRate", new BigDecimal("-1")),
+          Arguments.of("invalid taxRate", new BigDecimal("2")));
     }
   }
 
@@ -277,17 +278,18 @@ class ObjectAnnotatedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCopyFromInputs")
     @DisplayName("copyFrom accepts valid input")
-    void testAcceptsValidInput(String description, ObjectAnnotatedService arg0, String arg1) {
-      assertThatCode(() -> objectAnnotatedService.copyFrom(arg0, arg1)).doesNotThrowAnyException();
+    void testAcceptsValidInput(String description, ObjectAnnotatedService source, String reason) {
+      assertThatCode(() -> objectAnnotatedService.copyFrom(source, reason))
+          .doesNotThrowAnyException();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCopyFromInputs")
     @DisplayName("copyFrom rejects invalid input")
-    void testRejectsInvalidInput(String description, ObjectAnnotatedService arg0, String arg1) {
-      // Enforce @NotNull: DataValidation.notNull(arg0);
-      // Enforce @NotBlank: DataValidation.notBlank(arg1);
-      assertThatThrownBy(() -> objectAnnotatedService.copyFrom(arg0, arg1))
+    void testRejectsInvalidInput(String description, ObjectAnnotatedService source, String reason) {
+      // Enforce @NotNull: DataValidation.notNull(source);
+      // Enforce @NotBlank: DataValidation.notBlank(reason);
+      assertThatThrownBy(() -> objectAnnotatedService.copyFrom(source, reason))
           .isInstanceOf(Exception.class);
     }
 
@@ -296,31 +298,31 @@ class ObjectAnnotatedServiceTest {
           Arguments.of(
               "valid copyFrom",
               new ObjectAnnotatedService(
-                  "Mrs. Tiffany Ebert",
+                  "Coleman Crooks",
                   new BigDecimal("1.50"),
                   LocalDate.of(2020, 6, 15),
-                  "concetta.stanton@yahoo.com"),
-              "accusamus"));
+                  "rolando.pagac@yahoo.com"),
+              "Sed veniam beatae."));
     }
 
     static Stream<Arguments> invalidCopyFromInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "accusamus"),
+          Arguments.of("invalid source", (ObjectAnnotatedService) null, "Sed veniam beatae."),
           Arguments.of(
-              "invalid arg1",
+              "invalid reason",
               new ObjectAnnotatedService(
-                  "Mrs. Tiffany Ebert",
+                  "Coleman Crooks",
                   new BigDecimal("1.50"),
                   LocalDate.of(2020, 6, 15),
-                  "concetta.stanton@yahoo.com"),
+                  "rolando.pagac@yahoo.com"),
               (String) null),
           Arguments.of(
-              "invalid arg1",
+              "invalid reason",
               new ObjectAnnotatedService(
-                  "Mrs. Tiffany Ebert",
+                  "Coleman Crooks",
                   new BigDecimal("1.50"),
                   LocalDate.of(2020, 6, 15),
-                  "concetta.stanton@yahoo.com"),
+                  "rolando.pagac@yahoo.com"),
               ""));
     }
   }
@@ -337,27 +339,27 @@ class ObjectAnnotatedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validFormatDisplayInputs")
     @DisplayName("formatDisplay accepts valid input")
-    void testAcceptsValidInput(String description, String arg0) {
-      String result = objectAnnotatedService.formatDisplay(arg0);
+    void testAcceptsValidInput(String description, String prefix) {
+      String result = objectAnnotatedService.formatDisplay(prefix);
       DataValidation.notBlank(result);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidFormatDisplayInputs")
     @DisplayName("formatDisplay rejects invalid input")
-    void testRejectsInvalidInput(String description, String arg0) {
-      // Enforce @NotBlank: DataValidation.notBlank(arg0);
-      assertThatThrownBy(() -> objectAnnotatedService.formatDisplay(arg0))
+    void testRejectsInvalidInput(String description, String prefix) {
+      // Enforce @NotBlank: DataValidation.notBlank(prefix);
+      assertThatThrownBy(() -> objectAnnotatedService.formatDisplay(prefix))
           .isInstanceOf(Exception.class);
     }
 
     static Stream<Arguments> validFormatDisplayInputs() {
-      return Stream.of(Arguments.of("valid formatDisplay", "ea"));
+      return Stream.of(Arguments.of("valid formatDisplay", "Mr."));
     }
 
     static Stream<Arguments> invalidFormatDisplayInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (String) null), Arguments.of("invalid arg0", ""));
+          Arguments.of("invalid prefix", (String) null), Arguments.of("invalid prefix", ""));
     }
   }
 
@@ -370,18 +372,18 @@ class ObjectAnnotatedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validMergeInputs")
     @DisplayName("merge accepts valid input")
-    void testAcceptsValidInput(String description, ObjectAnnotatedService arg0, String arg1) {
-      ObjectAnnotatedService result = objectAnnotatedService.merge(arg0, arg1);
+    void testAcceptsValidInput(String description, ObjectAnnotatedService other, String newName) {
+      ObjectAnnotatedService result = objectAnnotatedService.merge(other, newName);
       assertThat(validator.validate(result)).isEmpty();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidMergeInputs")
     @DisplayName("merge rejects invalid input")
-    void testRejectsInvalidInput(String description, ObjectAnnotatedService arg0, String arg1) {
-      // Enforce @NotNull: DataValidation.notNull(arg0);
-      // Enforce @NotBlank: DataValidation.notBlank(arg1);
-      assertThatThrownBy(() -> objectAnnotatedService.merge(arg0, arg1))
+    void testRejectsInvalidInput(String description, ObjectAnnotatedService other, String newName) {
+      // Enforce @NotNull: DataValidation.notNull(other);
+      // Enforce @NotBlank: DataValidation.notBlank(newName);
+      assertThatThrownBy(() -> objectAnnotatedService.merge(other, newName))
           .isInstanceOf(Exception.class);
     }
 
@@ -390,31 +392,31 @@ class ObjectAnnotatedServiceTest {
           Arguments.of(
               "valid merge",
               new ObjectAnnotatedService(
-                  "Darryl Weimann II",
+                  "Bret Kautzer",
                   new BigDecimal("1.50"),
                   LocalDate.of(2020, 6, 15),
-                  "phillip.halvorson@gmail.com"),
-              "quia"));
+                  "krystle.mertz@yahoo.com"),
+              "Dr. Tommie O'Keefe"));
     }
 
     static Stream<Arguments> invalidMergeInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "quia"),
+          Arguments.of("invalid other", (ObjectAnnotatedService) null, "Dr. Tommie O'Keefe"),
           Arguments.of(
-              "invalid arg1",
+              "invalid newName",
               new ObjectAnnotatedService(
-                  "Darryl Weimann II",
+                  "Bret Kautzer",
                   new BigDecimal("1.50"),
                   LocalDate.of(2020, 6, 15),
-                  "phillip.halvorson@gmail.com"),
+                  "krystle.mertz@yahoo.com"),
               (String) null),
           Arguments.of(
-              "invalid arg1",
+              "invalid newName",
               new ObjectAnnotatedService(
-                  "Darryl Weimann II",
+                  "Bret Kautzer",
                   new BigDecimal("1.50"),
                   LocalDate.of(2020, 6, 15),
-                  "phillip.halvorson@gmail.com"),
+                  "krystle.mertz@yahoo.com"),
               ""));
     }
   }

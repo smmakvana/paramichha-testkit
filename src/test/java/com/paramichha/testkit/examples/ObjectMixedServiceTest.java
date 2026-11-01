@@ -242,16 +242,16 @@ class ObjectMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCopyFromInputs")
     @DisplayName("copyFrom accepts valid input")
-    void testAcceptsValidInput(String description, ObjectMixedService arg0, String arg1) {
-      assertThatCode(() -> objectMixedService.copyFrom(arg0, arg1)).doesNotThrowAnyException();
+    void testAcceptsValidInput(String description, ObjectMixedService source, String reason) {
+      assertThatCode(() -> objectMixedService.copyFrom(source, reason)).doesNotThrowAnyException();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCopyFromInputs")
     @DisplayName("copyFrom rejects invalid input")
-    void testRejectsInvalidInput(String description, ObjectMixedService arg0, String arg1) {
-      // Enforce @NotNull: DataValidation.notNull(arg0);
-      assertThatThrownBy(() -> objectMixedService.copyFrom(arg0, arg1))
+    void testRejectsInvalidInput(String description, ObjectMixedService source, String reason) {
+      // Enforce @NotNull: DataValidation.notNull(source);
+      assertThatThrownBy(() -> objectMixedService.copyFrom(source, reason))
           .isInstanceOf(Exception.class);
     }
 
@@ -260,15 +260,15 @@ class ObjectMixedServiceTest {
           Arguments.of(
               "valid copyFrom",
               new ObjectMixedService(
-                  "Jolanda Cormier",
+                  "Myron McDermott",
                   new BigDecimal("-1.00"),
                   LocalDate.of(2024, 1, 15),
-                  "marcelino.torphy@gmail.com"),
+                  "cedric.barrows@yahoo.com"),
               (String) null));
     }
 
     static Stream<Arguments> invalidCopyFromInputs() {
-      return Stream.of(Arguments.of("invalid arg0", (ObjectMixedService) null, (String) null));
+      return Stream.of(Arguments.of("invalid source", (ObjectMixedService) null, (String) null));
     }
   }
 
@@ -281,27 +281,27 @@ class ObjectMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validFormatDisplayInputs")
     @DisplayName("formatDisplay accepts valid input")
-    void testAcceptsValidInput(String description, String arg0) {
-      String result = objectMixedService.formatDisplay(arg0);
+    void testAcceptsValidInput(String description, String prefix) {
+      String result = objectMixedService.formatDisplay(prefix);
       assertThat(result).isNotNull();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidFormatDisplayInputs")
     @DisplayName("formatDisplay rejects invalid input")
-    void testRejectsInvalidInput(String description, String arg0) {
-      // Enforce @NotBlank: DataValidation.notBlank(arg0);
-      assertThatThrownBy(() -> objectMixedService.formatDisplay(arg0))
+    void testRejectsInvalidInput(String description, String prefix) {
+      // Enforce @NotBlank: DataValidation.notBlank(prefix);
+      assertThatThrownBy(() -> objectMixedService.formatDisplay(prefix))
           .isInstanceOf(Exception.class);
     }
 
     static Stream<Arguments> validFormatDisplayInputs() {
-      return Stream.of(Arguments.of("valid formatDisplay", "rerum"));
+      return Stream.of(Arguments.of("valid formatDisplay", "Mr."));
     }
 
     static Stream<Arguments> invalidFormatDisplayInputs() {
       return Stream.of(
-          Arguments.of("invalid arg0", (String) null), Arguments.of("invalid arg0", ""));
+          Arguments.of("invalid prefix", (String) null), Arguments.of("invalid prefix", ""));
     }
   }
 
@@ -314,17 +314,19 @@ class ObjectMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validMergeInputs")
     @DisplayName("merge accepts valid input")
-    void testAcceptsValidInput(String description, ObjectMixedService arg0, String arg1) {
-      ObjectMixedService result = objectMixedService.merge(arg0, arg1);
+    void testAcceptsValidInput(String description, ObjectMixedService other, String optionalLabel) {
+      ObjectMixedService result = objectMixedService.merge(other, optionalLabel);
       assertThat(validator.validate(result)).isEmpty();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidMergeInputs")
     @DisplayName("merge rejects invalid input")
-    void testRejectsInvalidInput(String description, ObjectMixedService arg0, String arg1) {
-      // Enforce @NotNull: DataValidation.notNull(arg0);
-      assertThatThrownBy(() -> objectMixedService.merge(arg0, arg1)).isInstanceOf(Exception.class);
+    void testRejectsInvalidInput(
+        String description, ObjectMixedService other, String optionalLabel) {
+      // Enforce @NotNull: DataValidation.notNull(other);
+      assertThatThrownBy(() -> objectMixedService.merge(other, optionalLabel))
+          .isInstanceOf(Exception.class);
     }
 
     static Stream<Arguments> validMergeInputs() {
@@ -332,15 +334,15 @@ class ObjectMixedServiceTest {
           Arguments.of(
               "valid merge",
               new ObjectMixedService(
-                  "Ms. Kamilah Cummerata",
+                  "Darcel Kuhn",
                   new BigDecimal("-1.00"),
                   LocalDate.of(2024, 1, 15),
-                  "anton.hoeger@yahoo.com"),
+                  "tamika.douglas@yahoo.com"),
               (String) null));
     }
 
     static Stream<Arguments> invalidMergeInputs() {
-      return Stream.of(Arguments.of("invalid arg0", (ObjectMixedService) null, (String) null));
+      return Stream.of(Arguments.of("invalid other", (ObjectMixedService) null, (String) null));
     }
   }
 
@@ -376,8 +378,8 @@ class ObjectMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validResolvedPriceInputs")
     @DisplayName("resolvedPrice accepts valid input")
-    void testAcceptsValidInput(String description, BigDecimal arg0) {
-      BigDecimal result = objectMixedService.resolvedPrice(arg0);
+    void testAcceptsValidInput(String description, BigDecimal fallback) {
+      BigDecimal result = objectMixedService.resolvedPrice(fallback);
       DataValidation.notNull(result);
     }
 

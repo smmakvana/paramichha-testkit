@@ -264,26 +264,28 @@ class PrimitiveMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyDiscountInputs")
     @DisplayName("applyDiscount accepts valid input")
-    void testAcceptsValidInput(String description, int arg0) {
-      double result = primitiveMixedService.applyDiscount(arg0);
+    void testAcceptsValidInput(String description, int discountPercent) {
+      double result = primitiveMixedService.applyDiscount(discountPercent);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidApplyDiscountInputs")
     @DisplayName("applyDiscount rejects invalid input")
-    void testRejectsInvalidInput(String description, int arg0) {
-      // Enforce @Min: DataValidation.min(0, arg0);
-      // Enforce @Max: DataValidation.max(100, arg0);
-      assertThatThrownBy(() -> primitiveMixedService.applyDiscount(arg0))
+    void testRejectsInvalidInput(String description, int discountPercent) {
+      // Enforce @Min: DataValidation.min(0, discountPercent);
+      // Enforce @Max: DataValidation.max(100, discountPercent);
+      assertThatThrownBy(() -> primitiveMixedService.applyDiscount(discountPercent))
           .isInstanceOf(Exception.class);
     }
 
     static Stream<Arguments> validApplyDiscountInputs() {
-      return Stream.of(Arguments.of("valid applyDiscount", 50));
+      return Stream.of(Arguments.of("valid applyDiscount", 1));
     }
 
     static Stream<Arguments> invalidApplyDiscountInputs() {
-      return Stream.of(Arguments.of("invalid arg0", -1), Arguments.of("invalid arg0", 101));
+      return Stream.of(
+          Arguments.of("invalid discountPercent", -1),
+          Arguments.of("invalid discountPercent", 101));
     }
   }
 
@@ -296,16 +298,16 @@ class PrimitiveMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCombineInputs")
     @DisplayName("combine accepts valid input")
-    void testAcceptsValidInput(String description, int arg0, int arg1) {
-      int result = primitiveMixedService.combine(arg0, arg1);
+    void testAcceptsValidInput(String description, int constrained, int plain) {
+      int result = primitiveMixedService.combine(constrained, plain);
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCombineInputs")
     @DisplayName("combine rejects invalid input")
-    void testRejectsInvalidInput(String description, int arg0, int arg1) {
-      // Enforce @Min: DataValidation.min(0, arg0);
-      assertThatThrownBy(() -> primitiveMixedService.combine(arg0, arg1))
+    void testRejectsInvalidInput(String description, int constrained, int plain) {
+      // Enforce @Min: DataValidation.min(0, constrained);
+      assertThatThrownBy(() -> primitiveMixedService.combine(constrained, plain))
           .isInstanceOf(Exception.class);
     }
 
@@ -314,7 +316,7 @@ class PrimitiveMixedServiceTest {
     }
 
     static Stream<Arguments> invalidCombineInputs() {
-      return Stream.of(Arguments.of("invalid arg0", -1, 0));
+      return Stream.of(Arguments.of("invalid constrained", -1, 0));
     }
   }
 
@@ -350,8 +352,8 @@ class PrimitiveMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validScaledRateInputs")
     @DisplayName("scaledRate accepts valid input")
-    void testAcceptsValidInput(String description, int arg0) {
-      double result = primitiveMixedService.scaledRate(arg0);
+    void testAcceptsValidInput(String description, int factor) {
+      double result = primitiveMixedService.scaledRate(factor);
       DataValidation.positive(result);
     }
 
@@ -369,25 +371,26 @@ class PrimitiveMixedServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validTransferInputs")
     @DisplayName("transfer accepts valid input")
-    void testAcceptsValidInput(String description, int arg0, int arg1) {
-      assertThatCode(() -> primitiveMixedService.transfer(arg0, arg1)).doesNotThrowAnyException();
+    void testAcceptsValidInput(String description, int amount, int targetLevel) {
+      assertThatCode(() -> primitiveMixedService.transfer(amount, targetLevel))
+          .doesNotThrowAnyException();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidTransferInputs")
     @DisplayName("transfer rejects invalid input")
-    void testRejectsInvalidInput(String description, int arg0, int arg1) {
-      // Enforce @Min: DataValidation.min(1, arg0);
-      assertThatThrownBy(() -> primitiveMixedService.transfer(arg0, arg1))
+    void testRejectsInvalidInput(String description, int amount, int targetLevel) {
+      // Enforce @Min: DataValidation.min(1, amount);
+      assertThatThrownBy(() -> primitiveMixedService.transfer(amount, targetLevel))
           .isInstanceOf(Exception.class);
     }
 
     static Stream<Arguments> validTransferInputs() {
-      return Stream.of(Arguments.of("valid transfer", 2, 0));
+      return Stream.of(Arguments.of("valid transfer", 100, 0));
     }
 
     static Stream<Arguments> invalidTransferInputs() {
-      return Stream.of(Arguments.of("invalid arg0", 0, 0));
+      return Stream.of(Arguments.of("invalid amount", 0, 0));
     }
   }
 }

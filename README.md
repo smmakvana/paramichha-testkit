@@ -130,6 +130,9 @@ Set `-Dtestkit.format=false` to skip formatting entirely, for example in an IDE 
   only comments with the reason; check the console for `✗ TestKit failed for …`.
 - **`TestKitRunner.writeBothModesTo(...)` overwrites.** PRODUCTION and DEV output use the same file name, so the
   DEV file replaces the PRODUCTION one.
+- **Parameter names come from the compiled class.** Compile the classes under test with `-parameters`
+  (`<parameters>true</parameters>` in maven-compiler-plugin) to get `merge(other, newName)` in generated method
+  tests; without it Java only keeps `arg0`, `arg1`, ….
 - **JUnit 5 + AssertJ only.** No TestNG, JUnit 4 or Hamcrest output.
 
 ---

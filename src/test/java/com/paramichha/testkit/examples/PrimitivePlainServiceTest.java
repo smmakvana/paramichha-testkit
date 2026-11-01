@@ -293,8 +293,8 @@ class PrimitivePlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyDiscountInputs")
     @DisplayName("applyDiscount accepts valid input")
-    void testAcceptsValidInput(String description, int arg0) {
-      double result = primitivePlainService.applyDiscount(arg0);
+    void testAcceptsValidInput(String description, int discountPercent) {
+      double result = primitivePlainService.applyDiscount(discountPercent);
     }
 
     static Stream<Arguments> validApplyDiscountInputs() {
@@ -311,8 +311,8 @@ class PrimitivePlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCombineInputs")
     @DisplayName("combine accepts valid input")
-    void testAcceptsValidInput(String description, int arg0, int arg1) {
-      int result = primitivePlainService.combine(arg0, arg1);
+    void testAcceptsValidInput(String description, int a, int b) {
+      int result = primitivePlainService.combine(a, b);
     }
 
     static Stream<Arguments> validCombineInputs() {
@@ -361,8 +361,9 @@ class PrimitivePlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validTransferInputs")
     @DisplayName("transfer accepts valid input")
-    void testAcceptsValidInput(String description, int arg0, int arg1) {
-      assertThatCode(() -> primitivePlainService.transfer(arg0, arg1)).doesNotThrowAnyException();
+    void testAcceptsValidInput(String description, int amount, int target) {
+      assertThatCode(() -> primitivePlainService.transfer(amount, target))
+          .doesNotThrowAnyException();
     }
 
     static Stream<Arguments> validTransferInputs() {
