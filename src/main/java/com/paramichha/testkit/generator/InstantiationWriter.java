@@ -115,7 +115,7 @@ final class InstantiationWriter {
                     && !pkg.startsWith("java.") && !pkg.startsWith("jakarta.");
             if (isDomainType) {
                 try {
-                    Object domainValid = DataFactory.of(rawType).seed(seed).valid();
+                    Object domainValid = DataFactory.of(rawType).seed(seed).valid().getOrNull();
                     return domainValid != null ? List.of(domainValid) : List.of();
                 } catch (Exception ignored2) {
                     return List.of();
@@ -152,7 +152,8 @@ final class InstantiationWriter {
             }
             // Domain type — use DefaultDataBuilder to create a valid instance
             if (!elemType.getPackageName().startsWith("java.")) {
-                return java.util.List.of(DataFactory.of(elemType).seed(seed).valid());
+                var elem = DataFactory.of(elemType).seed(seed).valid();
+                return elem.isSuccess() ? java.util.List.of(elem.get()) : java.util.List.of();
             }
             // Java type — use FieldBuilder
             Object elem = DataFactory.field(field.name(), (Class<Object>) elemType, java.util.List.of()).seed(seed).valid();

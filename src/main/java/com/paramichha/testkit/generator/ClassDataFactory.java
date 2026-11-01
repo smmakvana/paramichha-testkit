@@ -191,7 +191,7 @@ final class ClassDataFactory {
         if (type.isPrimitive()) {
             try {
                 Object val = param.validations().isEmpty()
-                        ? DataFactory.of(type).seed(seed).valid()
+                        ? DataFactory.of(type).seed(seed).valid().getOrNull()
                         : DataFactory.field(param.name(), (Class<Object>) type,
                         param.validations()).seed(seed).valid();
                 if (val != null) return List.of(val);
@@ -220,7 +220,7 @@ final class ClassDataFactory {
 
         try {
             Object val = param.validations().isEmpty()
-                    ? DataFactory.of(type).seed(seed).valid()
+                    ? DataFactory.of(type).seed(seed).valid().getOrNull()
                     : DataFactory.field(param.name(), (Class<Object>) type,
                     param.validations()).seed(seed).valid();
             if (val != null) return List.of(val);

@@ -1,11 +1,15 @@
 package com.paramichha.testkit;
 
+import com.paramichha.datafactory.DataBuilder;
 import com.paramichha.datafactory.DataFactory;
+import com.paramichha.datafactory.DataFactoryResult;
+import com.paramichha.datafactory.DataFactoryResults;
 import com.paramichha.datafactory.GenerationMode;
 import com.paramichha.testkit.model.TestFixture;
 
 import com.paramichha.utils.Seeds;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,22 +52,21 @@ public final class DefaultTestDataProvider implements TestDataProvider {
         String violationsError = null;
         Map<String, List<?>> validAllPerField = Map.of();
 
-        try {
-            base = DataFactory.of(type).mode(mode).seed(effectiveSeed).valid();
-        } catch (Exception e) {
-            baseError = e.getMessage();
-        }
+        DataBuilder<?> builder = DataFactory.of(type).mode(mode).seed(effectiveSeed);
 
-        try {
-            violations = DataFactory.of(type).mode(mode).seed(effectiveSeed).invalidList();
-        } catch (Exception e) {
-            violationsError = e.getMessage();
-        }
+        DataFactoryResult<?> valid = builder.valid();
+        if (valid.isSuccess()) base = valid.get();
+        else baseError = describe(valid);
 
-        try {
-            validAllPerField = (Map<String, List<?>>) (Map)
-                    DataFactory.of(type).mode(mode).seed(effectiveSeed).validPerField();
-        } catch (Exception ignored) {}
+        DataFactoryResults<?> invalid = builder.invalidList();
+        if (invalid.isSuccess()) violations = invalid.getAll();
+        else violationsError = describe(invalid.failed().get(0));
+
+        Map<String, List<?>> perField = new LinkedHashMap<>();
+        builder.validPerField().forEach((field, variants) -> {
+            if (variants.isSuccess()) perField.put(field, variants.getAll());
+        });
+        validAllPerField = perField;
 
         List<Object> validObjects = buildValidObjects(base, validAllPerField);
 
@@ -73,6 +76,10 @@ public final class DefaultTestDataProvider implements TestDataProvider {
         String error = baseError != null ? "valid() failed: " + baseError : null;
 
         return new TestFixture(type, base, mode, violations, validAllPerField, validObjects, error);
+    }
+
+    private static String describe(DataFactoryResult<?> r) {
+        return "[" + r.errorType() + "] " + r.reason();
     }
 
     public static List<Object> buildValidObjects(Object base,
