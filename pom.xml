@@ -48,6 +48,7 @@
             <groupId>com.paramichha</groupId>
             <artifactId>datafactory-catalog</artifactId>
             <version>${datafactory-catalog.version}</version>
+            <scope>test</scope> <!-- test fixtures only -->
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -65,6 +66,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>test</scope> <!-- only example fixtures use Lombok -->
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
