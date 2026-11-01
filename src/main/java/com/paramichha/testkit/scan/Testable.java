@@ -13,7 +13,7 @@ import java.lang.annotation.*;
  * ) {}
  * </pre>
  *
- * Run {@code TestKit.scanPackage("com.example").writeTo(Path.of("src/test/java"))}
+ * Run {@code TestKitRunner.scanPackage("com.example").writeTo(Path.of("src/test/java"))}
  * to generate {@code UserRequestTest.java}.
  */
 @Target(ElementType.TYPE)
