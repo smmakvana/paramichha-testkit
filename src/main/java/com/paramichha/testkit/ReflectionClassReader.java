@@ -77,15 +77,69 @@ public final class ReflectionClassReader implements ClassReader {
         List<Field> allFields = new ArrayList<>();
         for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass())
             allFields.addAll(0, Arrays.asList(c.getDeclaredFields()));
+        allFields.removeIf(f -> Modifier.isStatic(f.getModifiers()) || f.isSynthetic());
+
+        // The constructor generated tests call: parameters match the fields' types in order.
+        Constructor<?> ctor = fieldMatchingConstructor(type, allFields);
+        Parameter[] params = ctor != null ? ctor.getParameters() : new Parameter[0];
+        boolean namesPresent = params.length > 0 && Arrays.stream(params).allMatch(Parameter::isNamePresent);
+
         List<FieldInfo> result = new ArrayList<>();
-        for (Field f : allFields) {
-            if (Modifier.isStatic(f.getModifiers()) || f.isSynthetic()) continue;
-            List<Annotation> validations = filterValidation(Arrays.asList(f.getAnnotations()));
+        for (int i = 0; i < allFields.size(); i++) {
+            Field f = allFields.get(i);
+
+            // Property constraints — checked by Validator.validate(obj): field + getter.
+            List<Annotation> property = new ArrayList<>(Arrays.asList(f.getAnnotations()));
+            Method getter = getterFor(type, f);
+            if (getter != null) property.addAll(Arrays.asList(getter.getAnnotations()));
+            List<Annotation> propertyValidations = filterValidation(property);
+
+            // Constructor-parameter constraints — only ExecutableValidator checks these.
+            int index = -1;
+            if (ctor != null) {
+                index = namesPresent ? indexOfName(params, f.getName()) : i;
+                if (index >= params.length || (index >= 0 && params[index].getType() != f.getType())) index = -1;
+            }
+            List<Annotation> ctorValidations = index >= 0
+                    ? filterValidation(Arrays.asList(params[index].getAnnotations()))
+                    : List.of();
+
+            List<Annotation> all = new ArrayList<>(propertyValidations);
+            all.addAll(ctorValidations);
             boolean indirect = typeHasConstraints(f.getType());
             result.add(new ReflectionFieldInfo(f.getName(), f.getType(), f.getGenericType(),
-                    validations, isRequired(validations), indirect));
+                    propertyValidations, ctorValidations, index, isRequired(all), indirect));
         }
         return result;
+    }
+
+    /** A constructor whose parameter types are the field types in order, or null. */
+    private static Constructor<?> fieldMatchingConstructor(Class<?> type, List<Field> fields) {
+        for (Constructor<?> c : type.getDeclaredConstructors()) {
+            Class<?>[] p = c.getParameterTypes();
+            if (p.length != fields.size() || p.length == 0) continue;
+            boolean match = true;
+            for (int i = 0; i < p.length && match; i++) match = p[i] == fields.get(i).getType();
+            if (match) return c;
+        }
+        return null;
+    }
+
+    private static int indexOfName(Parameter[] params, String name) {
+        for (int i = 0; i < params.length; i++) if (params[i].getName().equals(name)) return i;
+        return -1;
+    }
+
+    /** {@code getX()} / {@code isX()} for field {@code x}, or null. */
+    private static Method getterFor(Class<?> type, Field f) {
+        String cap = Character.toUpperCase(f.getName().charAt(0)) + f.getName().substring(1);
+        for (String name : new String[]{"get" + cap, "is" + cap}) {
+            try {
+                Method m = type.getMethod(name);
+                if (m.getReturnType() == f.getType()) return m;
+            } catch (NoSuchMethodException ignored) {}
+        }
+        return null;
     }
 
     // ── Methods ───────────────────────────────────────────────────────────

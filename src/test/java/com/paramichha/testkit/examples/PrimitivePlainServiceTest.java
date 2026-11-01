@@ -67,22 +67,6 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid quantity 5", 2147483646),
           Arguments.of("valid quantity 6", 2147483647));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidQuantities")
-    @DisplayName("rejects invalid value")
-    void testRejectsQuantity(String description, int quantity) {
-      // TODO: add constraints to quantity, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitivePlainService obj =
-          new PrimitivePlainService(quantity, 100L, -1.0d, (byte) 127, (short) 5, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidQuantities() {
-      // TODO: add constraints to quantity, or delete this test
-      return Stream.of(Arguments.of("invalid quantity 1", -1));
-    }
   }
 
   @Nested
@@ -109,22 +93,6 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid price 5", 9223372036854775806L),
           Arguments.of("valid price 6", 9223372036854775807L));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidPrices")
-    @DisplayName("rejects invalid value")
-    void testRejectsPrice(String description, long price) {
-      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitivePlainService obj =
-          new PrimitivePlainService(1, price, -1.0d, (byte) 127, (short) 5, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidPrices() {
-      // TODO: add constraints to price, or delete this test
-      return Stream.of(Arguments.of("invalid price 1", -1L));
-    }
   }
 
   @Nested
@@ -148,22 +116,6 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid rate 2", 0.0d),
           Arguments.of("valid rate 3", 698.5d));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidRates")
-    @DisplayName("rejects invalid value")
-    void testRejectsRate(String description, double rate) {
-      // TODO: add constraints to rate, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitivePlainService obj =
-          new PrimitivePlainService(1, 100L, rate, (byte) 127, (short) 5, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidRates() {
-      // TODO: add constraints to rate, or delete this test
-      return Stream.of(Arguments.of("invalid rate 1", -1.0d));
-    }
   }
 
   @Nested
@@ -186,23 +138,7 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid level 2", (byte) -128),
           Arguments.of("valid level 3", (byte) -127),
           Arguments.of("valid level 4", (byte) 0),
-          Arguments.of("valid level 5", (byte) 126),
-          Arguments.of("valid level 6", (byte) 127));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLevels")
-    @DisplayName("rejects invalid value")
-    void testRejectsLevel(String description, byte level) {
-      // TODO: add constraints to level, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitivePlainService obj = new PrimitivePlainService(1, 100L, -1.0d, level, (short) 5, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLevels() {
-      // TODO: add constraints to level, or delete this test
-      return Stream.of(Arguments.of("invalid level 1", (byte) -1));
+          Arguments.of("valid level 5", (byte) 126));
     }
   }
 
@@ -230,22 +166,6 @@ class PrimitivePlainServiceTest {
           Arguments.of("valid score 5", (short) 32766),
           Arguments.of("valid score 6", (short) 32767));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidScores")
-    @DisplayName("rejects invalid value")
-    void testRejectsScore(String description, short score) {
-      // TODO: add constraints to score, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitivePlainService obj =
-          new PrimitivePlainService(1, 100L, -1.0d, (byte) 127, score, true);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidScores() {
-      // TODO: add constraints to score, or delete this test
-      return Stream.of(Arguments.of("invalid score 1", (short) -1));
-    }
   }
 
   @Nested
@@ -265,22 +185,6 @@ class PrimitivePlainServiceTest {
 
     static Stream<Arguments> validActives() {
       return Stream.of(Arguments.of("valid active 1", true), Arguments.of("valid active 2", false));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidActives")
-    @DisplayName("rejects invalid value")
-    void testRejectsActive(String description, boolean active) {
-      // TODO: add constraints to active, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      PrimitivePlainService obj =
-          new PrimitivePlainService(1, 100L, -1.0d, (byte) 127, (short) 5, active);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidActives() {
-      // TODO: add constraints to active, or delete this test
-      return Stream.of(Arguments.of("invalid active 1", false));
     }
   }
 

@@ -63,6 +63,35 @@ class ObjectMixedServiceTest {
     void testIsValid() {
       assertThat(validator.validate(objectMixedService)).isEmpty();
     }
+
+    @Test
+    @DisplayName("constructor arguments are valid")
+    void testConstructorArgumentsAreValid() {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(ObjectMixedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        "Harvey Dach",
+                        new BigDecimal("-1.00"),
+                        LocalDate.of(2024, 1, 15),
+                        "nathalie.mcclure@hotmail.com"
+                      }))
+          .isEmpty();
+    }
   }
 
   @Nested
@@ -75,6 +104,30 @@ class ObjectMixedServiceTest {
     @MethodSource("validNames")
     @DisplayName("accepts valid value")
     void testAcceptsName(String description, String name) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(ObjectMixedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        name,
+                        new BigDecimal("-1.00"),
+                        LocalDate.of(2024, 1, 15),
+                        "nathalie.mcclure@hotmail.com"
+                      }))
+          .isEmpty();
       ObjectMixedService obj =
           new ObjectMixedService(
               name,
@@ -92,17 +145,32 @@ class ObjectMixedServiceTest {
     @MethodSource("invalidNames")
     @DisplayName("rejects invalid value")
     void testRejectsName(String description, String name) {
-      try {
-        ObjectMixedService obj =
-            new ObjectMixedService(
-                name,
-                new BigDecimal("-1.00"),
-                LocalDate.of(2024, 1, 15),
-                "nathalie.mcclure@hotmail.com");
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(ObjectMixedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    String.class, BigDecimal.class, LocalDate.class, String.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {
+                    name,
+                    new BigDecimal("-1.00"),
+                    LocalDate.of(2024, 1, 15),
+                    "nathalie.mcclure@hotmail.com"
+                  });
+      // the violation must be on parameter 'name', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".name")
+                      || v.getPropertyPath().toString().endsWith(".arg0"));
     }
 
     static Stream<Arguments> invalidNames() {
@@ -132,25 +200,6 @@ class ObjectMixedServiceTest {
           Arguments.of("valid price 2", new BigDecimal("0.00")),
           Arguments.of("valid price 3", new BigDecimal("70.57")));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidPrices")
-    @DisplayName("rejects invalid value")
-    void testRejectsPrice(String description, BigDecimal price) {
-      // TODO: add constraints to price, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      ObjectMixedService obj =
-          new ObjectMixedService(
-              "Harvey Dach", price, LocalDate.of(2024, 1, 15), "nathalie.mcclure@hotmail.com");
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidPrices() {
-      // TODO: add constraints to price, or delete this test
-      return Stream.of(
-          Arguments.of("null price", (BigDecimal) null),
-          Arguments.of("invalid price 2", new BigDecimal("-1")));
-    }
   }
 
   @Nested
@@ -163,6 +212,30 @@ class ObjectMixedServiceTest {
     @MethodSource("validCreatedDates")
     @DisplayName("accepts valid value")
     void testAcceptsCreatedDate(String description, LocalDate createdDate) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(ObjectMixedService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {
+                                        String.class,
+                                        BigDecimal.class,
+                                        LocalDate.class,
+                                        String.class
+                                      }))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {
+                        "Harvey Dach",
+                        new BigDecimal("-1.00"),
+                        createdDate,
+                        "nathalie.mcclure@hotmail.com"
+                      }))
+          .isEmpty();
       ObjectMixedService obj =
           new ObjectMixedService(
               "Harvey Dach", new BigDecimal("-1.00"), createdDate, "nathalie.mcclure@hotmail.com");
@@ -177,17 +250,32 @@ class ObjectMixedServiceTest {
     @MethodSource("invalidCreatedDates")
     @DisplayName("rejects invalid value")
     void testRejectsCreatedDate(String description, LocalDate createdDate) {
-      try {
-        ObjectMixedService obj =
-            new ObjectMixedService(
-                "Harvey Dach",
-                new BigDecimal("-1.00"),
-                createdDate,
-                "nathalie.mcclure@hotmail.com");
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(ObjectMixedService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {
+                                    String.class, BigDecimal.class, LocalDate.class, String.class
+                                  }))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {
+                    "Harvey Dach",
+                    new BigDecimal("-1.00"),
+                    createdDate,
+                    "nathalie.mcclure@hotmail.com"
+                  });
+      // the violation must be on parameter 'createdDate', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".createdDate")
+                      || v.getPropertyPath().toString().endsWith(".arg2"));
     }
 
     static Stream<Arguments> invalidCreatedDates() {
@@ -213,23 +301,6 @@ class ObjectMixedServiceTest {
 
     static Stream<Arguments> validEmails() {
       return Stream.of(Arguments.of("email 0", "nathalie.mcclure@hotmail.com"));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidEmails")
-    @DisplayName("rejects invalid value")
-    void testRejectsEmail(String description, String email) {
-      // TODO: add constraints to email, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      ObjectMixedService obj =
-          new ObjectMixedService(
-              "Harvey Dach", new BigDecimal("-1.00"), LocalDate.of(2024, 1, 15), email);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidEmails() {
-      // TODO: add constraints to email, or delete this test
-      return Stream.of(Arguments.of("null email", (String) null), Arguments.of("blank email", ""));
     }
   }
 

@@ -120,8 +120,19 @@ Set `-Dtestkit.format=false` to skip formatting entirely, for example in an IDE 
   Source that hasn't been compiled yet can't be used directly.
 - **Generated tests are a starting point, not a specification.** They check constraints and that methods
   accept or reject input; they don't know your business rules or expected return values. Review them.
-- **Reject tests are lenient about constructors.** If the constructor itself throws for an invalid value, the
-  reject test passes — the contract was enforced, just earlier than the validator.
+- **How a reject test checks a constraint depends on where the constraint is.**
+  - On a **constructor parameter** (`Circle(@Positive int x)`): checked with
+    `validator.forExecutables().validateConstructorParameters(...)` — the constructor itself isn't called, and isn't
+    assumed to enforce anything. The violation must be on that parameter.
+  - On a **field or getter**: the object is built and `validator.validate(obj)` must report a violation on that
+    field. If the constructor rejects the value itself (`IllegalArgumentException` or `ValidationException`), that
+    counts as rejected too; any other exception fails the test.
+- **Unconstrained fields get accept tests only.** Nothing can reject their values, so a reject test would be a false
+  positive.
+- **Contradictory constraints** (e.g. `@Min(5) @Max(3)`) produce a failing `testConstraintsAreSatisfiable` naming the
+  problem, instead of fixtures that can't be valid.
+- **Without a Jakarta Validation provider** on the test classpath, no validation or reject tests are generated.
+- **Jakarta Validation only.** `javax.validation` annotations are not read.
 - **Objects as arguments** are written as `new Foo(…)` only when `Foo` is a record, or has a public constructor
   whose parameters match its declared fields in order. Otherwise the argument is `null` and the test needs editing.
 - **Whatever DataFactory can't express, TestKit can't test** — custom `@Constraint` annotations, class-level and

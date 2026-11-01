@@ -34,19 +34,4 @@ class EclipseFieldYTest {
         Arguments.of("valid y 5", 2147483646),
         Arguments.of("valid y 6", 2147483647));
   }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("invalidYs")
-  @DisplayName("rejects invalid value")
-  void testRejectsY(String description, int y) {
-    // TODO: add constraints to y, then replace assertThat(obj).isNotNull()
-    //       with assertThat(validator.validate(obj)).isNotEmpty()
-    Eclipse obj = new Eclipse(791, y, -1.0f);
-    assertThat(obj).isNotNull();
-  }
-
-  static Stream<Arguments> invalidYs() {
-    // TODO: add constraints to y, or delete this test
-    return Stream.of(Arguments.of("invalid y 1", -1));
-  }
 }

@@ -168,60 +168,7 @@ class GodRecordTest {
           Arguments.of("valid byteValue 2", (byte) -128),
           Arguments.of("valid byteValue 3", (byte) -127),
           Arguments.of("valid byteValue 4", (byte) 0),
-          Arguments.of("valid byteValue 5", (byte) 126),
-          Arguments.of("valid byteValue 6", (byte) 127));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidByteValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsByteValue(String description, byte byteValue) {
-      // TODO: add constraints to byteValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              byteValue,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidByteValues() {
-      // TODO: add constraints to byteValue, or delete this test
-      return Stream.of(Arguments.of("invalid byteValue 1", (byte) -1));
+          Arguments.of("valid byteValue 5", (byte) 126));
     }
   }
 
@@ -285,58 +232,6 @@ class GodRecordTest {
           Arguments.of("valid shortValue 5", (short) 32766),
           Arguments.of("valid shortValue 6", (short) 32767));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidShortValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsShortValue(String description, short shortValue) {
-      // TODO: add constraints to shortValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              shortValue,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidShortValues() {
-      // TODO: add constraints to shortValue, or delete this test
-      return Stream.of(Arguments.of("invalid shortValue 1", (short) -1));
-    }
   }
 
   @Nested
@@ -398,58 +293,6 @@ class GodRecordTest {
           Arguments.of("valid intValue 4", 0),
           Arguments.of("valid intValue 5", 2147483646),
           Arguments.of("valid intValue 6", 2147483647));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidIntValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsIntValue(String description, int intValue) {
-      // TODO: add constraints to intValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              intValue,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidIntValues() {
-      // TODO: add constraints to intValue, or delete this test
-      return Stream.of(Arguments.of("invalid intValue 1", -1));
     }
   }
 
@@ -513,58 +356,6 @@ class GodRecordTest {
           Arguments.of("valid longValue 5", 9223372036854775806L),
           Arguments.of("valid longValue 6", 9223372036854775807L));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLongValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsLongValue(String description, long longValue) {
-      // TODO: add constraints to longValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              longValue,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLongValues() {
-      // TODO: add constraints to longValue, or delete this test
-      return Stream.of(Arguments.of("invalid longValue 1", -1L));
-    }
   }
 
   @Nested
@@ -623,58 +414,6 @@ class GodRecordTest {
           Arguments.of("valid floatValue 1", -1.0f),
           Arguments.of("valid floatValue 2", 0.0f),
           Arguments.of("valid floatValue 3", 48.85f));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidFloatValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsFloatValue(String description, float floatValue) {
-      // TODO: add constraints to floatValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              floatValue,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidFloatValues() {
-      // TODO: add constraints to floatValue, or delete this test
-      return Stream.of(Arguments.of("invalid floatValue 1", -1.0f));
     }
   }
 
@@ -735,58 +474,6 @@ class GodRecordTest {
           Arguments.of("valid doubleValue 2", 0.0d),
           Arguments.of("valid doubleValue 3", 48.85d));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidDoubleValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsDoubleValue(String description, double doubleValue) {
-      // TODO: add constraints to doubleValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              doubleValue,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidDoubleValues() {
-      // TODO: add constraints to doubleValue, or delete this test
-      return Stream.of(Arguments.of("invalid doubleValue 1", -1.0d));
-    }
   }
 
   @Nested
@@ -844,58 +531,6 @@ class GodRecordTest {
       return Stream.of(
           Arguments.of("valid booleanValue 1", true), Arguments.of("valid booleanValue 2", false));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidBooleanValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsBooleanValue(String description, boolean booleanValue) {
-      // TODO: add constraints to booleanValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              booleanValue,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidBooleanValues() {
-      // TODO: add constraints to booleanValue, or delete this test
-      return Stream.of(Arguments.of("invalid booleanValue 1", false));
-    }
   }
 
   @Nested
@@ -951,58 +586,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validCharValues() {
       return Stream.of(Arguments.of("valid charValue 1", 'D'));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidCharValues")
-    @DisplayName("rejects invalid value")
-    void testRejectsCharValue(String description, char charValue) {
-      // TODO: add constraints to charValue, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              charValue,
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidCharValues() {
-      // TODO: add constraints to charValue, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", '\0'));
     }
   }
 
@@ -1063,62 +646,7 @@ class GodRecordTest {
           Arguments.of("valid byteWrapper 2", (byte) -128),
           Arguments.of("valid byteWrapper 3", (byte) -127),
           Arguments.of("valid byteWrapper 4", (byte) 0),
-          Arguments.of("valid byteWrapper 5", (byte) 126),
-          Arguments.of("valid byteWrapper 6", (byte) 127));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidByteWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsByteWrapper(String description, Byte byteWrapper) {
-      // TODO: add constraints to byteWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              byteWrapper,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidByteWrappers() {
-      // TODO: add constraints to byteWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null byteWrapper", (Byte) null),
-          Arguments.of("invalid byteWrapper 2", (byte) -1));
+          Arguments.of("valid byteWrapper 5", (byte) 126));
     }
   }
 
@@ -1182,60 +710,6 @@ class GodRecordTest {
           Arguments.of("valid shortWrapper 5", (short) 32766),
           Arguments.of("valid shortWrapper 6", (short) 32767));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidShortWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsShortWrapper(String description, Short shortWrapper) {
-      // TODO: add constraints to shortWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              shortWrapper,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidShortWrappers() {
-      // TODO: add constraints to shortWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null shortWrapper", (Short) null),
-          Arguments.of("invalid shortWrapper 2", (short) -1));
-    }
   }
 
   @Nested
@@ -1297,60 +771,6 @@ class GodRecordTest {
           Arguments.of("valid intWrapper 4", 0),
           Arguments.of("valid intWrapper 5", 2147483646),
           Arguments.of("valid intWrapper 6", 2147483647));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidIntWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsIntWrapper(String description, Integer intWrapper) {
-      // TODO: add constraints to intWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              intWrapper,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidIntWrappers() {
-      // TODO: add constraints to intWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null intWrapper", (Integer) null),
-          Arguments.of("invalid intWrapper 2", -1));
     }
   }
 
@@ -1414,60 +834,6 @@ class GodRecordTest {
           Arguments.of("valid longWrapper 5", 9223372036854775806L),
           Arguments.of("valid longWrapper 6", 9223372036854775807L));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLongWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsLongWrapper(String description, Long longWrapper) {
-      // TODO: add constraints to longWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              longWrapper,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLongWrappers() {
-      // TODO: add constraints to longWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null longWrapper", (Long) null),
-          Arguments.of("invalid longWrapper 2", -1L));
-    }
   }
 
   @Nested
@@ -1526,60 +892,6 @@ class GodRecordTest {
           Arguments.of("valid floatWrapper 1", -1.0f),
           Arguments.of("valid floatWrapper 2", 0.0f),
           Arguments.of("valid floatWrapper 3", 48.85f));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidFloatWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsFloatWrapper(String description, Float floatWrapper) {
-      // TODO: add constraints to floatWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              floatWrapper,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidFloatWrappers() {
-      // TODO: add constraints to floatWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null floatWrapper", (Float) null),
-          Arguments.of("invalid floatWrapper 2", -1.0f));
     }
   }
 
@@ -1640,60 +952,6 @@ class GodRecordTest {
           Arguments.of("valid doubleWrapper 2", 0.0d),
           Arguments.of("valid doubleWrapper 3", 48.85d));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidDoubleWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsDoubleWrapper(String description, Double doubleWrapper) {
-      // TODO: add constraints to doubleWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              doubleWrapper,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidDoubleWrappers() {
-      // TODO: add constraints to doubleWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null doubleWrapper", (Double) null),
-          Arguments.of("invalid doubleWrapper 2", -1.0d));
-    }
   }
 
   @Nested
@@ -1752,60 +1010,6 @@ class GodRecordTest {
           Arguments.of("valid booleanWrapper 1", true),
           Arguments.of("valid booleanWrapper 2", false));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidBooleanWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsBooleanWrapper(String description, Boolean booleanWrapper) {
-      // TODO: add constraints to booleanWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              booleanWrapper,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidBooleanWrappers() {
-      // TODO: add constraints to booleanWrapper, or delete this test
-      return Stream.of(
-          Arguments.of("null booleanWrapper", (Boolean) null),
-          Arguments.of("invalid booleanWrapper 2", false));
-    }
   }
 
   @Nested
@@ -1861,58 +1065,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validCharWrappers() {
       return Stream.of(Arguments.of("valid charWrapper 1", 'D'));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidCharWrappers")
-    @DisplayName("rejects invalid value")
-    void testRejectsCharWrapper(String description, Character charWrapper) {
-      // TODO: add constraints to charWrapper, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              charWrapper,
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidCharWrappers() {
-      // TODO: add constraints to charWrapper, or delete this test
-      return Stream.of(Arguments.of("null charWrapper", (Character) null));
     }
   }
 
@@ -1970,58 +1122,6 @@ class GodRecordTest {
     static Stream<Arguments> validByteArrays() {
       return Stream.of(Arguments.of("valid byteArray 1", new byte[] {(byte) 127, (byte) 127}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidByteArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsByteArray(String description, byte[] byteArray) {
-      // TODO: add constraints to byteArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              byteArray,
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidByteArrays() {
-      // TODO: add constraints to byteArray, or delete this test
-      return Stream.of(Arguments.of("null byteArray", (byte[]) null));
-    }
   }
 
   @Nested
@@ -2077,58 +1177,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validShortArrays() {
       return Stream.of(Arguments.of("valid shortArray 1", new short[] {(short) 669, (short) 761}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidShortArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsShortArray(String description, short[] shortArray) {
-      // TODO: add constraints to shortArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              shortArray,
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidShortArrays() {
-      // TODO: add constraints to shortArray, or delete this test
-      return Stream.of(Arguments.of("null shortArray", (short[]) null));
     }
   }
 
@@ -2186,58 +1234,6 @@ class GodRecordTest {
     static Stream<Arguments> validIntArrays() {
       return Stream.of(Arguments.of("valid intArray 1", new int[] {669, 761}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidIntArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsIntArray(String description, int[] intArray) {
-      // TODO: add constraints to intArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              intArray,
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidIntArrays() {
-      // TODO: add constraints to intArray, or delete this test
-      return Stream.of(Arguments.of("null intArray", (int[]) null));
-    }
   }
 
   @Nested
@@ -2293,58 +1289,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validLongArrays() {
       return Stream.of(Arguments.of("valid longArray 1", new long[] {669L, 761L}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLongArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsLongArray(String description, long[] longArray) {
-      // TODO: add constraints to longArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              longArray,
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLongArrays() {
-      // TODO: add constraints to longArray, or delete this test
-      return Stream.of(Arguments.of("null longArray", (long[]) null));
     }
   }
 
@@ -2402,58 +1346,6 @@ class GodRecordTest {
     static Stream<Arguments> validFloatArrays() {
       return Stream.of(Arguments.of("valid floatArray 1", new float[] {-1.0f, -1.0f}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidFloatArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsFloatArray(String description, float[] floatArray) {
-      // TODO: add constraints to floatArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              floatArray,
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidFloatArrays() {
-      // TODO: add constraints to floatArray, or delete this test
-      return Stream.of(Arguments.of("null floatArray", (float[]) null));
-    }
   }
 
   @Nested
@@ -2509,58 +1401,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validDoubleArrays() {
       return Stream.of(Arguments.of("valid doubleArray 1", new double[] {-1.0d, -1.0d}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidDoubleArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsDoubleArray(String description, double[] doubleArray) {
-      // TODO: add constraints to doubleArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              doubleArray,
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidDoubleArrays() {
-      // TODO: add constraints to doubleArray, or delete this test
-      return Stream.of(Arguments.of("null doubleArray", (double[]) null));
     }
   }
 
@@ -2618,58 +1458,6 @@ class GodRecordTest {
     static Stream<Arguments> validBooleanArrays() {
       return Stream.of(Arguments.of("valid booleanArray 1", new boolean[] {true, true}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidBooleanArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsBooleanArray(String description, boolean[] booleanArray) {
-      // TODO: add constraints to booleanArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              booleanArray,
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidBooleanArrays() {
-      // TODO: add constraints to booleanArray, or delete this test
-      return Stream.of(Arguments.of("null booleanArray", (boolean[]) null));
-    }
   }
 
   @Nested
@@ -2725,58 +1513,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validCharArrays() {
       return Stream.of(Arguments.of("valid charArray 1", new char[] {'D', 'P'}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidCharArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsCharArray(String description, char[] charArray) {
-      // TODO: add constraints to charArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              charArray,
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidCharArrays() {
-      // TODO: add constraints to charArray, or delete this test
-      return Stream.of(Arguments.of("null charArray", (char[]) null));
     }
   }
 
@@ -2835,58 +1571,6 @@ class GodRecordTest {
       return Stream.of(
           Arguments.of("valid byteWrapperArray 1", new Byte[] {(byte) 127, (byte) 127}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidByteWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsByteWrapperArray(String description, Byte[] byteWrapperArray) {
-      // TODO: add constraints to byteWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              byteWrapperArray,
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidByteWrapperArrays() {
-      // TODO: add constraints to byteWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null byteWrapperArray", (Byte[]) null));
-    }
   }
 
   @Nested
@@ -2944,58 +1628,6 @@ class GodRecordTest {
       return Stream.of(
           Arguments.of("valid shortWrapperArray 1", new Short[] {(short) 669, (short) 761}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidShortWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsShortWrapperArray(String description, Short[] shortWrapperArray) {
-      // TODO: add constraints to shortWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              shortWrapperArray,
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidShortWrapperArrays() {
-      // TODO: add constraints to shortWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null shortWrapperArray", (Short[]) null));
-    }
   }
 
   @Nested
@@ -3051,58 +1683,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validIntWrapperArrays() {
       return Stream.of(Arguments.of("valid intWrapperArray 1", new Integer[] {669, 761}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidIntWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsIntWrapperArray(String description, Integer[] intWrapperArray) {
-      // TODO: add constraints to intWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              intWrapperArray,
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidIntWrapperArrays() {
-      // TODO: add constraints to intWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null intWrapperArray", (Integer[]) null));
     }
   }
 
@@ -3160,58 +1740,6 @@ class GodRecordTest {
     static Stream<Arguments> validLongWrapperArrays() {
       return Stream.of(Arguments.of("valid longWrapperArray 1", new Long[] {669L, 761L}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLongWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsLongWrapperArray(String description, Long[] longWrapperArray) {
-      // TODO: add constraints to longWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              longWrapperArray,
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLongWrapperArrays() {
-      // TODO: add constraints to longWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null longWrapperArray", (Long[]) null));
-    }
   }
 
   @Nested
@@ -3267,58 +1795,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validFloatWrapperArrays() {
       return Stream.of(Arguments.of("valid floatWrapperArray 1", new Float[] {-1.0f, -1.0f}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidFloatWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsFloatWrapperArray(String description, Float[] floatWrapperArray) {
-      // TODO: add constraints to floatWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              floatWrapperArray,
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidFloatWrapperArrays() {
-      // TODO: add constraints to floatWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null floatWrapperArray", (Float[]) null));
     }
   }
 
@@ -3376,58 +1852,6 @@ class GodRecordTest {
     static Stream<Arguments> validDoubleWrapperArrays() {
       return Stream.of(Arguments.of("valid doubleWrapperArray 1", new Double[] {-1.0d, -1.0d}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidDoubleWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsDoubleWrapperArray(String description, Double[] doubleWrapperArray) {
-      // TODO: add constraints to doubleWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              doubleWrapperArray,
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidDoubleWrapperArrays() {
-      // TODO: add constraints to doubleWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null doubleWrapperArray", (Double[]) null));
-    }
   }
 
   @Nested
@@ -3484,58 +1908,6 @@ class GodRecordTest {
     static Stream<Arguments> validBooleanWrapperArrays() {
       return Stream.of(Arguments.of("valid booleanWrapperArray 1", new Boolean[] {true, true}));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidBooleanWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsBooleanWrapperArray(String description, Boolean[] booleanWrapperArray) {
-      // TODO: add constraints to booleanWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              booleanWrapperArray,
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidBooleanWrapperArrays() {
-      // TODO: add constraints to booleanWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null booleanWrapperArray", (Boolean[]) null));
-    }
   }
 
   @Nested
@@ -3591,58 +1963,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validCharWrapperArrays() {
       return Stream.of(Arguments.of("valid charWrapperArray 1", new Character[] {'D', 'P'}));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidCharWrapperArrays")
-    @DisplayName("rejects invalid value")
-    void testRejectsCharWrapperArray(String description, Character[] charWrapperArray) {
-      // TODO: add constraints to charWrapperArray, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              charWrapperArray,
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidCharWrapperArrays() {
-      // TODO: add constraints to charWrapperArray, or delete this test
-      return Stream.of(Arguments.of("null charWrapperArray", (Character[]) null));
     }
   }
 
@@ -3707,58 +2027,6 @@ class GodRecordTest {
           Arguments.of("valid dayOfWeek 6", DayOfWeek.SATURDAY),
           Arguments.of("valid dayOfWeek 7", DayOfWeek.SUNDAY));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidDayOfWeeks")
-    @DisplayName("rejects invalid value")
-    void testRejectsDayOfWeek(String description, DayOfWeek dayOfWeek) {
-      // TODO: add constraints to dayOfWeek, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              dayOfWeek,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidDayOfWeeks() {
-      // TODO: add constraints to dayOfWeek, or delete this test
-      return Stream.of(Arguments.of("null dayOfWeek", (DayOfWeek) null));
-    }
   }
 
   @Nested
@@ -3814,59 +2082,6 @@ class GodRecordTest {
 
     static Stream<Arguments> validLists() {
       return Stream.of(Arguments.of("valid list 1", List.of("ut")));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidLists")
-    @DisplayName("rejects invalid value")
-    void testRejectsList(String description, List list) {
-      // TODO: add constraints to list, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              list,
-              Set.of("debitis", "ut"),
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidLists() {
-      // TODO: add constraints to list, or delete this test
-      return Stream.of(
-          Arguments.of("null list", (List) null), Arguments.of("invalid list 2", List.of()));
     }
   }
 
@@ -3924,116 +2139,11 @@ class GodRecordTest {
     static Stream<Arguments> validSets() {
       return Stream.of(Arguments.of("valid set 1", Set.of("debitis", "ut")));
     }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidSets")
-    @DisplayName("rejects invalid value")
-    void testRejectsSet(String description, Set set) {
-      // TODO: add constraints to set, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              set,
-              (Map) null);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidSets() {
-      // TODO: add constraints to set, or delete this test
-      return Stream.of(Arguments.of("null set", (Set) null));
-    }
   }
 
   @Nested
   @DisplayName("GodRecord Field map")
   @Tag("field")
   @TestMethodOrder(MethodOrderer.MethodName.class)
-  class GodRecordMapTest {
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("invalidMaps")
-    @DisplayName("rejects invalid value")
-    void testRejectsMap(String description, Map map) {
-      // TODO: add constraints to map, then replace assertThat(obj).isNotNull()
-      //       with assertThat(validator.validate(obj)).isNotEmpty()
-      GodRecord obj =
-          new GodRecord(
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              (byte) 127,
-              (short) 669,
-              669,
-              669L,
-              -1.0f,
-              -1.0d,
-              true,
-              'D',
-              new byte[] {(byte) 127, (byte) 127},
-              new short[] {(short) 669, (short) 761},
-              new int[] {669, 761},
-              new long[] {669L, 761L},
-              new float[] {-1.0f, -1.0f},
-              new double[] {-1.0d, -1.0d},
-              new boolean[] {true, true},
-              new char[] {'D', 'P'},
-              new Byte[] {(byte) 127, (byte) 127},
-              new Short[] {(short) 669, (short) 761},
-              new Integer[] {669, 761},
-              new Long[] {669L, 761L},
-              new Float[] {-1.0f, -1.0f},
-              new Double[] {-1.0d, -1.0d},
-              new Boolean[] {true, true},
-              new Character[] {'D', 'P'},
-              DayOfWeek.MONDAY,
-              List.of("ut"),
-              Set.of("debitis", "ut"),
-              map);
-      assertThat(obj).isNotNull();
-    }
-
-    static Stream<Arguments> invalidMaps() {
-      // TODO: add constraints to map, or delete this test
-      return Stream.of(Arguments.of("null map", (Map) null));
-    }
-  }
+  class GodRecordMapTest {}
 }

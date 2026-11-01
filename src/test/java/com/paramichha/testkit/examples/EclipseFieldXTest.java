@@ -34,19 +34,4 @@ class EclipseFieldXTest {
         Arguments.of("valid x 5", 2147483646),
         Arguments.of("valid x 6", 2147483647));
   }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("invalidXes")
-  @DisplayName("rejects invalid value")
-  void testRejectsX(String description, int x) {
-    // TODO: add constraints to x, then replace assertThat(obj).isNotNull()
-    //       with assertThat(validator.validate(obj)).isNotEmpty()
-    Eclipse obj = new Eclipse(x, 791, -1.0f);
-    assertThat(obj).isNotNull();
-  }
-
-  static Stream<Arguments> invalidXes() {
-    // TODO: add constraints to x, or delete this test
-    return Stream.of(Arguments.of("invalid x 1", -1));
-  }
 }

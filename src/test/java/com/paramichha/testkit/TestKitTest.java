@@ -105,10 +105,14 @@ class TestKitTest {
         }
 
         @Test
-        void unannotatedFieldRejectIsCommentedOut() {
+        void unannotatedFieldHasNoRejectTest() {
+            // Nothing can reject a value of an unconstrained field, so a "rejects" test could only
+            // be a false positive (it used to assert isNotNull()).
             String src = TestKit.of(PlainRecord.class)
                     .withPackage("com.example").generateTest().asString();
-            assertThat(src).contains("// TODO");
+            assertThat(src).doesNotContain("testRejects").doesNotContain("isNotNull()).isTrue")
+                    .doesNotContain("assertThat(obj).isNotNull()").doesNotContain("TODO");
+            assertThat(src).contains("testAcceptsCount");
         }
 
         @Test

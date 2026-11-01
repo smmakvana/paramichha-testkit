@@ -30,7 +30,8 @@ public class TestKitApp {
                 ObjectMixedService.class,          // objects mixed
 
                 // Original sample
-                SampleService.class
+                SampleService.class,
+                Circle.class
         );
 
         generateAll(

@@ -31,19 +31,4 @@ class EclipseFieldRTest {
         Arguments.of("valid r 2", 0.0f),
         Arguments.of("valid r 3", 351.46f));
   }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("invalidRs")
-  @DisplayName("rejects invalid value")
-  void testRejectsR(String description, float r) {
-    // TODO: add constraints to r, then replace assertThat(obj).isNotNull()
-    //       with assertThat(validator.validate(obj)).isNotEmpty()
-    Eclipse obj = new Eclipse(791, 791, r);
-    assertThat(obj).isNotNull();
-  }
-
-  static Stream<Arguments> invalidRs() {
-    // TODO: add constraints to r, or delete this test
-    return Stream.of(Arguments.of("invalid r 1", -1.0f));
-  }
 }

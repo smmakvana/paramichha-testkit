@@ -58,6 +58,25 @@ class SampleServiceTest {
     void testIsValid() {
       assertThat(validator.validate(sampleService)).isEmpty();
     }
+
+    @Test
+    @DisplayName("constructor arguments are valid")
+    void testConstructorArgumentsAreValid() {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {"Daina Goodwin", 1, new BigDecimal("1.50")}))
+          .isEmpty();
+    }
   }
 
   @Nested
@@ -70,6 +89,20 @@ class SampleServiceTest {
     @MethodSource("validNames")
     @DisplayName("accepts valid value")
     void testAcceptsName(String description, String name) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {name, 1, new BigDecimal("1.50")}))
+          .isEmpty();
       SampleService obj = new SampleService(name, 1, new BigDecimal("1.50"));
       assertThat(validator.validate(obj)).isEmpty();
     }
@@ -82,12 +115,25 @@ class SampleServiceTest {
     @MethodSource("invalidNames")
     @DisplayName("rejects invalid value")
     void testRejectsName(String description, String name) {
-      try {
-        SampleService obj = new SampleService(name, 1, new BigDecimal("1.50"));
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {name, 1, new BigDecimal("1.50")});
+      // the violation must be on parameter 'name', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".name")
+                      || v.getPropertyPath().toString().endsWith(".arg0"));
     }
 
     static Stream<Arguments> invalidNames() {
@@ -105,6 +151,20 @@ class SampleServiceTest {
     @MethodSource("validQuantities")
     @DisplayName("accepts valid value")
     void testAcceptsQuantity(String description, int quantity) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {"Daina Goodwin", quantity, new BigDecimal("1.50")}))
+          .isEmpty();
       SampleService obj = new SampleService("Daina Goodwin", quantity, new BigDecimal("1.50"));
       assertThat(validator.validate(obj)).isEmpty();
     }
@@ -112,28 +172,43 @@ class SampleServiceTest {
     static Stream<Arguments> validQuantities() {
       return Stream.of(
           Arguments.of("valid quantity 1", 1),
-          Arguments.of("valid quantity 2", 1),
-          Arguments.of("valid quantity 3", 2),
-          Arguments.of("valid quantity 4", 50),
-          Arguments.of("valid quantity 5", 99),
-          Arguments.of("valid quantity 6", 100));
+          Arguments.of("valid quantity 2", 2),
+          Arguments.of("valid quantity 3", 50),
+          Arguments.of("valid quantity 4", 99),
+          Arguments.of("valid quantity 5", 100));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidQuantities")
     @DisplayName("rejects invalid value")
     void testRejectsQuantity(String description, int quantity) {
-      try {
-        SampleService obj = new SampleService("Daina Goodwin", quantity, new BigDecimal("1.50"));
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {"Daina Goodwin", quantity, new BigDecimal("1.50")});
+      // the violation must be on parameter 'quantity', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".quantity")
+                      || v.getPropertyPath().toString().endsWith(".arg1"));
     }
 
     static Stream<Arguments> invalidQuantities() {
       return Stream.of(
-          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 101));
+          Arguments.of("invalid quantity 1", 0),
+          Arguments.of("invalid quantity 2", 101),
+          Arguments.of("invalid quantity 3", -2147483648),
+          Arguments.of("invalid quantity 4", 2147483647));
     }
   }
 
@@ -147,6 +222,20 @@ class SampleServiceTest {
     @MethodSource("validPrices")
     @DisplayName("accepts valid value")
     void testAcceptsPrice(String description, BigDecimal price) {
+      assertThat(
+              validator
+                  .forExecutables()
+                  .validateConstructorParameters(
+                      java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                          .filter(
+                              c ->
+                                  java.util.Arrays.equals(
+                                      c.getParameterTypes(),
+                                      new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                          .findFirst()
+                          .orElseThrow(),
+                      new Object[] {"Daina Goodwin", 1, price}))
+          .isEmpty();
       SampleService obj = new SampleService("Daina Goodwin", 1, price);
       assertThat(validator.validate(obj)).isEmpty();
     }
@@ -162,12 +251,25 @@ class SampleServiceTest {
     @MethodSource("invalidPrices")
     @DisplayName("rejects invalid value")
     void testRejectsPrice(String description, BigDecimal price) {
-      try {
-        SampleService obj = new SampleService("Daina Goodwin", 1, price);
-        assertThat(validator.validate(obj)).isNotEmpty();
-      } catch (Exception ignored) {
-        // Constructor enforced the contract — test passes
-      }
+      var violations =
+          validator
+              .forExecutables()
+              .validateConstructorParameters(
+                  java.util.Arrays.stream(SampleService.class.getDeclaredConstructors())
+                      .filter(
+                          c ->
+                              java.util.Arrays.equals(
+                                  c.getParameterTypes(),
+                                  new Class<?>[] {String.class, int.class, BigDecimal.class}))
+                      .findFirst()
+                      .orElseThrow(),
+                  new Object[] {"Daina Goodwin", 1, price});
+      // the violation must be on parameter 'price', not on the other (valid) ones
+      assertThat(violations)
+          .anyMatch(
+              v ->
+                  v.getPropertyPath().toString().endsWith(".price")
+                      || v.getPropertyPath().toString().endsWith(".arg2"));
     }
 
     static Stream<Arguments> invalidPrices() {
