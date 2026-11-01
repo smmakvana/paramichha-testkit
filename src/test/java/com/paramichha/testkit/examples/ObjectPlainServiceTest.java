@@ -213,8 +213,8 @@ class ObjectPlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyTaxInputs")
     @DisplayName("applyTax accepts valid input")
-    void testAcceptsValidInput(String description, BigDecimal arg0) {
-      BigDecimal result = objectPlainService.applyTax(arg0);
+    void testAcceptsValidInput(String description, BigDecimal rate) {
+      BigDecimal result = objectPlainService.applyTax(rate);
       assertThat(result).isNotNull();
     }
 
@@ -232,8 +232,8 @@ class ObjectPlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCopyFromInputs")
     @DisplayName("copyFrom accepts valid input")
-    void testAcceptsValidInput(String description, ObjectPlainService arg0, String arg1) {
-      assertThatCode(() -> objectPlainService.copyFrom(arg0, arg1)).doesNotThrowAnyException();
+    void testAcceptsValidInput(String description, ObjectPlainService source, String reason) {
+      assertThatCode(() -> objectPlainService.copyFrom(source, reason)).doesNotThrowAnyException();
     }
 
     static Stream<Arguments> validCopyFromInputs() {
@@ -241,10 +241,10 @@ class ObjectPlainServiceTest {
           Arguments.of(
               "valid copyFrom",
               new ObjectPlainService(
-                  "Basil Hermiston",
+                  "Felicia Lynch IV",
                   new BigDecimal("-1.00"),
                   LocalDate.of(2024, 1, 15),
-                  "eleonora.halvorson@yahoo.com"),
+                  "sibyl.rempel@hotmail.com"),
               (String) null));
     }
   }
@@ -258,8 +258,8 @@ class ObjectPlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validFormatDisplayInputs")
     @DisplayName("formatDisplay accepts valid input")
-    void testAcceptsValidInput(String description, String arg0) {
-      String result = objectPlainService.formatDisplay(arg0);
+    void testAcceptsValidInput(String description, String prefix) {
+      String result = objectPlainService.formatDisplay(prefix);
       assertThat(result).isNotNull();
     }
 
@@ -277,8 +277,8 @@ class ObjectPlainServiceTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("validMergeInputs")
     @DisplayName("merge accepts valid input")
-    void testAcceptsValidInput(String description, ObjectPlainService arg0, String arg1) {
-      ObjectPlainService result = objectPlainService.merge(arg0, arg1);
+    void testAcceptsValidInput(String description, ObjectPlainService other, String newName) {
+      ObjectPlainService result = objectPlainService.merge(other, newName);
       assertThat(result).isNotNull();
     }
 
@@ -287,10 +287,10 @@ class ObjectPlainServiceTest {
           Arguments.of(
               "valid merge",
               new ObjectPlainService(
-                  "Clemencia Cartwright MD",
+                  "Dr. Alleen Graham",
                   new BigDecimal("-1.00"),
                   LocalDate.of(2024, 1, 15),
-                  "karlyn.dare@hotmail.com"),
+                  "emmitt.feil@yahoo.com"),
               (String) null));
     }
   }
