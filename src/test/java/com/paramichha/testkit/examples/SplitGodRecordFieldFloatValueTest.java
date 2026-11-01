@@ -159,6 +159,6 @@ class SplitGodRecordFieldFloatValueTest {
 
   static Stream<Arguments> invalidFloatValues() {
     // TODO: add constraints to floatValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0.0f));
+    return Stream.of(Arguments.of("invalid floatValue 1", -1.0f));
   }
 }

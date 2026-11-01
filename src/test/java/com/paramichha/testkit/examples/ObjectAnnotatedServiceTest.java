@@ -292,14 +292,36 @@ class ObjectAnnotatedServiceTest {
     }
 
     static Stream<Arguments> validCopyFromInputs() {
-      return Stream.of(Arguments.of("valid copyFrom", (ObjectAnnotatedService) null, "accusamus"));
+      return Stream.of(
+          Arguments.of(
+              "valid copyFrom",
+              new ObjectAnnotatedService(
+                  "Mrs. Tiffany Ebert",
+                  new BigDecimal("1.50"),
+                  LocalDate.of(2020, 6, 15),
+                  "concetta.stanton@yahoo.com"),
+              "accusamus"));
     }
 
     static Stream<Arguments> invalidCopyFromInputs() {
       return Stream.of(
           Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "accusamus"),
-          Arguments.of("invalid arg1", (ObjectAnnotatedService) null, (String) null),
-          Arguments.of("invalid arg1", (ObjectAnnotatedService) null, ""));
+          Arguments.of(
+              "invalid arg1",
+              new ObjectAnnotatedService(
+                  "Mrs. Tiffany Ebert",
+                  new BigDecimal("1.50"),
+                  LocalDate.of(2020, 6, 15),
+                  "concetta.stanton@yahoo.com"),
+              (String) null),
+          Arguments.of(
+              "invalid arg1",
+              new ObjectAnnotatedService(
+                  "Mrs. Tiffany Ebert",
+                  new BigDecimal("1.50"),
+                  LocalDate.of(2020, 6, 15),
+                  "concetta.stanton@yahoo.com"),
+              ""));
     }
   }
 
@@ -364,14 +386,36 @@ class ObjectAnnotatedServiceTest {
     }
 
     static Stream<Arguments> validMergeInputs() {
-      return Stream.of(Arguments.of("valid merge", (ObjectAnnotatedService) null, "quia"));
+      return Stream.of(
+          Arguments.of(
+              "valid merge",
+              new ObjectAnnotatedService(
+                  "Darryl Weimann II",
+                  new BigDecimal("1.50"),
+                  LocalDate.of(2020, 6, 15),
+                  "phillip.halvorson@gmail.com"),
+              "quia"));
     }
 
     static Stream<Arguments> invalidMergeInputs() {
       return Stream.of(
           Arguments.of("invalid arg0", (ObjectAnnotatedService) null, "quia"),
-          Arguments.of("invalid arg1", (ObjectAnnotatedService) null, (String) null),
-          Arguments.of("invalid arg1", (ObjectAnnotatedService) null, ""));
+          Arguments.of(
+              "invalid arg1",
+              new ObjectAnnotatedService(
+                  "Darryl Weimann II",
+                  new BigDecimal("1.50"),
+                  LocalDate.of(2020, 6, 15),
+                  "phillip.halvorson@gmail.com"),
+              (String) null),
+          Arguments.of(
+              "invalid arg1",
+              new ObjectAnnotatedService(
+                  "Darryl Weimann II",
+                  new BigDecimal("1.50"),
+                  LocalDate.of(2020, 6, 15),
+                  "phillip.halvorson@gmail.com"),
+              ""));
     }
   }
 

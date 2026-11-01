@@ -47,6 +47,6 @@ class EclipseFieldXTest {
 
   static Stream<Arguments> invalidXes() {
     // TODO: add constraints to x, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+    return Stream.of(Arguments.of("invalid x 1", -1));
   }
 }

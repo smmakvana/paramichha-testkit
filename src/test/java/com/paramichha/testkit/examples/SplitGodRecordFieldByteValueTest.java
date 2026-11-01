@@ -162,6 +162,6 @@ class SplitGodRecordFieldByteValueTest {
 
   static Stream<Arguments> invalidByteValues() {
     // TODO: add constraints to byteValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
+    return Stream.of(Arguments.of("invalid byteValue 1", (byte) -1));
   }
 }

@@ -102,7 +102,8 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidQuantities() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+      return Stream.of(
+          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 101));
     }
   }
 
@@ -145,7 +146,8 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidPrices() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
+      return Stream.of(
+          Arguments.of("invalid price 1", -1L), Arguments.of("invalid price 2", 1000000L));
     }
   }
 
@@ -185,7 +187,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidRates() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
+      return Stream.of(Arguments.of("invalid rate 1", 0.0d));
     }
   }
 
@@ -228,7 +230,8 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidLevels() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", (byte) 0));
+      return Stream.of(
+          Arguments.of("invalid level 1", (byte) -1), Arguments.of("invalid level 2", (byte) -128));
     }
   }
 
@@ -268,7 +271,7 @@ class PrimitiveAnnotatedServiceTest {
     }
 
     static Stream<Arguments> invalidScores() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", (short) 0));
+      return Stream.of(Arguments.of("invalid score 1", (short) -1));
     }
   }
 
@@ -304,7 +307,7 @@ class PrimitiveAnnotatedServiceTest {
 
     static Stream<Arguments> invalidActives() {
       // TODO: add constraints to active, or delete this test
-      return Stream.of(Arguments.of("no constraints defined — add some!", false));
+      return Stream.of(Arguments.of("invalid active 1", false));
     }
   }
 

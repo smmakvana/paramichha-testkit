@@ -132,7 +132,8 @@ class SampleServiceTest {
     }
 
     static Stream<Arguments> invalidQuantities() {
-      return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+      return Stream.of(
+          Arguments.of("invalid quantity 1", 0), Arguments.of("invalid quantity 2", 101));
     }
   }
 
@@ -329,14 +330,22 @@ class SampleServiceTest {
     }
 
     static Stream<Arguments> validMergeInputs() {
-      return Stream.of(Arguments.of("valid merge", (SampleService) null, "optio"));
+      return Stream.of(
+          Arguments.of(
+              "valid merge",
+              new SampleService("Laverne Bernier", 1, new BigDecimal("1.50")),
+              "optio"));
     }
 
     static Stream<Arguments> invalidMergeInputs() {
       return Stream.of(
           Arguments.of("invalid arg0", (SampleService) null, "optio"),
-          Arguments.of("invalid arg1", (SampleService) null, (String) null),
-          Arguments.of("invalid arg1", (SampleService) null, ""));
+          Arguments.of(
+              "invalid arg1",
+              new SampleService("Laverne Bernier", 1, new BigDecimal("1.50")),
+              (String) null),
+          Arguments.of(
+              "invalid arg1", new SampleService("Laverne Bernier", 1, new BigDecimal("1.50")), ""));
     }
   }
 
@@ -418,7 +427,11 @@ class SampleServiceTest {
     }
 
     static Stream<Arguments> validTransferToInputs() {
-      return Stream.of(Arguments.of("valid transferTo", (SampleService) null, 0));
+      return Stream.of(
+          Arguments.of(
+              "valid transferTo",
+              new SampleService("Cameron Kessler", 1, new BigDecimal("1.50")),
+              0));
     }
 
     static Stream<Arguments> invalidTransferToInputs() {

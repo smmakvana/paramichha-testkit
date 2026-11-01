@@ -159,6 +159,6 @@ class SplitGodRecordFieldDoubleValueTest {
 
   static Stream<Arguments> invalidDoubleValues() {
     // TODO: add constraints to doubleValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0.0d));
+    return Stream.of(Arguments.of("invalid doubleValue 1", -1.0d));
   }
 }

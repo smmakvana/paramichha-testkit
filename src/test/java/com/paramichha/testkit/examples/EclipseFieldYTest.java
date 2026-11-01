@@ -47,6 +47,6 @@ class EclipseFieldYTest {
 
   static Stream<Arguments> invalidYs() {
     // TODO: add constraints to y, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0));
+    return Stream.of(Arguments.of("invalid y 1", -1));
   }
 }

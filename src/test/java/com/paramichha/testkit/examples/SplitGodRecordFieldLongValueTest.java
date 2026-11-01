@@ -162,6 +162,6 @@ class SplitGodRecordFieldLongValueTest {
 
   static Stream<Arguments> invalidLongValues() {
     // TODO: add constraints to longValue, or delete this test
-    return Stream.of(Arguments.of("no constraints defined — add some!", 0L));
+    return Stream.of(Arguments.of("invalid longValue 1", -1L));
   }
 }

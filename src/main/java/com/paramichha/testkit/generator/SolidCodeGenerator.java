@@ -1,7 +1,6 @@
 package com.paramichha.testkit.generator;
 
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
+import com.paramichha.testkit.utils.JavaFormatting;
 import com.paramichha.testkit.CodeGenerator;
 import com.paramichha.testkit.GenerationResult;
 import com.paramichha.testkit.TestCodeData;
@@ -31,7 +30,6 @@ public final class SolidCodeGenerator implements CodeGenerator {
     public static final SolidCodeGenerator INSTANCE = new SolidCodeGenerator();
 
     private final FreshCoder<ClassCoderInfo> coder      = new ClassCoder();
-    private final Formatter                  formatter   = new Formatter();
 
     private SolidCodeGenerator() {}
 
@@ -73,13 +71,9 @@ public final class SolidCodeGenerator implements CodeGenerator {
     // ── Formatting ────────────────────────────────────────────────────────
 
     private String cleanCode(String source) {
-        try {
-            return formatter.formatSource(source);
-        } catch (FormatterException e) {
-            // If formatting fails return unformatted — never break generation
-            System.err.println("⚠ google-java-format failed: " + e.getMessage());
-            return source;
-        }
+        // Never breaks generation — falls back to unformatted source when the formatter
+        // can't run in this JVM (see JavaFormatting).
+        return JavaFormatting.format(source);
     }
 
     // ── Config assembly ───────────────────────────────────────────────────

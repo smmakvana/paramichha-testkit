@@ -14,6 +14,7 @@ import com.paramichha.datafactory.catalog.realworld.payment.Payment;
 import com.paramichha.datafactory.catalog.realworld.registration.UserRegistration;
 import com.paramichha.datafactory.catalog.realworld.trading.Trade;
 import com.paramichha.datafactory.utils.JavaNames;
+import com.paramichha.testkit.fixture.PlainRecord;
 import com.paramichha.testkit.runner.TestKitRunner;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -76,8 +77,8 @@ class TestKitRunnerTestX {
 
         @Test
         void generatesUnannotated() {
-            String src = TestKit.of(NumberRecord.class).generateTest().asString();
-            assertStructure(src, "NumberRecord");
+            String src = TestKit.of(PlainRecord.class).generateTest().asString();
+            assertStructure(src, "PlainRecord");
             assertNoValidator(src);
         }
 
@@ -99,7 +100,7 @@ class TestKitRunnerTestX {
         void generatesEmail() {
             String src = TestKit.of(EmailRecord.class).generateTest().asString();
             assertStructure(src, "EmailRecord");
-            assertThat(src).contains("notanemail");
+            assertThat(src).contains("not-an-email");
         }
 
         @Test
@@ -194,7 +195,7 @@ class TestKitRunnerTestX {
         @Test
         void scanPackageFindsTestableClasses() {
             List<GenerationResult> results = TestKitRunner
-                    .scanPackage("com.paramichha.datafactory.catalog.realworld")
+                    .scanPackage("com.paramichha.testkit.fixture.scan")
                     .generate();
             assertThat(results).isNotEmpty();
             results.forEach(g -> assertThat(g.className()).endsWith("Test"));

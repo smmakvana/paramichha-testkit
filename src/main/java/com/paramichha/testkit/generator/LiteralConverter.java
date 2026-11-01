@@ -57,7 +57,8 @@ final class LiteralConverter {
             default                  -> {
                 Class<?> c = value.getClass();
                 if (c.isArray()) yield canSerializeArray(value);
-                yield c.isRecord() && canSerializeRecord(value);
+                if (c.isRecord()) yield canSerializeRecord(value);
+                yield canSerializeConstructed(value);
             }
         };
     }
@@ -113,6 +114,7 @@ final class LiteralConverter {
                 Class<?> dc = value.getClass();
                 if (dc.isArray()) yield toLiteralArray(value);
                 if (dc.isRecord()) yield toLiteralRecord(value);
+                if (canSerializeConstructed(value)) yield toLiteralConstructed(value);
                 yield "/* TODO: " + dc.getSimpleName() + " */ null";
             }
         };
@@ -149,6 +151,76 @@ final class LiteralConverter {
         }
     }
 
+    // ── Plain classes: new Foo(a, b) via a field-matching public constructor ──
+
+    /** Guards against object graphs that reference themselves. */
+    private static final ThreadLocal<java.util.Set<Object>> CONSTRUCTING =
+            ThreadLocal.withInitial(() -> java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
+
+    /** Instance fields in declaration order (declared on the class itself). */
+    private static List<java.lang.reflect.Field> instanceFields(Class<?> c) {
+        List<java.lang.reflect.Field> out = new java.util.ArrayList<>();
+        for (java.lang.reflect.Field f : c.getDeclaredFields()) {
+            int m = f.getModifiers();
+            if (java.lang.reflect.Modifier.isStatic(m) || f.isSynthetic()) continue;
+            out.add(f);
+        }
+        return out;
+    }
+
+    /**
+     * A public constructor whose parameter types are exactly the instance field types,
+     * in declaration order — so {@code new Foo(field1, field2, ...)} rebuilds the object.
+     */
+    private static java.lang.reflect.Constructor<?> fieldMatchingConstructor(Class<?> c) {
+        if (c.isInterface() || java.lang.reflect.Modifier.isAbstract(c.getModifiers())) return null;
+        if (c.isMemberClass() && !java.lang.reflect.Modifier.isStatic(c.getModifiers())) return null;
+        String pkg = c.getPackageName();
+        if (pkg.startsWith("java.") || pkg.startsWith("javax.") || pkg.startsWith("jakarta.")) return null;
+        List<java.lang.reflect.Field> fields = instanceFields(c);
+        if (fields.isEmpty()) return null;
+        for (java.lang.reflect.Constructor<?> k : c.getConstructors()) {
+            Class<?>[] p = k.getParameterTypes();
+            if (p.length != fields.size()) continue;
+            boolean match = true;
+            for (int i = 0; i < p.length && match; i++) match = p[i] == fields.get(i).getType();
+            if (match) return k;
+        }
+        return null;
+    }
+
+    private static boolean canSerializeConstructed(Object value) {
+        if (fieldMatchingConstructor(value.getClass()) == null) return false;
+        if (!CONSTRUCTING.get().add(value)) return false; // cycle
+        try {
+            for (java.lang.reflect.Field f : instanceFields(value.getClass())) {
+                f.setAccessible(true);
+                if (!canSerialize(f.get(value))) return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            CONSTRUCTING.get().remove(value);
+        }
+    }
+
+    /** Serializes a plain class as a constructor call: new Foo("bar", 42). */
+    private static String toLiteralConstructed(Object value) {
+        try {
+            StringBuilder sb = new StringBuilder("new ").append(JavaTypeNames.of(value.getClass())).append("(");
+            List<java.lang.reflect.Field> fields = instanceFields(value.getClass());
+            for (int i = 0; i < fields.size(); i++) {
+                fields.get(i).setAccessible(true);
+                sb.append(toLiteral(fields.get(i).get(value)));
+                if (i < fields.size() - 1) sb.append(", ");
+            }
+            return sb.append(")").toString();
+        } catch (Exception e) {
+            return "/* TODO: " + value.getClass().getSimpleName() + " */ null";
+        }
+    }
+
     public static List<String> importsFor(Object value) {
         if (value == null) return List.of();
         List<String> base = switch (value) {
@@ -177,6 +249,18 @@ final class LiteralConverter {
                     all.addAll(importsForClass(rc.getType()));
                 }
             } catch (Exception ignored2) {}
+            return List.copyOf(all);
+        }
+        // For constructed plain classes: the class plus each field's imports
+        if (canSerializeConstructed(value)) {
+            java.util.Set<String> all = new java.util.LinkedHashSet<>(base);
+            all.addAll(importsForClass(value.getClass()));
+            try {
+                for (java.lang.reflect.Field f : instanceFields(value.getClass())) {
+                    f.setAccessible(true);
+                    all.addAll(importsFor(f.get(value)));
+                }
+            } catch (Exception ignored3) {}
             return List.copyOf(all);
         }
         // For lists: recurse into each element
