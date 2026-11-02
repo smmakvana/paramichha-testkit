@@ -102,7 +102,8 @@ public final class SolidCodeGenerator implements CodeGenerator {
                 isRecord,
                 payload.template().validatorField,
                 payload.template().validatorSetup,
-                payload.template().testSuffix);
+                payload.template().classAffix(),
+                payload.template().methodAffix());
     }
 
     private ImportCollector buildImports(ClassInfo classInfo, TestCodeData payload) {
@@ -139,7 +140,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
     // ── Placeholder ───────────────────────────────────────────────────────
 
     private GenerationResult placeholder(TestCodeData payload, String error) {
-        String name = payload.classInfo().simpleName() + payload.template().testSuffix;
+        String name = payload.template().classAffix().apply(payload.classInfo().simpleName());
         String pkg  = payload.targetPackage();
         System.err.println("✗ TestKit failed for "
                 + payload.classInfo().simpleName() + ": " + error);

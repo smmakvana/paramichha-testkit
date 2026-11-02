@@ -1,5 +1,7 @@
 package com.paramichha.testkit.generator;
 
+import com.paramichha.testkit.Affix;
+
 import java.util.List;
 
 /**
@@ -18,12 +20,14 @@ final class ClassDataConfig {
     private final boolean      isRecord;
     private final String       validatorField;    // e.g. "validator"
     private final String       validatorSetup;    // e.g. "setUpValidator"
-    private final String       testSuffix;        // e.g. "Test", "IT", "Spec"
+    private final Affix        classAffix;        // class names: prefix + name + suffix
+    private final Affix        methodAffix;       // test method names: prefix + name + suffix
 
     ClassDataConfig(String sourceClassName, String targetPackage, String instanceName,
                     String header, List<String> imports,
                     boolean hasJakarta, boolean isUtilityClass, boolean isRecord,
-                    String validatorField, String validatorSetup, String testSuffix) {
+                    String validatorField, String validatorSetup,
+                    Affix classAffix, Affix methodAffix) {
         this.sourceClassName = sourceClassName;
         this.targetPackage   = targetPackage;
         this.instanceName    = instanceName;
@@ -34,7 +38,8 @@ final class ClassDataConfig {
         this.isRecord        = isRecord;
         this.validatorField  = validatorField;
         this.validatorSetup  = validatorSetup;
-        this.testSuffix      = testSuffix;
+        this.classAffix      = classAffix;
+        this.methodAffix     = methodAffix;
     }
 
     String       sourceClassName() { return sourceClassName; }
@@ -47,5 +52,6 @@ final class ClassDataConfig {
     boolean      isRecord()        { return isRecord;        }
     String       validatorField()  { return validatorField;  }
     String       validatorSetup()  { return validatorSetup;  }
-    String       testSuffix()      { return testSuffix;      }
+    Affix        classAffix()      { return classAffix;      }
+    Affix        methodAffix()     { return methodAffix;     }
 }
