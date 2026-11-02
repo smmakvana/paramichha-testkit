@@ -4,7 +4,6 @@ import com.paramichha.datafactory.DataBuilder;
 import com.paramichha.datafactory.DataFactory;
 import com.paramichha.datafactory.DataFactoryResult;
 import com.paramichha.datafactory.DataFactoryResults;
-import com.paramichha.datafactory.GenerationMode;
 import com.paramichha.testkit.model.TestFixture;
 
 import com.paramichha.utils.Seeds;
@@ -31,7 +30,7 @@ public final class DefaultTestDataProvider implements TestDataProvider {
 
     @Override
     public TestFixture provide(Class<?> type) {
-        return provide(type, GenerationMode.PRODUCTION, Seeds.stableHash(type));
+        return provide(type, Seeds.stableHash(type));
     }
 
 /**
@@ -43,7 +42,7 @@ public final class DefaultTestDataProvider implements TestDataProvider {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public TestFixture provide(Class<?> type, GenerationMode mode, Long seed) {
+    public TestFixture provide(Class<?> type, Long seed) {
         // Always seed from class name when no explicit seed given — deterministic output.
         long effectiveSeed = seed != null ? seed : Seeds.stableHash(type);
         Object base = null;
@@ -52,7 +51,7 @@ public final class DefaultTestDataProvider implements TestDataProvider {
         String violationsError = null;
         Map<String, List<?>> validAllPerField = Map.of();
 
-        DataBuilder<?> builder = DataFactory.of(type).mode(mode).seed(effectiveSeed);
+        DataBuilder<?> builder = DataFactory.of(type).seed(effectiveSeed);
 
         DataFactoryResult<?> valid = builder.valid();
         if (valid.isSuccess()) base = valid.get();
@@ -75,7 +74,7 @@ public final class DefaultTestDataProvider implements TestDataProvider {
         // creation tests and method tests are still generated.
         String error = baseError != null ? "valid() failed: " + baseError : null;
 
-        return new TestFixture(type, base, mode, violations, validAllPerField, validObjects, error);
+        return new TestFixture(type, base, violations, validAllPerField, validObjects, error);
     }
 
     private static String describe(DataFactoryResult<?> r) {

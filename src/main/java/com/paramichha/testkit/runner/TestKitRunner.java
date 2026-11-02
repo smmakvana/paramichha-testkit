@@ -1,6 +1,5 @@
 package com.paramichha.testkit.runner;
 
-import com.paramichha.datafactory.GenerationMode;
 import com.paramichha.testkit.GenerationResult;
 import com.paramichha.testkit.TestKit;
 import com.paramichha.testkit.scan.TestableScanner;
@@ -54,28 +53,6 @@ public final class TestKitRunner {
                 .map(t -> TestKit.of(t.type())
                         .withPackage(t.targetPackage())
                         .generateTest())
-                .toList();
-    }
-
-    public List<Path> writeBothModesTo(Path sourceRoot) {
-        return targets.stream()
-                .flatMap(t -> java.util.stream.Stream.of(
-                        TestKit.of(t.type()).withPackage(t.targetPackage())
-                                .withMode(GenerationMode.PRODUCTION)
-                                .generateTest().writeTo(sourceRoot),
-                        TestKit.of(t.type()).withPackage(t.targetPackage())
-                                .withMode(GenerationMode.DEV)
-                                .generateTest().writeTo(sourceRoot)))
-                .toList();
-    }
-
-    public List<GenerationResult> generateBothModes() {
-        return targets.stream()
-                .flatMap(t -> java.util.stream.Stream.of(
-                        TestKit.of(t.type()).withPackage(t.targetPackage())
-                                .withMode(GenerationMode.PRODUCTION).generateTest(),
-                        TestKit.of(t.type()).withPackage(t.targetPackage())
-                                .withMode(GenerationMode.DEV).generateTest()))
                 .toList();
     }
 

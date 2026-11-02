@@ -1,6 +1,5 @@
 package com.paramichha.testkit;
 
-import com.paramichha.datafactory.GenerationMode;
 import com.paramichha.testkit.generator.SolidCodeGenerator;
 import com.paramichha.testkit.model.ClassInfo;
 import com.paramichha.testkit.model.TestFixture;
@@ -26,7 +25,6 @@ public final class TestKit {
     private String targetPackage;
     private TestKitTemplate template = TestKitTemplate.DEFAULT;
     private ProjectType projectType = ProjectType.detect();
-    private GenerationMode mode = GenerationMode.PRODUCTION;
     private Long seed = null;
     private boolean methodTests = true;
     private final CodeGenerator generator = SolidCodeGenerator.INSTANCE;
@@ -80,12 +78,6 @@ public final class TestKit {
         return this;
     }
 
-    public TestKit withMode(GenerationMode mode) {
-        if (mode == null) throw new TestKitException("mode must not be null");
-        this.mode = mode;
-        return this;
-    }
-
     public TestKit withSeed(long seed) {
         this.seed = seed;
         return this;
@@ -118,10 +110,10 @@ public final class TestKit {
         if (!methodTests) resolved = withoutMethods(resolved);
 
         // Step 2 — load values via DataFactory
-        TestFixture fixture = dataProvider.provide(resolved.type(), mode, seed);
+        TestFixture fixture = dataProvider.provide(resolved.type(), seed);
 
         // Step 3 — assemble pipeline context
-        return new TestCodeData(resolved, fixture, targetPackage, template, projectType, mode, seed);
+        return new TestCodeData(resolved, fixture, targetPackage, template, projectType, seed);
     }
 
     /** The same class, seen without methods — so no method tests are generated. */

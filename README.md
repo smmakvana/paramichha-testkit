@@ -88,7 +88,6 @@ method, grouped by kind: command, mutator, query, transformer, operation.
   arguments are written as `new Foo(…)` calls.
 - **Unannotated fields aren't skipped** — they get a test with a `// TODO: add constraints` note, so gaps are visible.
 - **Method tests on or off** — `withMethodTests(false)` generates only creation and field tests.
-- **Generation modes** — `withMode(GenerationMode.PRODUCTION)` (default) or `DEV`, see DataFactory.
 - **Pluggable** — `withTemplate(...)` controls naming; `withProjectType(SPRING | JAKARTA | PLAIN_JAVA)` is detected
   from the classpath when not set.
 - **Embeds safely** — formatting with google-java-format is optional and never breaks generation (see below).
@@ -140,8 +139,6 @@ Set `-Dtestkit.format=false` to skip formatting entirely, for example in an IDE 
   See [DataFactory's limitations](https://github.com/smmakvana/paramichha-datafactory#limitations).
 - **Failures produce a placeholder file.** If a class can't be processed, the output is a test file containing
   only comments with the reason; check the console for `✗ TestKit failed for …`.
-- **`TestKitRunner.writeBothModesTo(...)` overwrites.** PRODUCTION and DEV output use the same file name, so the
-  DEV file replaces the PRODUCTION one.
 - **Parameter names come from the compiled class.** Compile the classes under test with `-parameters`
   (`<parameters>true</parameters>` in maven-compiler-plugin) to get `merge(other, newName)` in generated method
   tests; without it Java only keeps `arg0`, `arg1`, ….
