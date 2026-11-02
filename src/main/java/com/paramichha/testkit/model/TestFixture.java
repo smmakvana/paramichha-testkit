@@ -1,6 +1,5 @@
 package com.paramichha.testkit.model;
 
-import com.paramichha.datafactory.GenerationMode;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import java.util.Map;
 public record TestFixture(
         Class<?> type,
         Object base,
-        GenerationMode mode,
         List<?> violations,
         Map<String, List<?>> validAllPerField,
         List<?> validObjects,

@@ -541,7 +541,7 @@ final class ClassDataFactory {
                 meta, null, meta.packageName(),
                 com.paramichha.testkit.TestKitTemplate.DEFAULT,
                 com.paramichha.testkit.ProjectType.detect(),
-                com.paramichha.datafactory.GenerationMode.PRODUCTION, seed);
+                seed);
     }
 
     private static long   longAttr  (Annotation a, String attr) throws Exception { return (long)   a.annotationType().getMethod(attr).invoke(a); }

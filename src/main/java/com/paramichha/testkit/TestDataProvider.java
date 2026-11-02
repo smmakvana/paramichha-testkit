@@ -1,6 +1,5 @@
 package com.paramichha.testkit;
 
-import com.paramichha.datafactory.GenerationMode;
 import com.paramichha.testkit.model.TestFixture;
 
 /**
@@ -10,5 +9,5 @@ import com.paramichha.testkit.model.TestFixture;
 public interface TestDataProvider {
     TestFixture provide(Class<?> type);
 
-    TestFixture provide(Class<?> type, GenerationMode mode, Long seed);
+    TestFixture provide(Class<?> type, Long seed);
 }

@@ -1,6 +1,5 @@
 package com.paramichha.testkit;
 
-import com.paramichha.datafactory.GenerationMode;
 import com.paramichha.testkit.model.ClassInfo;
 import com.paramichha.testkit.model.TestFixture;
 
@@ -21,18 +20,16 @@ public final class TestCodeData {
     private final String targetPackage;
     private final TestKitTemplate template;
     private final ProjectType projectType;
-    private final GenerationMode mode;
     private final Long seed;
 
     public TestCodeData(ClassInfo classInfo, TestFixture fixture,
                  String targetPackage, TestKitTemplate template,
-                 ProjectType projectType, GenerationMode mode, Long seed) {
+                 ProjectType projectType, Long seed) {
         this.classInfo = classInfo;
         this.fixture = fixture;
         this.targetPackage = targetPackage;
         this.template = template;
         this.projectType = projectType;
-        this.mode = mode;
         this.seed = seed;
     }
 
@@ -56,9 +53,6 @@ public final class TestCodeData {
         return projectType;
     }
 
-    public GenerationMode mode() {
-        return mode;
-    }
 
     public Long seed() {
         return seed;
