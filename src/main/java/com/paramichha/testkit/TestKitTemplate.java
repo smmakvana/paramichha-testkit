@@ -15,6 +15,23 @@ public final class TestKitTemplate {
      * Must be a Java identifier part; the default keeps the historical {@code Test} names.
      */
     public String testSuffix = "Test";
+    /** Text before the class name: {@code Unit} → {@code UnitCircleTest}. Empty by default. */
+    public String classPrefix = "";
+
+    // ── Test method names ────────────────────────────────────────────────
+    /**
+     * Wrapped around the name of every test method ({@code @Test}, {@code @ParameterizedTest}):
+     * {@code methodPrefix + "testRejectsX" + methodSuffix}. Helper methods (value streams, setup)
+     * keep their names. Both empty by default.
+     */
+    public String methodPrefix = "";
+    public String methodSuffix = "";
+
+    /** The class-name affix, used for every generated test class. */
+    public Affix classAffix() { return new Affix(classPrefix, testSuffix); }
+
+    /** The test-method affix. */
+    public Affix methodAffix() { return new Affix(methodPrefix, methodSuffix); }
 
     // ── Validator ─────────────────────────────────────────────────────────
     public String validatorField   = "validator";
@@ -70,11 +87,32 @@ public final class TestKitTemplate {
 
         /** {@code "Test"} (default), {@code "IT"}, {@code "Spec"}, … */
         public Builder testSuffix(String suffix) {
-            if (suffix == null || suffix.isEmpty() || !Character.isJavaIdentifierStart(suffix.charAt(0))
-                    || !suffix.chars().allMatch(Character::isJavaIdentifierPart)) {
+            if (suffix == null || suffix.isEmpty() || !Character.isJavaIdentifierStart(suffix.charAt(0))) {
                 throw new IllegalArgumentException("testSuffix must be a Java identifier, got: " + suffix);
             }
+            Affix.check("testSuffix", suffix, false);
             template.testSuffix = suffix;
+            return this;
+        }
+
+        /** Text before every test class name: {@code "Unit"} → {@code UnitCircleTest}. Empty is allowed. */
+        public Builder classPrefix(String prefix) {
+            Affix.check("classPrefix", prefix, true);
+            template.classPrefix = prefix;
+            return this;
+        }
+
+        /** Text before every test method name: {@code "given"} → {@code giventestRejectsX}. Empty is allowed. */
+        public Builder methodPrefix(String prefix) {
+            Affix.check("methodPrefix", prefix, true);
+            template.methodPrefix = prefix;
+            return this;
+        }
+
+        /** Text after every test method name: {@code "_IT"} → {@code testRejectsX_IT}. Empty is allowed. */
+        public Builder methodSuffix(String suffix) {
+            Affix.check("methodSuffix", suffix, true);
+            template.methodSuffix = suffix;
             return this;
         }
 
@@ -86,6 +124,9 @@ public final class TestKitTemplate {
         public TestKitTemplate build() {
             TestKitTemplate copy = new TestKitTemplate();
             copy.testSuffix = template.testSuffix;
+            copy.classPrefix = template.classPrefix;
+            copy.methodPrefix = template.methodPrefix;
+            copy.methodSuffix = template.methodSuffix;
             copy.validatorField = template.validatorField;
             return copy;
         }

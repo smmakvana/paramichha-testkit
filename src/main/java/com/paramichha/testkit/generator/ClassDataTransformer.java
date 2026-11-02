@@ -15,7 +15,31 @@ final class ClassDataTransformer {
     // ── Single file ───────────────────────────────────────────────────────
 
     static ClassCoderInfo transform(ClassData data, ClassDataConfig config) {
-        return buildRoot(data, config, buildNestedClasses(data, config));
+        return renameTestMethods(buildRoot(data, config, buildNestedClasses(data, config)), config.methodAffix());
+    }
+
+    /**
+     * Wraps the configured method affix around every test method — the ones annotated
+     * {@code @Test} or {@code @ParameterizedTest}. Value streams and setup methods keep their names.
+     * Applied to the whole tree, so nested classes are covered too.
+     */
+    static ClassCoderInfo renameTestMethods(ClassCoderInfo c, com.paramichha.testkit.Affix affix) {
+        List<MethodCoderInfo> methods = c.methods().stream()
+                .map(m -> isTestMethod(m)
+                        ? new MethodCoderInfo(m.annotations(), m.modifiers(), m.returnType(),
+                                affix.apply(m.name()), m.params(), m.body())
+                        : m)
+                .toList();
+        List<ClassCoderInfo> nested = c.nestedClasses().stream()
+                .map(n -> renameTestMethods(n, affix))
+                .toList();
+        return new ClassCoderInfo(c.packageName(), c.imports(), c.annotations(), c.modifiers(),
+                c.name(), c.fields(), methods, nested);
+    }
+
+    private static boolean isTestMethod(MethodCoderInfo m) {
+        return m.annotations().stream().anyMatch(a ->
+                a.equals("@Test") || a.startsWith("@Test(") || a.startsWith("@ParameterizedTest"));
     }
 
     // ── Split files ───────────────────────────────────────────────────────
@@ -36,8 +60,8 @@ final class ClassDataTransformer {
         if (!config.isUtilityClass()) {
             for (MemberData member : data.members()) {
                 ClassCoderInfo field = FieldTransformer.transform(member, data, config);
-                String splitName = config.sourceClassName() + "Field"
-                        + com.paramichha.utils.Texts.capitalize(member.name()) + config.testSuffix();
+                String splitName = config.classAffix().apply(config.sourceClassName() + "Field"
+                        + com.paramichha.utils.Texts.capitalize(member.name()));
                 result.add(promoteToTopLevel(withName(field, splitName), data, config));
             }
         }
@@ -45,12 +69,12 @@ final class ClassDataTransformer {
         // Methods → GodRecordMethod<MethodName>Test
         for (MethodData method : data.methods()) {
             ClassCoderInfo methodClass = MethodTransformer.transform(method, config);
-            String splitName = config.sourceClassName() + "Method"
-                    + com.paramichha.utils.Texts.capitalize(method.name()) + config.testSuffix();
+            String splitName = config.classAffix().apply(config.sourceClassName() + "Method"
+                    + com.paramichha.utils.Texts.capitalize(method.name()));
             result.add(promoteToTopLevel(withName(methodClass, splitName), data, config));
         }
 
-        return List.copyOf(result);
+        return result.stream().map(c -> renameTestMethods(c, config.methodAffix())).toList();
     }
 
     // ── Promote nested → standalone top-level ─────────────────────────────
