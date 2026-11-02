@@ -73,7 +73,7 @@ final class CreationTransformer {
                         "@Tag(\"creation\")",
                         "@TestMethodOrder(MethodOrderer.MethodName.class)"),
                 List.of(),
-                className + "CreationTest",
+                className + "Creation" + config.testSuffix(),
                 List.of(),
                 List.copyOf(methods),
                 List.of());

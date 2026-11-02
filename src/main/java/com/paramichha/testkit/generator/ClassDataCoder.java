@@ -85,7 +85,7 @@ final class ClassDataCoder {
 
     private String codeCreationNested(ClassData data, ClassDataConfig config) {
         StringBuilder sb = new StringBuilder();
-        String nestedName = config.sourceClassName() + "CreationTest";
+        String nestedName = config.sourceClassName() + "Creation" + config.testSuffix();
         String instanceName = config.instanceName();
 
         sb.append(INDENT).append("@Nested\n");
@@ -143,7 +143,7 @@ final class ClassDataCoder {
         String className = config.sourceClassName();
         String name = member.name();
         String boxedType = member.type().className();
-        String nestedName = TestNames.memberClass(className, name);
+        String nestedName = TestNames.memberClass(className, name, config.testSuffix());
         String acceptsM = "testAccepts" + com.paramichha.utils.Texts.capitalize(name);
         String rejectsM = "testRejects" + com.paramichha.utils.Texts.capitalize(name);
         String validSrc = TestNames.validSource(name);

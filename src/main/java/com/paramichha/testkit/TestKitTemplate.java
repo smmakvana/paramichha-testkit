@@ -9,6 +9,13 @@ import com.paramichha.utils.Tokens;
  */
 public final class TestKitTemplate {
 
+    // ── Class names ───────────────────────────────────────────────────────
+    /**
+     * Suffix of every generated test class: {@code CircleTest}, {@code CircleIT}, {@code CircleSpec}.
+     * Must be a Java identifier part; the default keeps the historical {@code Test} names.
+     */
+    public String testSuffix = "Test";
+
     // ── Validator ─────────────────────────────────────────────────────────
     public String validatorField   = "validator";
     public String validatorSetup   = "setUpValidator";
@@ -51,6 +58,38 @@ public final class TestKitTemplate {
 
     // ── Default singleton ─────────────────────────────────────────────────
     public static final TestKitTemplate DEFAULT = new TestKitTemplate();
+
+    /** Start from the defaults and change what you need: {@code TestKitTemplate.builder().testSuffix("IT").build()}. */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /** Fluent construction for naming conventions. Unset values keep their defaults. */
+    public static final class Builder {
+        private final TestKitTemplate template = new TestKitTemplate();
+
+        /** {@code "Test"} (default), {@code "IT"}, {@code "Spec"}, … */
+        public Builder testSuffix(String suffix) {
+            if (suffix == null || suffix.isEmpty() || !Character.isJavaIdentifierStart(suffix.charAt(0))
+                    || !suffix.chars().allMatch(Character::isJavaIdentifierPart)) {
+                throw new IllegalArgumentException("testSuffix must be a Java identifier, got: " + suffix);
+            }
+            template.testSuffix = suffix;
+            return this;
+        }
+
+        public Builder validatorField(String name) {
+            template.validatorField = name;
+            return this;
+        }
+
+        public TestKitTemplate build() {
+            TestKitTemplate copy = new TestKitTemplate();
+            copy.testSuffix = template.testSuffix;
+            copy.validatorField = template.validatorField;
+            return copy;
+        }
+    }
 
     // ── Token resolution ──────────────────────────────────────────────────
 

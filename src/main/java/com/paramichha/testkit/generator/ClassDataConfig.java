@@ -18,11 +18,12 @@ final class ClassDataConfig {
     private final boolean      isRecord;
     private final String       validatorField;    // e.g. "validator"
     private final String       validatorSetup;    // e.g. "setUpValidator"
+    private final String       testSuffix;        // e.g. "Test", "IT", "Spec"
 
     ClassDataConfig(String sourceClassName, String targetPackage, String instanceName,
                     String header, List<String> imports,
                     boolean hasJakarta, boolean isUtilityClass, boolean isRecord,
-                    String validatorField, String validatorSetup) {
+                    String validatorField, String validatorSetup, String testSuffix) {
         this.sourceClassName = sourceClassName;
         this.targetPackage   = targetPackage;
         this.instanceName    = instanceName;
@@ -33,6 +34,7 @@ final class ClassDataConfig {
         this.isRecord        = isRecord;
         this.validatorField  = validatorField;
         this.validatorSetup  = validatorSetup;
+        this.testSuffix      = testSuffix;
     }
 
     String       sourceClassName() { return sourceClassName; }
@@ -45,4 +47,5 @@ final class ClassDataConfig {
     boolean      isRecord()        { return isRecord;        }
     String       validatorField()  { return validatorField;  }
     String       validatorSetup()  { return validatorSetup;  }
+    String       testSuffix()      { return testSuffix;      }
 }

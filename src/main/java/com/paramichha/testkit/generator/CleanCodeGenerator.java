@@ -87,7 +87,8 @@ public final class CleanCodeGenerator implements CodeGenerator {
                 classInfo.utilityClass(),
                 isRecord,
                 payload.template().validatorField,
-                payload.template().validatorSetup
+                payload.template().validatorSetup,
+                payload.template().testSuffix
         );
     }
 
@@ -129,7 +130,7 @@ public final class CleanCodeGenerator implements CodeGenerator {
     // ── Placeholder ───────────────────────────────────────────────────────
 
     private GenerationResult placeholder(TestCodeData payload, String error) {
-        String name = payload.classInfo().simpleName() + "Test";
+        String name = payload.classInfo().simpleName() + payload.template().testSuffix;
         String pkg = payload.targetPackage();
         System.err.println("✗ TestKit failed for "
                 + payload.classInfo().simpleName() + ": " + error);
