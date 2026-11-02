@@ -56,7 +56,7 @@ final class ClassDataFactory {
         boolean isRecord = classInfo.constructorStyle() == com.paramichha.testkit.model.ConstructorStyle.RECORD;
 
         return new DefaultClassData(
-                classInfo.simpleName() + "Test",
+                classInfo.simpleName() + template.testSuffix,
                 payload.targetPackage(),
                 false, false, false,
                 isRecord, false, false, false,

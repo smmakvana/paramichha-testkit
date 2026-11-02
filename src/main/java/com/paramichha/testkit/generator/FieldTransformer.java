@@ -16,7 +16,7 @@ final class FieldTransformer {
         String className   = config.sourceClassName();
         String name        = member.name();
         String boxedType   = member.type().className();
-        String nestedName  = TestNames.memberClass(className, name);
+        String nestedName  = TestNames.memberClass(className, name, config.testSuffix());
         String displayName = className + " Field " + name;
         String acceptsM    = "testAccepts" + com.paramichha.utils.Texts.capitalize(name);
         String rejectsM    = "testRejects" + com.paramichha.utils.Texts.capitalize(name);

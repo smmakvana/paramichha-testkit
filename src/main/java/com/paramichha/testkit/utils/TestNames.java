@@ -79,24 +79,47 @@ public final class TestNames {
     // Generated test class names
     // =========================================================================
 
+    /** The default suffix of every generated test class. */
+    public static final String DEFAULT_SUFFIX = "Test";
+
     /** "Circle" → "CircleTest" */
     public static String testClass(String className) {
-        return className + "Test";
+        return testClass(className, DEFAULT_SUFFIX);
+    }
+
+    /** "Circle", "IT" → "CircleIT" */
+    public static String testClass(String className, String suffix) {
+        return className + suffix;
     }
 
     /** "Circle" → "CircleCreationTest" */
     public static String creationClass(String className) {
-        return className + "CreationTest";
+        return creationClass(className, DEFAULT_SUFFIX);
+    }
+
+    /** "Circle", "IT" → "CircleCreationIT" */
+    public static String creationClass(String className, String suffix) {
+        return className + "Creation" + suffix;
     }
 
     /** "Circle", "radius" → "CircleRadiusTest" */
     public static String memberClass(String className, String memberName) {
-        return className + JavaNames.className(memberName) + "Test";
+        return memberClass(className, memberName, DEFAULT_SUFFIX);
+    }
+
+    /** "Circle", "radius", "IT" → "CircleRadiusIT" */
+    public static String memberClass(String className, String memberName, String suffix) {
+        return className + JavaNames.className(memberName) + suffix;
     }
 
     /** "Circle", "resize" → "CircleMethodResizeTest" */
     public static String methodClass(String className, String methodName) {
-        return className + "Method" + JavaNames.className(methodName) + "Test";
+        return methodClass(className, methodName, DEFAULT_SUFFIX);
+    }
+
+    /** "Circle", "resize", "IT" → "CircleMethodResizeIT" */
+    public static String methodClass(String className, String methodName, String suffix) {
+        return className + "Method" + JavaNames.className(methodName) + suffix;
     }
 
     /** "Circle" → "CircleScenarioTest" */

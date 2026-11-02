@@ -26,7 +26,7 @@ final class ClassDataTransformer {
         // Root — instance field + @BeforeAll only
         result.add(buildRoot(data, config, List.of()));
 
-        // Creation → GodRecordCreationTest (name unchanged)
+        // Creation → GodRecordCreationTest (the test suffix is applied to every name)
         if (!config.isUtilityClass()) {
             ClassCoderInfo creation = CreationTransformer.transform(data, config);
             result.add(promoteToTopLevel(creation, data, config));
@@ -37,7 +37,7 @@ final class ClassDataTransformer {
             for (MemberData member : data.members()) {
                 ClassCoderInfo field = FieldTransformer.transform(member, data, config);
                 String splitName = config.sourceClassName() + "Field"
-                        + com.paramichha.utils.Texts.capitalize(member.name()) + "Test";
+                        + com.paramichha.utils.Texts.capitalize(member.name()) + config.testSuffix();
                 result.add(promoteToTopLevel(withName(field, splitName), data, config));
             }
         }
@@ -46,7 +46,7 @@ final class ClassDataTransformer {
         for (MethodData method : data.methods()) {
             ClassCoderInfo methodClass = MethodTransformer.transform(method, config);
             String splitName = config.sourceClassName() + "Method"
-                    + com.paramichha.utils.Texts.capitalize(method.name()) + "Test";
+                    + com.paramichha.utils.Texts.capitalize(method.name()) + config.testSuffix();
             result.add(promoteToTopLevel(withName(methodClass, splitName), data, config));
         }
 
