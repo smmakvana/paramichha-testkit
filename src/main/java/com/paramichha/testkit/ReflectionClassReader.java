@@ -155,7 +155,6 @@ public final class ReflectionClassReader implements ClassReader {
             if (utility  && !isStatic) continue;
             if (!utility && isStatic)  continue;
             if (objectMethods.contains(m.getName())) continue;
-            if (isGetterOrSetter(m)) continue;
             if (m.isSynthetic() || m.isBridge()) continue;
 
             List<ParameterInfo> params = extractParameters(m);
@@ -193,15 +192,6 @@ public final class ReflectionClassReader implements ClassReader {
         if (paramCount == 0)           return MethodKind.QUERY;
         if (paramCount == 1)           return MethodKind.TRANSFORMER;
         return MethodKind.OPERATION;
-    }
-
-    private boolean isGetterOrSetter(Method m) {
-        String name = m.getName();
-        int params = m.getParameterCount();
-        if (params == 0 && (name.startsWith("get") || name.startsWith("is"))
-                && name.length() > 2) return true;
-        if (params == 1 && name.startsWith("set") && name.length() > 3) return true;
-        return false;
     }
 
     private static Set<String> objectMethodNames() {

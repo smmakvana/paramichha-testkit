@@ -131,9 +131,10 @@ class ConstructorConstraintRegressionTest {
         }
 
         @Test
-        void settersWithoutConstraintsAreNotTreatedAsValidated() {
+        void settersAreTestedButUnconstrainedOnesDoNotReject() {
             String withMethods = TestKit.of(Circle.class).withMethodTests(true).generateTest().asString();
-            assertThat(withMethods).doesNotContain("setX(").doesNotContain("setY(").doesNotContain("setZ(");
+            assertThat(withMethods).contains("setX()").contains("setY()")
+                    .doesNotContain("setX rejects invalid input").doesNotContain("setY rejects invalid input");
         }
 
         private List<Integer> values(String source) {

@@ -41,6 +41,11 @@ public final class TestKitTemplate {
     public boolean showSuffixInDisplay = false;
     /** Use the arrow style for tree labels: {@code Circle › field r}. Off by default. */
     public boolean nestedStyle = false;
+    /**
+     * When on, a getter or setter that maps to a field (getR/setR for field r) gets no method test,
+     * because the field test already checks it. Off by default: every public method is tested.
+     */
+    public boolean foldAccessors = false;
 
     /** The class-name affix, used for every generated test class. */
     public Affix classAffix() { return new Affix(classPrefix, testSuffix); }
@@ -176,6 +181,12 @@ public final class TestKitTemplate {
             return this;
         }
 
+        /** Fold getters and setters that map to a field into the field's test. Off keeps every public method. */
+        public Builder foldAccessors(boolean fold) {
+            template.foldAccessors = fold;
+            return this;
+        }
+
         private static void checkTokens(String what, String pattern, String... allowed) {
             if (pattern == null) throw new IllegalArgumentException(what + " must not be null");
             java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\{([A-Za-z]+)\\}").matcher(pattern);
@@ -199,6 +210,7 @@ public final class TestKitTemplate {
             copy.displayPrefix = template.displayPrefix;
             copy.showSuffixInDisplay = template.showSuffixInDisplay;
             copy.nestedStyle = template.nestedStyle;
+            copy.foldAccessors = template.foldAccessors;
             return copy;
         }
     }
