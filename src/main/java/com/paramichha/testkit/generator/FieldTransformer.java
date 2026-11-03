@@ -78,28 +78,34 @@ final class FieldTransformer {
         // Rejects test — only when something actually checks the constraint. An unconstrained
         // field, or a project without a Jakarta Validation provider, gets no rejects test: any
         // assertion there would pass whatever the value.
-        boolean rejectable = canValidate && (member.isConstructorConstrained() || member.isPropertyConstrained());
-        if (rejectable && !invalidVals.isEmpty()) {
+        boolean constrained = member.isConstructorConstrained() || member.isPropertyConstrained();
+        if (constrained && !invalidVals.isEmpty()) {
             String body;
-            if (member.isConstructorConstrained()) {
+            if (canValidate && member.isConstructorConstrained()) {
                 // Checked without calling the constructor, which needn't enforce anything itself.
                 int index = member.constructorIndex();
                 body = "var violations = " + constructorViolations(className, classData, member, validator) + ";\n"
                         + "// the violation must be on parameter '" + name + "', not on the other (valid) ones\n"
                         + "assertThat(violations).anyMatch(v -> v.getPropertyPath().toString().endsWith(\"." + name + "\")\n"
                         + "        || v.getPropertyPath().toString().endsWith(\".arg" + index + "\"));";
-            } else {
+            } else if (canValidate) {
+                // Jakarta present: the validator must report the violation. A constructor that
+                // throws here is an error, so the test fails.
                 String constructorWithVar = buildConstructorWithVar(className, classData, member, config);
-                body = className + " obj;\n"
-                        + "try {\n"
-                        + "    obj = " + constructorWithVar + ";\n"
-                        + "} catch (IllegalArgumentException | jakarta.validation.ValidationException e) {\n"
-                        + "    return; // the constructor itself rejected the value\n"
-                        + "}\n"
+                body = className + " obj = " + constructorWithVar + ";\n"
                         + "assertThat(" + validator + ".validate(obj)).anyMatch(v -> {\n"
                         + "    String path = v.getPropertyPath().toString();\n"
                         + "    return path.equals(\"" + name + "\") || path.startsWith(\"" + name + ".\") || path.startsWith(\"" + name + "[\");\n"
                         + "});";
+            } else {
+                // No validator (core library): the constructor itself must reject the value, as an
+                // IllegalArgumentException. If the object is created, the hint says what to fix.
+                String constructorWithVar = buildConstructorWithVar(className, classData, member, config);
+                body = "assertThatThrownBy(() -> " + constructorWithVar + ")\n"
+                        + "        .as(\"" + escape(className) + ": field '" + name + "' = %s must be rejected with"
+                        + " IllegalArgumentException, but the object was created. Fix: check '" + name
+                        + "' in the constructor and throw IllegalArgumentException\", " + name + ")\n"
+                        + "        .isInstanceOf(IllegalArgumentException.class);";
             }
             methods.add(new MethodCoderInfo(
                     List.of("@ParameterizedTest(name = \"{0}\")",

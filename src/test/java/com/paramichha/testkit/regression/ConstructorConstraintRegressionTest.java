@@ -158,10 +158,14 @@ class ConstructorConstraintRegressionTest {
     }
 
     @Test
-    @DisplayName("without a validation provider no test pretends validation happens")
-    void noProviderNoValidationTests() {
+    @DisplayName("without a validation provider the constructor must reject invalid values")
+    void noProviderConstructorMustReject() {
         String src = TestKit.of(Circle.class).withProjectType(ProjectType.PLAIN_JAVA).generateTest().asString();
-        assertThat(src).doesNotContain("validator").doesNotContain("testRejects")
+        assertThat(src).doesNotContain("validator")
+                .contains("testRejects")
+                .contains("assertThatThrownBy(() -> new Circle(")
+                .contains("isInstanceOf(IllegalArgumentException.class)")
+                .contains("in the constructor and throw IllegalArgumentException")
                 .contains("assertThat(obj.getX()).isEqualTo(x)");
     }
 
