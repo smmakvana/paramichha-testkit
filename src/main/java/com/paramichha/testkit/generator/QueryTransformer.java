@@ -18,8 +18,13 @@ final class QueryTransformer {
 
         // testReturnsResult
         String returnsBody = typeName + " result = " + call + ";";
-        if (!ret.assertionCode().isBlank())
+        if (!ret.assertionCode().isBlank()) {
             returnsBody += "\n" + ret.assertionCode();
+        } else if (!ret.isVoid()) {
+            // No known expected value: fail until a person states it, so the test cannot pass silently.
+            returnsBody += "\norg.assertj.core.api.Assertions.fail(\"TODO: define the expected result of "
+                    + method.name() + "(), e.g. assertThat(result).isEqualTo(...)\");";
+        }
 
         result.add(MethodCoderInfo.of(
                 List.of("@Test",

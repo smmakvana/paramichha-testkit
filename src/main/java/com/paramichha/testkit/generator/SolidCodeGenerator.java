@@ -41,7 +41,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
             ClassData       data   = ClassDataFactory.build(payload);
             ClassDataConfig config = buildConfig(payload);
             ClassCoderInfo  info   = ClassDataTransformer.transform(data, config);
-            String          source = cleanCode(coder.code(info));
+            String          source = cleanCode(config.header() + coder.code(info));
             return GenerationResult.of(data.className(), config.targetPackage(), source);
         } catch (Exception e) {
             return placeholder(payload, e.getMessage());
@@ -60,7 +60,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
                     .map(info -> GenerationResult.of(
                             info.name(),
                             config.targetPackage(),
-                            cleanCode(coder.code(info))))
+                            cleanCode(config.header() + coder.code(info))))
                     .collect(Collectors.toList());
             return GenerationResult.ofAll(results);
         } catch (Exception e) {
