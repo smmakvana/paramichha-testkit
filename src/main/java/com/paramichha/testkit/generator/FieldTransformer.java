@@ -65,7 +65,7 @@ final class FieldTransformer {
             methods.add(new MethodCoderInfo(
                     List.of("@ParameterizedTest(name = \"{0}\")",
                             "@MethodSource(\"" + validSrc + "\")",
-                            "@DisplayName(\"accepts valid value\")"),
+                            "@DisplayName(\"accepts valid values\")"),
                     List.of(), "void", acceptsM,
                     List.of(ParameterCoderInfo.of("String", "description"),
                             ParameterCoderInfo.of(boxedType, name)),
@@ -110,7 +110,7 @@ final class FieldTransformer {
             methods.add(new MethodCoderInfo(
                     List.of("@ParameterizedTest(name = \"{0}\")",
                             "@MethodSource(\"" + invalidSrc + "\")",
-                            "@DisplayName(\"rejects invalid value\")"),
+                            "@DisplayName(\"rejects invalid values\")"),
                     List.of(), "void", rejectsM,
                     List.of(ParameterCoderInfo.of("String", "description"),
                             ParameterCoderInfo.of(boxedType, name)),
@@ -228,9 +228,11 @@ final class FieldTransformer {
         return (type.isPrimitive() && type.className().equals("boolean"));
     }
 
+    /** "radius -1.5 (valid)": the member, the value and the verdict. Quotes in strings are escaped. */
     private static String labelFor(Object value, String name, String kind, int index) {
-        if (value == null) return "null " + name;
-        if (value instanceof String s) return s.isEmpty() ? "blank " + name : name + " " + index;
-        return kind + " " + name + " " + (index + 1);
+        String shown = value == null ? "null"
+                : value instanceof String s ? (s.isEmpty() ? "blank" : "\"" + escape(s) + "\"")
+                : String.valueOf(value);
+        return escape(name + " " + shown + " (" + kind + ")");
     }
 }

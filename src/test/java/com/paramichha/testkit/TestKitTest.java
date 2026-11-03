@@ -138,7 +138,7 @@ class TestKitTest {
             // quantity is @Min(1) @Max(100): the max and the first value above it
             assertThat(src).contains("100").contains("101");
             // primitive constrained fields must get real invalid values, not a placeholder
-            assertThat(src).contains("invalid quantity").doesNotContain("no constraints defined");
+            assertThat(src).contains("(invalid)").doesNotContain("no constraints defined");
         }
     }
 

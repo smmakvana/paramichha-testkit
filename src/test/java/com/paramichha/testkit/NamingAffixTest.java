@@ -24,7 +24,7 @@ class NamingAffixTest {
 
         assertThat(src).contains("void testAcceptsQuantity_Spec(").contains("void testRejectsQuantity_Spec(");
         // helper streams and setup keep their names
-        assertThat(src).contains("static Stream<Arguments> validQuantities()");
+        assertThat(src).contains("static Stream<Arguments> validQuantityValues()");
         assertThat(src).doesNotContain("validQuantities_Spec");
     }
 

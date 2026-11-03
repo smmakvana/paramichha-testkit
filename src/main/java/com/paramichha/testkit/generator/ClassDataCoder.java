@@ -174,7 +174,7 @@ final class ClassDataCoder {
             sb.append(INDENT).append(INDENT)
                     .append("@MethodSource(\"").append(validSrc).append("\")\n");
             sb.append(INDENT).append(INDENT)
-                    .append("@DisplayName(\"accepts valid value\")\n");
+                    .append("@DisplayName(\"accepts valid values\")\n");
             sb.append(INDENT).append(INDENT)
                     .append("void ").append(acceptsM)
                     .append("(String description, ").append(boxedType).append(" ").append(name).append(") {\n");
@@ -207,7 +207,7 @@ final class ClassDataCoder {
             sb.append(INDENT).append(INDENT)
                     .append("@MethodSource(\"").append(invalidSrc).append("\")\n");
             sb.append(INDENT).append(INDENT)
-                    .append("@DisplayName(\"rejects invalid value\")\n");
+                    .append("@DisplayName(\"rejects invalid values\")\n");
             sb.append(INDENT).append(INDENT)
                     .append("void ").append(rejectsM)
                     .append("(String description, ").append(boxedType).append(" ").append(name).append(") {\n");
@@ -333,7 +333,7 @@ final class ClassDataCoder {
 
         sb.append(INDENT).append(INDENT).append("@Test\n");
         sb.append(INDENT).append(INDENT)
-                .append("@DisplayName(\"").append(method.name()).append(" returns a result\")\n");
+                .append("@DisplayName(\"").append(method.name()).append(" returns a value\")\n");
         sb.append(INDENT).append(INDENT).append("void testReturnsResult() {\n");
         sb.append(INDENT).append(INDENT).append(INDENT)
                 .append(typeName).append(" result = ").append(call).append(";\n");
@@ -343,7 +343,7 @@ final class ClassDataCoder {
 
         sb.append(INDENT).append(INDENT).append("@Test\n");
         sb.append(INDENT).append(INDENT)
-                .append("@DisplayName(\"").append(method.name()).append(" returns consistent result\")\n");
+                .append("@DisplayName(\"").append(method.name()).append(" returns the same value on repeat calls\")\n");
         sb.append(INDENT).append(INDENT).append("void testReturnsConsistentResult() {\n");
         sb.append(INDENT).append(INDENT).append(INDENT)
                 .append("assertThat(").append(call).append(").isEqualTo(").append(call).append(");\n");

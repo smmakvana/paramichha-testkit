@@ -90,23 +90,23 @@ class ConstructorConstraintRegressionTest {
 
         @Test
         void positiveRejectsZeroAndNegativeValues() {
-            assertThat(values("invalidXes")).contains(0).allSatisfy(v -> assertThat(v).isLessThanOrEqualTo(0))
+            assertThat(values("invalidXValues")).contains(0).allSatisfy(v -> assertThat(v).isLessThanOrEqualTo(0))
                     .anySatisfy(v -> assertThat(v).isNegative());
-            assertThat(values("validXes")).isNotEmpty().allSatisfy(v -> assertThat(v).isPositive());
+            assertThat(values("validXValues")).isNotEmpty().allSatisfy(v -> assertThat(v).isPositive());
         }
 
         @Test
         void negativeRejectsZeroAndPositiveValues() {
-            assertThat(values("invalidYs")).contains(0).allSatisfy(v -> assertThat(v).isGreaterThanOrEqualTo(0))
+            assertThat(values("invalidYValues")).contains(0).allSatisfy(v -> assertThat(v).isGreaterThanOrEqualTo(0))
                     .anySatisfy(v -> assertThat(v).isPositive());
-            assertThat(values("validYs")).isNotEmpty().allSatisfy(v -> assertThat(v).isNegative());
+            assertThat(values("validYValues")).isNotEmpty().allSatisfy(v -> assertThat(v).isNegative());
         }
 
         @Test
         void minOneMaxFiveGivesOnlyOneToFiveAsValid() {
-            assertThat(values("validZes")).isNotEmpty().allSatisfy(v -> assertThat(v).isBetween(1, 5))
+            assertThat(values("validZValues")).isNotEmpty().allSatisfy(v -> assertThat(v).isBetween(1, 5))
                     .contains(1, 5);
-            assertThat(values("invalidZes")).contains(0, 6).noneSatisfy(v -> assertThat(v).isBetween(1, 5));
+            assertThat(values("invalidZValues")).contains(0, 6).noneSatisfy(v -> assertThat(v).isBetween(1, 5));
         }
 
         @Test
@@ -212,9 +212,9 @@ class ConstructorConstraintRegressionTest {
             Path v2 = compileCircle("gen.edit", circleSource("gen.edit").replace("@Max(5)", "@Max(9)"), true);
             String after = generateFor(v2, "gen.edit.Circle");
 
-            assertThat(before).contains("Arguments.of(\"invalid z 2\", 6)").doesNotContain("\"valid z 9\"");
-            assertThat(after).contains("Arguments.of(\"invalid z 2\", 10)")
-                    .containsPattern("Arguments\\.of\\(\"valid z \\d+\", 9\\)");
+            assertThat(before).contains("Arguments.of(\"z 6 (invalid)\", 6)").doesNotContain("\"z 9 (valid)\"");
+            assertThat(after).contains("Arguments.of(\"z 10 (invalid)\", 10)")
+                    .containsPattern("Arguments\\.of\\(\"z 9 \\(valid\\)\", 9\\)");
             // compiled with -parameters: the violation path uses the real parameter name
             assertThat(after).contains(".endsWith(\".z\")");
         }

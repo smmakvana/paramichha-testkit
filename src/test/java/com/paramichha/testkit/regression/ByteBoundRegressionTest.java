@@ -20,7 +20,7 @@ class ByteBoundRegressionTest {
     void everyValidValueIsWithinTheConstraint() {
         String src = TestKit.of(ByteBound.class).withSeed(1).generateTest().asString();
 
-        Matcher m = Pattern.compile("Arguments\\.of\\(\"valid level \\d+\", \\(byte\\) (-?\\d+)\\)").matcher(src);
+        Matcher m = Pattern.compile("Arguments\\.of\\(\"level -?\\d+ \\(valid\\)\", \\(byte\\) (-?\\d+)\\)").matcher(src);
         int count = 0;
         while (m.find()) {
             count++;
