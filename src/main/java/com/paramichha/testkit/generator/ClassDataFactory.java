@@ -3,6 +3,7 @@ package com.paramichha.testkit.generator;
 import com.paramichha.datafactory.DataFactory;
 import com.paramichha.testkit.ReflectionClassReader;
 import com.paramichha.testkit.TestCodeData;
+import com.paramichha.testkit.TestKitException;
 import com.paramichha.testkit.TestKitTemplate;
 import com.paramichha.testkit.model.*;
 
@@ -44,10 +45,10 @@ final class ClassDataFactory {
         try { members = buildMembers(classInfo, fixture, iw, validParts); }
         catch (Exception e) { members = new ArrayList<>(); }
 
-        List<MethodData> methods;
-        try { methods = buildMethods(classInfo, template, seed,
-                payload.projectType().hasValidator(), visiting); }
-        catch (Exception e) { methods = new ArrayList<>(); }
+        // Not caught: a method that cannot be built fails the class with its name and reason,
+        // rather than disappearing from the tests without a word.
+        List<MethodData> methods = buildMethods(classInfo, template, seed,
+                payload.projectType().hasValidator(), visiting);
 
         boolean isConstrained = false;
         try { isConstrained = classInfo.fields().stream().anyMatch(FieldInfo::isConstrained); }
@@ -129,19 +130,44 @@ final class ClassDataFactory {
     private static List<MethodData> buildMethods(ClassInfo classInfo, TestKitTemplate template,
                                                  long seed, boolean hasJakarta,
                                                  Set<Class<?>> visiting) {
-        List<MethodData> result    = new ArrayList<>();
-        String           className = classInfo.simpleName();
+        List<MethodData> result     = new ArrayList<>();
+        List<String>     failed     = new ArrayList<>();
+        String           className  = classInfo.simpleName();
+        Set<String>      fieldNames = classInfo.fields().stream().map(FieldInfo::name).collect(Collectors.toSet());
         for (MethodInfo method : classInfo.methods()) {
+            boolean accessor = isAccessor(method, fieldNames);
+            if (template.foldAccessors && accessor) continue;
             try {
-                result.add(buildMethodData(method, className, template, seed, hasJakarta, visiting));
-            } catch (Exception ignored) {}
+                result.add(buildMethodData(method, className, template, seed, hasJakarta, visiting, accessor));
+            } catch (Exception e) {
+                failed.add(method.name() + " (" + e.getMessage() + ")");
+            }
+        }
+        if (!failed.isEmpty()) {
+            throw new TestKitException("could not build tests for method(s): " + String.join(", ", failed));
         }
         return List.copyOf(result);
     }
 
+    /**
+     * A getter or setter for a field of the class ({@code getR}, {@code isR}, {@code setR} for field {@code r}).
+     * Its value is checked by the field's own test; with folding on, it gets no method test at all.
+     */
+    static boolean isAccessor(MethodInfo method, Set<String> fieldNames) {
+        String name = method.name();
+        int    args = method.parameters().size();
+        String prop = null;
+        if (args == 0 && name.startsWith("get") && name.length() > 3) prop = name.substring(3);
+        if (args == 0 && name.startsWith("is")  && name.length() > 2) prop = name.substring(2);
+        if (args == 1 && name.startsWith("set") && name.length() > 3) prop = name.substring(3);
+        if (prop == null) return false;
+        return fieldNames.contains(Character.toLowerCase(prop.charAt(0)) + prop.substring(1));
+    }
+
     private static MethodData buildMethodData(MethodInfo method, String className,
                                               TestKitTemplate template, long seed,
-                                              boolean hasJakarta, Set<Class<?>> visiting) {
+                                              boolean hasJakarta, Set<Class<?>> visiting,
+                                              boolean accessor) {
         String methodName      = method.name();
         String nestedClassName = template.resolveMethod(template.methodClassName, className, methodName);
         String displayName     = template.resolveMethod(template.methodDisplay, className, methodName);
@@ -150,6 +176,12 @@ final class ClassDataFactory {
 
         List<ParamData> params     = buildParams(method.parameters(), seed, methodName, visiting);
         ReturnData      returnData = buildReturnData(method.returnType(), methodName, hasJakarta);
+        if (accessor && !returnData.isVoid()) {
+            // The value of an accessor is checked by the field's test. Here: the call returns something.
+            // No TODO, so accessors don't fail the build until someone writes an expectation.
+            returnData = new DefaultReturnData(returnData.type(), false, returnData.isConstrained(),
+                    returnData.needsWrapperRecord(), "assertThat(result).isNotNull();", returnData.wrapperRecord());
+        }
 
         return new DefaultMethodData(
                 methodName, method.kind(), params, returnData,

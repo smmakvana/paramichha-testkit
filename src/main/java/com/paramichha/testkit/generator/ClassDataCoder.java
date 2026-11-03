@@ -89,7 +89,9 @@ final class ClassDataCoder {
         String instanceName = config.instanceName();
 
         sb.append(INDENT).append("@Nested\n");
-        sb.append(INDENT).append("@DisplayName(\"Creation\")\n");
+        sb.append(INDENT).append("@DisplayName(\"")
+                .append(com.paramichha.testkit.NameFormat.display(config.template(), config.sourceClassName(), "Creation", ""))
+                .append("\")\n");
         sb.append(INDENT).append("class ").append(nestedName).append(" {\n\n");
 
         // testCanBeCreated
@@ -155,7 +157,9 @@ final class ClassDataCoder {
                 .filter(LiteralConverter::canSerialize).collect(Collectors.toList());
 
         sb.append(INDENT).append("@Nested\n");
-        sb.append(INDENT).append("@DisplayName(\"").append(name).append("\")\n");
+        sb.append(INDENT).append("@DisplayName(\"")
+                .append(com.paramichha.testkit.NameFormat.display(config.template(), config.sourceClassName(), "Field", name))
+                .append("\")\n");
         sb.append(INDENT).append("class ").append(nestedName).append(" {\n\n");
 
         // Accepts test

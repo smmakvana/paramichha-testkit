@@ -60,8 +60,8 @@ final class ClassDataTransformer {
         if (!config.isUtilityClass()) {
             for (MemberData member : data.members()) {
                 ClassCoderInfo field = FieldTransformer.transform(member, data, config);
-                String splitName = config.classAffix().apply(config.sourceClassName() + "Field"
-                        + com.paramichha.utils.Texts.capitalize(member.name()));
+                String splitName = com.paramichha.testkit.NameFormat.splitFileName(
+                        config.template(), config.sourceClassName(), "Field", member.name());
                 result.add(promoteToTopLevel(withName(field, splitName), data, config));
             }
         }
@@ -69,8 +69,8 @@ final class ClassDataTransformer {
         // Methods → GodRecordMethod<MethodName>Test
         for (MethodData method : data.methods()) {
             ClassCoderInfo methodClass = MethodTransformer.transform(method, config);
-            String splitName = config.classAffix().apply(config.sourceClassName() + "Method"
-                    + com.paramichha.utils.Texts.capitalize(method.name()));
+            String splitName = com.paramichha.testkit.NameFormat.splitFileName(
+                    config.template(), config.sourceClassName(), "Method", method.name());
             result.add(promoteToTopLevel(withName(methodClass, splitName), data, config));
         }
 

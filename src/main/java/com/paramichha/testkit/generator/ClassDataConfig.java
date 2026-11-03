@@ -22,12 +22,15 @@ final class ClassDataConfig {
     private final String       validatorSetup;    // e.g. "setUpValidator"
     private final Affix        classAffix;        // class names: prefix + name + suffix
     private final Affix        methodAffix;       // test method names: prefix + name + suffix
+    private final com.paramichha.testkit.TestKitTemplate template; // split file and tree-label patterns
 
     ClassDataConfig(String sourceClassName, String targetPackage, String instanceName,
                     String header, List<String> imports,
                     boolean hasJakarta, boolean isUtilityClass, boolean isRecord,
                     String validatorField, String validatorSetup,
-                    Affix classAffix, Affix methodAffix) {
+                    Affix classAffix, Affix methodAffix,
+                    com.paramichha.testkit.TestKitTemplate template) {
+        this.template        = template;
         this.sourceClassName = sourceClassName;
         this.targetPackage   = targetPackage;
         this.instanceName    = instanceName;
@@ -54,4 +57,5 @@ final class ClassDataConfig {
     String       validatorSetup()  { return validatorSetup;  }
     Affix        classAffix()      { return classAffix;      }
     Affix        methodAffix()     { return methodAffix;     }
+    com.paramichha.testkit.TestKitTemplate template() { return template; }
 }
