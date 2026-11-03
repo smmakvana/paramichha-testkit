@@ -2,7 +2,7 @@ package com.paramichha.testkit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.paramichha.testkit.fixture.coverage.Shape;
+import com.paramichha.testkit.fixture.shapes.Shape;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
