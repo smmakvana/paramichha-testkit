@@ -131,14 +131,14 @@ public final class TestNames {
     // Data source method names
     // =========================================================================
 
-    /** "radius" → "validRadii" / "validRoles" etc */
+    /** "radius" → "validRadiusValues" */
     public static String validSource(String memberName) {
-        return "valid" + JavaNames.className(pluralize(memberName));
+        return "valid" + JavaNames.className(memberName) + "Values";
     }
 
-    /** "radius" → "invalidRadii" / "invalidRoles" etc */
+    /** "radius" → "invalidRadiusValues" */
     public static String invalidSource(String memberName) {
-        return "invalid" + JavaNames.className(pluralize(memberName));
+        return "invalid" + JavaNames.className(memberName) + "Values";
     }
 
     /** "resize" → "validResizeInputs" */

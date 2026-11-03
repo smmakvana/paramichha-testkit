@@ -28,7 +28,7 @@ final class QueryTransformer {
 
         result.add(MethodCoderInfo.of(
                 List.of("@Test",
-                        "@DisplayName(\"" + method.name() + " returns a result\")"),
+                        "@DisplayName(\"" + method.name() + " returns a value\")"),
                 "void",
                 "testReturnsResult",
                 returnsBody));
@@ -36,7 +36,7 @@ final class QueryTransformer {
         // testReturnsConsistentResult
         result.add(MethodCoderInfo.of(
                 List.of("@Test",
-                        "@DisplayName(\"" + method.name() + " returns consistent result\")"),
+                        "@DisplayName(\"" + method.name() + " returns the same value on repeat calls\")"),
                 "void",
                 "testReturnsConsistentResult",
                 "assertThat(" + call + ").isEqualTo(" + call + ");"));
