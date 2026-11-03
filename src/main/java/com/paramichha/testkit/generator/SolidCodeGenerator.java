@@ -80,8 +80,11 @@ public final class SolidCodeGenerator implements CodeGenerator {
 
     private ClassDataConfig buildConfig(TestCodeData payload) {
         ClassInfo classInfo    = payload.classInfo();
+        // A validator is needed when a field or a method parameter carries a constraint.
         boolean   hasJakarta   = payload.projectType().hasValidator()
-                && classInfo.fields().stream().anyMatch(f -> !f.validations().isEmpty());
+                && (classInfo.fields().stream().anyMatch(f -> !f.validations().isEmpty())
+                    || classInfo.methods().stream().anyMatch(m ->
+                            m.parameters().stream().anyMatch(p -> !p.validations().isEmpty())));
         boolean   isRecord     = classInfo.constructorStyle() == ConstructorStyle.RECORD;
         String    instanceName = TestNames.toVariable(classInfo.simpleName());
 

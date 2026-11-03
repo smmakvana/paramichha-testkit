@@ -32,10 +32,22 @@ class AllPublicMethodsTest {
         assertThat(names).contains("ShapeMethodGetAreaTest", "ShapeMethodGetDiameterTest", "ShapeMethodAreaTest");
     }
 
-    @Test
-    void setterWithConstraintIsNotDroppedAndRejectsWhenItAccepts() {
-        String src = TestKit.of(Shape.class).generateTests().files().stream()
+    private static String setterSource(ProjectType type) {
+        return TestKit.of(Shape.class).withProjectType(type).generateTests().files().stream()
                 .filter(f -> f.className().equals("ShapeMethodSetRadiusTest")).findFirst().orElseThrow().source();
-        assertThat(src).contains("setRadius");
+    }
+
+    @Test
+    void jakartaSetterRejectsAreCheckedByTheValidator() {
+        String src = setterSource(ProjectType.JAKARTA);
+        assertThat(src).contains("validateParameters")
+                .doesNotContain("isInstanceOf(Exception.class)");
+    }
+
+    @Test
+    void coreSetterRejectsExpectAnException() {
+        String src = setterSource(ProjectType.PLAIN_JAVA);
+        assertThat(src).contains("isInstanceOf(Exception.class)")
+                .doesNotContain("validateParameters");
     }
 }

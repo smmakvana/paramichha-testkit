@@ -44,9 +44,21 @@ final class MutatorTransformer {
             String rejectsBody = method.params().stream()
                     .flatMap(p -> p.enforcementHints().stream())
                     .collect(Collectors.joining("\n"));
-            if (!rejectsBody.isBlank()) rejectsBody += "\n";
-            rejectsBody += "assertThatThrownBy(() -> " + call + ")\n"
-                    + "    .isInstanceOf(Exception.class);";
+            if (config.hasJakarta()) {
+                // Jakarta: the validator reports the violation on the parameters. The method is not
+                // required to throw. The method is found by name; overloads are not supported here.
+                rejectsBody = "var violations = " + config.validatorField()
+                        + ".forExecutables().validateParameters(\n"
+                        + "    " + config.instanceName() + ", java.util.Arrays.stream("
+                        + config.sourceClassName() + ".class.getMethods())\n"
+                        + "        .filter(m -> m.getName().equals(\"" + method.name() + "\")).findFirst().orElseThrow(),\n"
+                        + "    new Object[]{" + paramCall + "});\n"
+                        + "assertThat(violations).isNotEmpty();";
+            } else {
+                if (!rejectsBody.isBlank()) rejectsBody += "\n";
+                rejectsBody += "assertThatThrownBy(() -> " + call + ")\n"
+                        + "    .isInstanceOf(Exception.class);";
+            }
 
             result.add(new MethodCoderInfo(
                     List.of("@ParameterizedTest(name = \"{0}\")",
