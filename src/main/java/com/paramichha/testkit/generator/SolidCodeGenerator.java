@@ -103,7 +103,8 @@ public final class SolidCodeGenerator implements CodeGenerator {
                 payload.template().validatorField,
                 payload.template().validatorSetup,
                 payload.template().classAffix(),
-                payload.template().methodAffix());
+                payload.template().methodAffix(),
+                payload.template());
     }
 
     private ImportCollector buildImports(ClassInfo classInfo, TestCodeData payload) {

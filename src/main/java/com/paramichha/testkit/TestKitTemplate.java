@@ -27,6 +27,21 @@ public final class TestKitTemplate {
     public String methodPrefix = "";
     public String methodSuffix = "";
 
+    // ── Split files and test-tree names ───────────────────────────────────
+    /**
+     * File name of each split file, without {@code .java}. Tokens {@code {Class}}, {@code {Kind}},
+     * {@code {Name}}, {@code {Suffix}} (see {@link NameFormat}). Default: {@code CircleFieldRadiusTest}.
+     */
+    public String splitFilePattern = "{Class}{Kind}{Name}{Suffix}";
+    /** Text shown in the test tree for split and nested classes. Tokens {@code {Class}}, {@code {Kind}}, {@code {Name}}. */
+    public String displayPattern = "{Class} {Kind} {Name}";
+    /** Text before every tree label, e.g. {@code [unit]} → {@code [unit] Circle Field r}. Empty by default. */
+    public String displayPrefix = "";
+    /** Append the test suffix to tree labels: {@code Circle Field r (Test)}. Off by default. */
+    public boolean showSuffixInDisplay = false;
+    /** Use the arrow style for tree labels: {@code Circle › field r}. Off by default. */
+    public boolean nestedStyle = false;
+
     /** The class-name affix, used for every generated test class. */
     public Affix classAffix() { return new Affix(classPrefix, testSuffix); }
 
@@ -121,6 +136,57 @@ public final class TestKitTemplate {
             return this;
         }
 
+        /**
+         * Split file name pattern. Allowed tokens: {@code {Class}}, {@code {Kind}}, {@code {Name}}, {@code {Suffix}}.
+         * The result must be a valid Java class name, so only letters, digits and {@code _} may appear outside tokens.
+         */
+        public Builder splitFilePattern(String pattern) {
+            checkTokens("splitFilePattern", pattern, "Class", "Kind", "Name", "Suffix");
+            String literal = pattern.replaceAll("\\{(Class|Kind|Name|Suffix)\\}", "");
+            if (!literal.matches("[A-Za-z0-9_]*")) {
+                throw new IllegalArgumentException("splitFilePattern may only add letters, digits and _ outside tokens: " + pattern);
+            }
+            if (!pattern.contains("{Kind}")) {
+                throw new IllegalArgumentException("splitFilePattern must contain {Kind}, or split files would share names: " + pattern);
+            }
+            template.splitFilePattern = pattern;
+            return this;
+        }
+
+        /** Tree label pattern. Allowed tokens: {@code {Class}}, {@code {Kind}}, {@code {Name}}. */
+        public Builder displayPattern(String pattern) {
+            checkTokens("displayPattern", pattern, "Class", "Kind", "Name");
+            template.displayPattern = pattern;
+            return this;
+        }
+
+        /** Text before every tree label. Empty is allowed. */
+        public Builder displayPrefix(String prefix) {
+            template.displayPrefix = prefix == null ? "" : prefix;
+            return this;
+        }
+
+        public Builder showSuffixInDisplay(boolean show) {
+            template.showSuffixInDisplay = show;
+            return this;
+        }
+
+        public Builder nestedStyle(boolean arrow) {
+            template.nestedStyle = arrow;
+            return this;
+        }
+
+        private static void checkTokens(String what, String pattern, String... allowed) {
+            if (pattern == null) throw new IllegalArgumentException(what + " must not be null");
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\{([A-Za-z]+)\\}").matcher(pattern);
+            while (m.find()) {
+                String token = m.group(1);
+                if (!java.util.Arrays.asList(allowed).contains(token)) {
+                    throw new IllegalArgumentException(what + " has unknown token {" + token + "}: " + pattern);
+                }
+            }
+        }
+
         public TestKitTemplate build() {
             TestKitTemplate copy = new TestKitTemplate();
             copy.testSuffix = template.testSuffix;
@@ -128,6 +194,11 @@ public final class TestKitTemplate {
             copy.methodPrefix = template.methodPrefix;
             copy.methodSuffix = template.methodSuffix;
             copy.validatorField = template.validatorField;
+            copy.splitFilePattern = template.splitFilePattern;
+            copy.displayPattern = template.displayPattern;
+            copy.displayPrefix = template.displayPrefix;
+            copy.showSuffixInDisplay = template.showSuffixInDisplay;
+            copy.nestedStyle = template.nestedStyle;
             return copy;
         }
     }

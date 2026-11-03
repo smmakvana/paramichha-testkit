@@ -14,7 +14,7 @@ final class CreationTransformer {
         List<MethodCoderInfo> methods = new ArrayList<>();
         String instanceName  = config.instanceName();
         String className     = config.sourceClassName();
-        String displayName   = className + " Creation";
+        String displayName   = com.paramichha.testkit.NameFormat.display(config.template(), className, "Creation", "");
 
         // testCanBeCreated
         methods.add(MethodCoderInfo.of(
@@ -73,7 +73,7 @@ final class CreationTransformer {
                         "@Tag(\"creation\")",
                         "@TestMethodOrder(MethodOrderer.MethodName.class)"),
                 List.of(),
-                config.classAffix().apply(className + "Creation"),
+                com.paramichha.testkit.NameFormat.splitFileName(config.template(), className, "Creation", ""),
                 List.of(),
                 List.copyOf(methods),
                 List.of());

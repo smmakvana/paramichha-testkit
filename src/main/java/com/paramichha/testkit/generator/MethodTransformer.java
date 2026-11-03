@@ -11,7 +11,8 @@ final class MethodTransformer {
 
     static ClassCoderInfo transform(MethodData method, ClassDataConfig config) {
         String className   = config.sourceClassName();
-        String displayName = className + " Method " + method.name() + "()";
+        String displayName = com.paramichha.testkit.NameFormat.display(
+                config.template(), className, "Method", method.name() + "()");
 
         List<MethodCoderInfo> methods = switch (method.kind()) {
             case COMMAND     -> CommandTransformer.transform(method, config);
