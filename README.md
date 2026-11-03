@@ -19,7 +19,7 @@ Built on [DataFactory](https://github.com/smmakvana/paramichha-datafactory), whi
 </dependency>
 ```
 
-Requires Java 21. The **generated** tests need JUnit 5 (`junit-jupiter`, including `junit-jupiter-params`),
+Requires Java 21 or later. The **generated** tests need JUnit 5 (`junit-jupiter`, including `junit-jupiter-params`),
 AssertJ and a Jakarta Validation implementation (e.g. Hibernate Validator) on the test classpath.
 
 ---
