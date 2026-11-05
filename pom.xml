@@ -27,6 +27,9 @@
     <properties>
         <datafactory.version>0.2.0-SNAPSHOT</datafactory.version>
         <datafactory-catalog.version>0.2.0-SNAPSHOT</datafactory-catalog.version>
+        <!-- Line-coverage floor checked by `mvn verify` (rule in paramichha-dev). Set just below
+             current coverage (66.6%); raise it as tests are added, never lower it. -->
+        <jacoco.line.minimum>0.66</jacoco.line.minimum>
     </properties>
 
     <!-- 5. SCM -->
@@ -61,6 +64,7 @@
         <dependency>
             <groupId>com.google.googlejavaformat</groupId>
             <artifactId>google-java-format</artifactId>
+            <!-- Kept: paramichha-dev still manages 1.19.2; drop this pin once the parent moves to 1.22.0 -->
             <version>1.22.0</version>
         </dependency>
         <dependency>
