@@ -101,6 +101,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
                 hasJakarta,
                 classInfo.utilityClass(),
                 isRecord,
+                classInfo.constructorStyle() == ConstructorStyle.SETTER,
                 payload.template().validatorField,
                 payload.template().validatorSetup,
                 payload.template().classAffix(),
