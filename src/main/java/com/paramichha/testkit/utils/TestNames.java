@@ -219,4 +219,17 @@ public final class TestNames {
     public static String returnsConsistentDisplay(String methodName) {
         return methodName + " returns consistent result";
     }
+
+    /**
+     * The name of the first parameter of a parameterized test, which only carries the case label
+     * shown by {@code @ParameterizedTest(name = "{0}")}: {@code description}, or another name if a
+     * test parameter is already called that (a field or method parameter named "description").
+     */
+    public static String labelParameter(java.util.Collection<String> otherParameters) {
+        String name = "description";
+        if (!otherParameters.contains(name)) return name;
+        name = "caseDescription";
+        for (int i = 2; otherParameters.contains(name); i++) name = "caseDescription" + i;
+        return name;
+    }
 }

@@ -81,7 +81,9 @@ final class ClassDataFactory {
                 parts.add(null);
             }
         }
-        return List.copyOf(parts);
+        // Not List.copyOf: it rejects nulls, and one field without a valid value (null) used to
+        // throw here and wipe the baseline of every field.
+        return java.util.Collections.unmodifiableList(parts);
     }
 
     // ── Members ───────────────────────────────────────────────────────────

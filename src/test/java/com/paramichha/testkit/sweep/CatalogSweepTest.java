@@ -48,12 +48,7 @@ class CatalogSweepTest {
 
     /** Why a catalog class is known to fail today. Each one is a TestKit bug to fix. */
     enum Gap {
-        QUEUE("Queue field: the generated value is a String literal, not a Queue"),
-        SET("Set field: the generated Set literal does not compile (type inference), or a valid Set is rejected"),
-        NAME_CLASH("a field named 'description' clashes with the generated test parameter 'description'"),
         GETTER("Optional field: the getter check compares against the wrong value"),
-        MAP_VALID("Map field: the valid baseline map is empty or null, so @NotEmpty fails and the getters return null"),
-        VALID_MAP_OPTIONAL("record with an Optional component: the valid baseline object fails validation"),
         IMPORT("a nested type used by a field is not imported"),
         NESTED_SETTER("JavaBeans class with a @Valid nested object: a method test expects the setter to throw for an"
                 + " invalid nested value, but setters do not validate"),
@@ -73,27 +68,10 @@ class CatalogSweepTest {
      * class not on it must pass.
      */
     static final Map<String, Gap> KNOWN_FAILING = Map.ofEntries(
-            Map.entry("collection.map.MapPojo", Gap.MAP_VALID),
-            Map.entry("collection.queue.QueuePojo", Gap.QUEUE),
-            Map.entry("collection.set.SetPojo", Gap.SET),
             Map.entry("nested.NestedPojo", Gap.NESTED_SETTER),
             Map.entry("optional.OptionalPojo", Gap.GETTER),
-            Map.entry("text.TextPojo", Gap.NAME_CLASH),
-            Map.entry("collection.map.MapAllArgs", Gap.MAP_VALID),
-            Map.entry("collection.map.MapLombok", Gap.MAP_VALID),
-            Map.entry("collection.map.MapRecord", Gap.MAP_VALID),
-            Map.entry("collection.queue.QueueAllArgs", Gap.QUEUE),
-            Map.entry("collection.queue.QueueLombok", Gap.QUEUE),
-            Map.entry("collection.queue.QueueRecord", Gap.QUEUE),
-            Map.entry("collection.set.SetAllArgs", Gap.SET),
-            Map.entry("collection.set.SetLombok", Gap.SET),
-            Map.entry("collection.set.SetRecord", Gap.SET),
-            Map.entry("text.TextAllArgs", Gap.NAME_CLASH),
-            Map.entry("text.TextLombok", Gap.NAME_CLASH),
-            Map.entry("text.TextRecord", Gap.NAME_CLASH),
             Map.entry("optional.OptionalAllArgs", Gap.GETTER),
             Map.entry("optional.OptionalLombok", Gap.GETTER),
-            Map.entry("optional.OptionalRecord", Gap.VALID_MAP_OPTIONAL),
             Map.entry("realworld.trading.TradeWithLegs", Gap.IMPORT),
             Map.entry("enumtype.OrderStatus", Gap.ENUM),
             Map.entry("realworld.trading.TradeSide", Gap.ENUM),

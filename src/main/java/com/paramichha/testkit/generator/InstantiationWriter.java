@@ -44,10 +44,11 @@ final class InstantiationWriter {
                 return java.util.Arrays.asList((Object) null);
             }
 
-            // List<T> has no shaper in FieldBuilder — generate one element instead
-            if (rawType == java.util.List.class || rawType == java.util.Collection.class) {
-                Object oneElement = buildOneValidListElement(field);
-                return oneElement != null ? List.of(oneElement) : List.of();
+            // Containers: one valid element of the declared type argument(s), e.g. List<Integer>,
+            // Map<String, Integer>. DataFactory's field-level API only sees the raw type.
+            if (java.util.Collection.class.isAssignableFrom(rawType) || java.util.Map.class.isAssignableFrom(rawType)) {
+                Object container = buildOneValidContainer(field);
+                return container != null ? List.of(container) : List.of();
             }
 
             // Domain type (not a java/jakarta type): use DataFactory.valid() directly
@@ -84,25 +85,52 @@ final class InstantiationWriter {
      * Uses DataFactory to generate one valid element of the list's element type.
      */
     @SuppressWarnings("unchecked")
-    private Object buildOneValidListElement(FieldInfo field) {
+    /**
+     * A container of the field's type holding one valid element (or entry) of its declared type
+     * arguments, or null when no element can be produced.
+     */
+    private Object buildOneValidContainer(FieldInfo field) {
         try {
-            // Extract element type from FieldMeta.genericType (e.g. List<String> → String)
-            Class<?> elemType = String.class;
-            if (field.genericType() instanceof java.lang.reflect.ParameterizedType pt) {
-                java.lang.reflect.Type arg = pt.getActualTypeArguments()[0];
-                if (arg instanceof Class<?> c) elemType = c;
+            Class<?> raw = field.rawType();
+            if (java.util.Map.class.isAssignableFrom(raw)) {
+                Object key = oneElement(field, typeArgument(field, 0), ".key");
+                Object value = oneElement(field, typeArgument(field, 1), ".value");
+                return key == null || value == null ? null : java.util.Map.of(key, value);
             }
-            // Domain type — use DefaultDataBuilder to create a valid instance
-            if (!elemType.getPackageName().startsWith("java.")) {
-                var elem = DataFactory.of(elemType).seed(seed).valid();
-                return elem.isSuccess() ? java.util.List.of(elem.get()) : java.util.List.of();
-            }
-            // Java type — use FieldBuilder
-            Object elem = DataFactory.field(field.name(), (Class<Object>) elemType, java.util.List.of()).seed(seed).valid();
-            return elem != null ? java.util.List.of(elem) : java.util.List.of("x");
+            Object element = oneElement(field, typeArgument(field, 0), "");
+            if (element == null) return null;
+            if (java.util.Set.class.isAssignableFrom(raw)) return java.util.Set.of(element);
+            if (java.util.Queue.class.isAssignableFrom(raw)) return new java.util.ArrayDeque<>(List.of(element));
+            return List.of(element);
         } catch (Exception e) {
-            return java.util.List.of();
+            return null;
         }
+    }
+
+    /** The class of the field's {@code index}-th type argument, or String when it is unknown. */
+    private static Class<?> typeArgument(FieldInfo field, int index) {
+        if (field.genericType() instanceof java.lang.reflect.ParameterizedType pt
+                && pt.getActualTypeArguments().length > index) {
+            java.lang.reflect.Type arg = pt.getActualTypeArguments()[index];
+            if (arg instanceof Class<?> c) return c;
+            if (arg instanceof java.lang.reflect.ParameterizedType p && p.getRawType() instanceof Class<?> c) return c;
+        }
+        return String.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object oneElement(FieldInfo field, Class<?> type, String suffix) {
+        // Map<String, Object>, List<?>: any value is valid for Object, so use a String.
+        if (type == Object.class) type = String.class;
+        if (type.isEnum()) {
+            Object[] constants = type.getEnumConstants();
+            return constants.length == 0 ? null : constants[0];
+        }
+        if (!type.getPackageName().startsWith("java.")) {
+            var elem = DataFactory.of(type).seed(seed).valid();
+            return elem.isSuccess() ? elem.get() : null;
+        }
+        return DataFactory.field(field.name() + suffix, (Class<Object>) type, List.of()).seed(seed).valid();
     }
 
     /**

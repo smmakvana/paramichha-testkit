@@ -88,7 +88,8 @@ final class MutatorTransformer {
 
     private static List<ParameterCoderInfo> buildParams(List<ParamData> params) {
         List<ParameterCoderInfo> result = new ArrayList<>();
-        result.add(ParameterCoderInfo.of("String", "description"));
+        result.add(ParameterCoderInfo.of("String", com.paramichha.testkit.utils.TestNames.labelParameter(
+                params.stream().map(ParamData::name).toList())));
         params.forEach(p -> result.add(ParameterTransformer.transform(p)));
         return List.copyOf(result);
     }
