@@ -18,6 +18,7 @@ final class ClassDataConfig {
     private final boolean      hasJakarta;
     private final boolean      isUtilityClass;
     private final boolean      isRecord;
+    private final boolean      setterStyle;       // JavaBeans: no-args constructor + setters
     private final String       validatorField;    // e.g. "validator"
     private final String       validatorSetup;    // e.g. "setUpValidator"
     private final Affix        classAffix;        // class names: prefix + name + suffix
@@ -26,7 +27,7 @@ final class ClassDataConfig {
 
     ClassDataConfig(String sourceClassName, String targetPackage, String instanceName,
                     String header, List<String> imports,
-                    boolean hasJakarta, boolean isUtilityClass, boolean isRecord,
+                    boolean hasJakarta, boolean isUtilityClass, boolean isRecord, boolean setterStyle,
                     String validatorField, String validatorSetup,
                     Affix classAffix, Affix methodAffix,
                     com.paramichha.testkit.TestKitTemplate template) {
@@ -39,6 +40,7 @@ final class ClassDataConfig {
         this.hasJakarta      = hasJakarta;
         this.isUtilityClass  = isUtilityClass;
         this.isRecord        = isRecord;
+        this.setterStyle     = setterStyle;
         this.validatorField  = validatorField;
         this.validatorSetup  = validatorSetup;
         this.classAffix      = classAffix;
@@ -53,6 +55,7 @@ final class ClassDataConfig {
     boolean      hasJakarta()      { return hasJakarta;      }
     boolean      isUtilityClass()  { return isUtilityClass;  }
     boolean      isRecord()        { return isRecord;        }
+    boolean      isSetterStyle()   { return setterStyle;     }
     String       validatorField()  { return validatorField;  }
     String       validatorSetup()  { return validatorSetup;  }
     Affix        classAffix()      { return classAffix;      }

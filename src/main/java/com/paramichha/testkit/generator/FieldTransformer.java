@@ -140,25 +140,7 @@ final class FieldTransformer {
 
     private static String buildConstructorWithVar(String className, ClassData classData,
                                                   MemberData target, ClassDataConfig config) {
-        List<Object>     parts   = classData.validValues();
-        List<MemberData> members = classData.members();
-        StringBuilder    sb      = new StringBuilder("new ").append(className).append("(\n");
-        for (int i = 0; i < members.size(); i++) {
-            if (i > 0) sb.append(",\n");
-            MemberData m = members.get(i);
-            if (m.name().equals(target.name())) {
-                sb.append("    ").append(m.name());
-            } else {
-                Object val = i < parts.size() ? parts.get(i) : null;
-                String lit = val == null
-                        ? "(" + m.type().className() + ") null"
-                        : LiteralConverter.canSerialize(val) ? LiteralConverter.toLiteral(val)
-                        : "(" + m.type().className() + ") null";
-                sb.append("    ").append(lit);
-            }
-        }
-        sb.append(")");
-        return sb.toString();
+        return CreationExpressions.withVariable(classData, config, target);
     }
 
     /**

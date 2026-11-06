@@ -89,7 +89,7 @@ final class ClassDataTransformer {
 
         // Prepend validator field + instance field + @BeforeAll
         List<FieldCoderInfo>  fields  = buildStandaloneFields(nested, data, config);
-        List<MethodCoderInfo> methods = buildStandaloneMethods(nested, config);
+        List<MethodCoderInfo> methods = buildStandaloneMethods(nested, data, config);
 
         return new ClassCoderInfo(
                 config.targetPackage(),
@@ -134,6 +134,7 @@ final class ClassDataTransformer {
     }
 
     private static List<MethodCoderInfo> buildStandaloneMethods(ClassCoderInfo nested,
+                                                                ClassData data,
                                                                 ClassDataConfig config) {
         List<MethodCoderInfo> methods = new ArrayList<>();
 
@@ -145,6 +146,7 @@ final class ClassDataTransformer {
                             + " = Validation.buildDefaultValidatorFactory().getValidator();"));
         }
 
+        CreationExpressions.factoryMethod(data, config).ifPresent(methods::add);
         methods.addAll(nested.methods());
         return List.copyOf(methods);
     }
@@ -173,6 +175,7 @@ final class ClassDataTransformer {
                     config.sourceClassName(), config.instanceName(),
                     buildConstructorCall(data, config)));
         }
+        CreationExpressions.factoryMethod(data, config).ifPresent(methods::add);
 
         return new ClassCoderInfo(
                 config.targetPackage(),
@@ -207,20 +210,6 @@ final class ClassDataTransformer {
     // ── Constructor call ──────────────────────────────────────────────────
 
     private static String buildConstructorCall(ClassData data, ClassDataConfig config) {
-        List<Object>     parts   = data.validValues();
-        List<MemberData> members = data.members();
-        StringBuilder    sb      = new StringBuilder("new ")
-                .append(config.sourceClassName()).append("(\n");
-        for (int i = 0; i < members.size(); i++) {
-            if (i > 0) sb.append(",\n");
-            Object val = i < parts.size() ? parts.get(i) : null;
-            String lit = val == null
-                    ? "(" + members.get(i).type().className() + ") null"
-                    : LiteralConverter.canSerialize(val) ? LiteralConverter.toLiteral(val)
-                    : "(" + members.get(i).type().className() + ") null";
-            sb.append("    ").append(lit);
-        }
-        sb.append(")");
-        return sb.toString();
+        return CreationExpressions.baseline(data, config);
     }
 }
