@@ -8,7 +8,6 @@ import com.paramichha.testkit.TestKitTemplate;
 import com.paramichha.testkit.model.*;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -177,12 +176,12 @@ final class ClassDataFactory {
         String invalidSrc      = template.resolveMethod(template.invalidInputsSource, className, methodName);
 
         List<ParamData> params     = buildParams(method.parameters(), seed, methodName, visiting);
-        ReturnData      returnData = buildReturnData(method.returnType(), methodName, hasJakarta);
+        ReturnData      returnData = buildReturnData(method.returnType(), hasJakarta);
         if (accessor && !returnData.isVoid()) {
             // The value of an accessor is checked by the field's test. Here: the call returns something.
             // No TODO, so accessors don't fail the build until someone writes an expectation.
             returnData = new DefaultReturnData(returnData.type(), false, returnData.isConstrained(),
-                    returnData.needsWrapperRecord(), "assertThat(result).isNotNull();", returnData.wrapperRecord());
+                    "assertThat(result).isNotNull();");
         }
 
         return new DefaultMethodData(
@@ -213,19 +212,15 @@ final class ClassDataFactory {
 
     // ── Return type ───────────────────────────────────────────────────────
 
-    private static ReturnData buildReturnData(ReturnTypeInfo ret, String methodName,
-                                              boolean hasJakarta) {
+    private static ReturnData buildReturnData(ReturnTypeInfo ret, boolean hasJakarta) {
         if (ret.isVoid())
-            return new DefaultReturnData(null, true, false, false, "", null);
+            return new DefaultReturnData(null, true, false, "");
 
         ClassData type          = primitiveOrSimpleClassData(ret.type());
         boolean   constrained   = ret.isConstrained();
         String    assertionCode = buildReturnAssertion(ret, hasJakarta);
-        boolean   needsWrapper  = needsWrapperRecord(ret);
-        String    wrapperRecord = needsWrapper ? buildWrapperRecord(methodName, ret) : null;
 
-        return new DefaultReturnData(type, false, constrained, needsWrapper,
-                assertionCode, wrapperRecord);
+        return new DefaultReturnData(type, false, constrained, assertionCode);
     }
 
     // ── DataFactory calls ─────────────────────────────────────────────────
@@ -407,22 +402,6 @@ final class ClassDataFactory {
         return "assertThat(result).isNotNull();";
     }
 
-    private static boolean needsWrapperRecord(ReturnTypeInfo ret) {
-        if (ret.isVoid() || !ret.isConstrained()) return false;
-        Class<?> t = ret.type();
-        return t.isPrimitive() || t == String.class || t == Character.class
-                || t.getPackageName().startsWith("java.")
-                || t.getPackageName().startsWith("javax.");
-    }
-
-    private static String buildWrapperRecord(String methodName, ReturnTypeInfo ret) {
-        String annotations = buildAnnotationSource(ret.annotations());
-        String boxedType   = JavaTypeNames.boxed(ret.type());
-        String name        = Character.toUpperCase(methodName.charAt(0))
-                + methodName.substring(1) + "Result";
-        return "private record " + name + "(" + annotations + boxedType + " value) {}";
-    }
-
     private static List<String> buildEnforcementHints(ParameterInfo param) {
         List<String> hints = new ArrayList<>();
         for (Annotation a : param.validations()) {
@@ -458,53 +437,6 @@ final class ClassDataFactory {
         } catch (Exception ignored) { return null; }
     }
 
-    private static String buildAnnotationSource(List<Annotation> annotations) {
-        if (annotations.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (Annotation a : annotations) sb.append(annotationToSource(a)).append(" ");
-        return sb.toString();
-    }
-
-    private static String annotationToSource(Annotation a) {
-        String   name  = a.annotationType().getSimpleName();
-        Method[] attrs = a.annotationType().getDeclaredMethods();
-        if (attrs.length == 0) return "@" + name;
-        if (attrs.length == 1 && attrs[0].getName().equals("value")) {
-            try {
-                Object val = attrs[0].invoke(a);
-                String src = attrToSource(val);
-                if (src == null) return "@" + name;
-                if (src.endsWith("L")) src = src.substring(0, src.length() - 1);
-                return "@" + name + "(" + src + ")";
-            } catch (Exception ignored) {}
-        }
-        StringBuilder sb = new StringBuilder("@").append(name).append("(");
-        boolean first = true;
-        for (Method m : attrs) {
-            try {
-                Object val = m.invoke(a);
-                Object def = m.getDefaultValue();
-                if (def != null && def.equals(val)) continue;
-                String src = attrToSource(val);
-                if (src == null) continue;
-                if (!first) sb.append(", ");
-                sb.append(m.getName()).append("=").append(src);
-                first = false;
-            } catch (Exception ignored) {}
-        }
-        sb.append(")");
-        return sb.toString().equals("@" + name + "()") ? "@" + name : sb.toString();
-    }
-
-    private static String attrToSource(Object val) {
-        if (val instanceof String s)       return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-        if (val instanceof Long l)         return l + "L";
-        if (val instanceof Class<?> c)     return c.getSimpleName() + ".class";
-        if (val instanceof Annotation ann) return annotationToSource(ann);
-        if (val != null && val.getClass().isArray()) return null;
-        return val == null ? null : String.valueOf(val);
-    }
-
     // ── Utilities ─────────────────────────────────────────────────────────
 
     private static long effectiveSeed(TestCodeData payload) {
@@ -513,7 +445,6 @@ final class ClassDataFactory {
                 : com.paramichha.utils.Seeds.stableHash(payload.classInfo().type());
     }
 
-    @SuppressWarnings("unchecked")
     /**
      * For integer fields with a bound, add the type's extreme beyond that bound as a second
      * invalid value: {@code @Positive int} → also {@code Integer.MIN_VALUE}, {@code @Max(5)} → also
@@ -570,15 +501,7 @@ final class ClassDataFactory {
     }
 
     private static List<Object> castList(List<?> list) {
-        return new ArrayList<>((List<Object>) list);
-    }
-
-    private static TestCodeData wrapAsPayload(ClassInfo meta, long seed) {
-        return new com.paramichha.testkit.TestCodeData(
-                meta, null, meta.packageName(),
-                com.paramichha.testkit.TestKitTemplate.DEFAULT,
-                com.paramichha.testkit.ProjectType.detect(),
-                seed);
+        return new ArrayList<Object>(list);
     }
 
     private static long   longAttr  (Annotation a, String attr) throws Exception { return (long)   a.annotationType().getMethod(attr).invoke(a); }

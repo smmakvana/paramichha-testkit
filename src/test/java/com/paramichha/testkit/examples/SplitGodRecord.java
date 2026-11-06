@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// Raw List, Set and Map on purpose: TestKit must handle classes that use raw types.
+@SuppressWarnings("rawtypes")
 public record SplitGodRecord(
         // Primitives
         byte byteValue,

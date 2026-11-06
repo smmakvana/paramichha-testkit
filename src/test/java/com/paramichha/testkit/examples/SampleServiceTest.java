@@ -3,9 +3,6 @@ package com.paramichha.testkit.examples;
 import com.paramichha.utils.DataValidation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
@@ -285,9 +282,6 @@ class SampleServiceTest {
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodApplyDiscountTest {
 
-    private record ApplyDiscountResult(@NotNull @Positive BigDecimal value) {}
-    ;
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyDiscountInputs")
     @DisplayName("applyDiscount accepts valid input")
@@ -340,9 +334,6 @@ class SampleServiceTest {
   @Tag("method")
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class SampleServiceMethodDescribeTest {
-
-    private record DescribeResult(@NotBlank String value) {}
-    ;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("validDescribeInputs")

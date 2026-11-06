@@ -3,9 +3,10 @@ package com.paramichha.testkit.examples;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
+// Raw List, Set and Map on purpose: TestKit must handle classes that use raw types.
+@SuppressWarnings("rawtypes")
 public final class GodClass {
     private final byte byteValue;
     private final short shortValue;

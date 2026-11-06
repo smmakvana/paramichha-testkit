@@ -3,7 +3,6 @@ package com.paramichha.testkit.examples;
 import com.paramichha.utils.DataValidation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.Positive;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -395,9 +394,6 @@ class PrimitiveMixedServiceTest {
   @Tag("method")
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveMixedServiceMethodScaledRateTest {
-
-    private record ScaledRateResult(@Positive Double value) {}
-    ;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("validScaledRateInputs")

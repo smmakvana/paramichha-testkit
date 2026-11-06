@@ -1,6 +1,5 @@
 package com.paramichha.testkit.generator;
 
-import java.util.List;
 
 /**
  * Method return type with all DataFactory values pre-resolved.
@@ -12,10 +11,8 @@ public interface ReturnData {
 
     boolean   isVoid();
     boolean   isConstrained();     // return type has Jakarta annotations
-    boolean   needsWrapperRecord();// constrained primitive/String needs record wrapper
 
     // ── Pre-resolved ──────────────────────────────────────────────────────
 
     String    assertionCode();     // pre-built assertion e.g. "DataValidation.notNull(result);"
-    String    wrapperRecord();     // pre-built record declaration or null
 }

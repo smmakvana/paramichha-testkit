@@ -6,8 +6,10 @@ import com.paramichha.testkit.GenerationResult;
 import com.paramichha.testkit.TestCodeData;
 import com.paramichha.testkit.model.ClassInfo;
 import com.paramichha.testkit.model.ConstructorStyle;
+import com.paramichha.testkit.model.FieldInfo;
 import com.paramichha.testkit.utils.TestNames;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +46,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
         try {
             ClassData       data   = ClassDataFactory.build(payload);
             ClassDataConfig config = buildConfig(payload, data);
-            ClassCoderInfo  info   = ClassDataTransformer.transform(data, config);
+            ClassCoderInfo  info   = rawTypesAllowed(ClassDataTransformer.transform(data, config), payload.classInfo());
             String          source = cleanCode(config.header() + coder.code(info));
             return GenerationResult.of(data.className(), config.targetPackage(), source);
         } catch (Exception e) {
@@ -63,7 +65,9 @@ public final class SolidCodeGenerator implements CodeGenerator {
         try {
             ClassData            data    = ClassDataFactory.build(payload);
             ClassDataConfig      config  = buildConfig(payload, data);
-            List<ClassCoderInfo> infos   = ClassDataTransformer.transformSplit(data, config);
+            List<ClassCoderInfo> infos   = ClassDataTransformer.transformSplit(data, config).stream()
+                    .map(info -> rawTypesAllowed(info, payload.classInfo()))
+                    .toList();
             List<GenerationResult> results = infos.stream()
                     .map(info -> GenerationResult.of(
                             info.name(),
@@ -74,6 +78,34 @@ public final class SolidCodeGenerator implements CodeGenerator {
         } catch (Exception e) {
             return placeholder(payload, e.getMessage());
         }
+    }
+
+    // ── Raw types ─────────────────────────────────────────────────────────
+
+    /**
+     * A class with a raw field ({@code List} instead of {@code List<String>}) makes a test that
+     * reads that field use the same raw type, and the compiler warns on every use. The warning
+     * belongs to the class under test, so such a test file says it knows, once. Files that never
+     * read a raw field get nothing (an unneeded suppression is itself flagged by IDEs).
+     */
+    private ClassCoderInfo rawTypesAllowed(ClassCoderInfo info, ClassInfo classInfo) {
+        String code = coder.code(info);
+        boolean readsRawField = classInfo.fields().stream()
+                .filter(f -> f.genericType() instanceof Class<?> c && c.getTypeParameters().length > 0)
+                .map(FieldInfo::name)
+                .anyMatch(name -> readsField(code, name));
+        if (!readsRawField) return info;
+        List<String> annotations = new ArrayList<>(info.annotations());
+        annotations.addFirst("@SuppressWarnings({\"rawtypes\", \"unchecked\"})");
+        return new ClassCoderInfo(info.packageName(), info.imports(), annotations, info.modifiers(),
+                info.name(), info.fields(), info.methods(), info.nestedClasses());
+    }
+
+    /** True when the code calls the field's accessor: {@code .name()}, {@code .getName()} or {@code .isName()}. */
+    static boolean readsField(String code, String name) {
+        String cap = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+        return code.contains("." + name + "()") || code.contains(".get" + cap + "()")
+                || code.contains(".is" + cap + "()");
     }
 
     // ── Formatting ────────────────────────────────────────────────────────
@@ -139,13 +171,7 @@ public final class SolidCodeGenerator implements CodeGenerator {
                     ic.addTypeImport(p.type());
                 }
             });
-            ic.addAnnotationImports(m.returnType().annotations());
         });
-
-        boolean hasValid = classInfo.methods().stream()
-                .anyMatch(m -> m.returnType().annotations().stream()
-                        .anyMatch(a -> a.annotationType().getSimpleName().equals("Valid")));
-        if (hasValid) ic.addRawImport("jakarta.validation.Valid");
 
         boolean needsDataValidation = classInfo.methods().stream().anyMatch(m ->
                 m.returnType().isConstrained() ||

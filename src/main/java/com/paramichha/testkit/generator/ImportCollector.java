@@ -73,18 +73,6 @@ final class ImportCollector {
         values.forEach(this::addValueImports);
     }
 
-    /** Add imports for Jakarta annotations used in wrapper records. */
-    void addAnnotationImports(List<java.lang.annotation.Annotation> annotations) {
-        for (java.lang.annotation.Annotation a : annotations) {
-            String pkg = a.annotationType().getPackageName();
-            if (!pkg.startsWith("java.lang")) {
-                imports.add(a.annotationType().getName()
-                        .replace(a.annotationType().getSimpleName(), "")
-                        .replaceAll("\\.$", "") + "." + a.annotationType().getSimpleName());
-            }
-        }
-    }
-
     void addRawImport(String fullyQualified) {
         imports.add(fullyQualified);
     }

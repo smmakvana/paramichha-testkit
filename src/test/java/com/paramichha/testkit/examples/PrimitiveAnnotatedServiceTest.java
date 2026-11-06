@@ -3,9 +3,6 @@ package com.paramichha.testkit.examples;
 import com.paramichha.utils.DataValidation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -539,9 +536,6 @@ class PrimitiveAnnotatedServiceTest {
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodApplyDiscountTest {
 
-    private record ApplyDiscountResult(@Positive Double value) {}
-    ;
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyDiscountInputs")
     @DisplayName("applyDiscount accepts valid input")
@@ -576,9 +570,6 @@ class PrimitiveAnnotatedServiceTest {
   @Tag("method")
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodCombineTest {
-
-    private record CombineResult(@PositiveOrZero Integer value) {}
-    ;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("validCombineInputs")
@@ -632,9 +623,6 @@ class PrimitiveAnnotatedServiceTest {
   @Tag("method")
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class PrimitiveAnnotatedServiceMethodTotalValueTest {
-
-    private record TotalValueResult(@Min(value = 0L) Long value) {}
-    ;
 
     @Test
     @DisplayName("totalValue returns a result")
