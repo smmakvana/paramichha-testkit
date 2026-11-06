@@ -106,8 +106,6 @@ class SplitGodRecordFieldLongWrapperArrayTest {
   }
 
   static Stream<Arguments> validLongWrapperArrayValues() {
-    return Stream.of(
-        Arguments.of(
-            "longWrapperArray [Ljava.lang.Long;@20dc1b76 (valid)", new Long[] {330L, 189L}));
+    return Stream.of(Arguments.of("longWrapperArray [330, 189] (valid)", new Long[] {330L, 189L}));
   }
 }

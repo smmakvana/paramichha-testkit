@@ -11,8 +11,6 @@ public interface MemberData {
     String    name();
     ClassData type();              // recursive — full ClassData for domain types
 
-    boolean   isConstrained();     // has Jakarta validation annotations
-    boolean   isRequired();        // @NotNull / @NotBlank etc
 
     // ── Pre-resolved values ───────────────────────────────────────────────
 
@@ -21,11 +19,11 @@ public interface MemberData {
 
     // ── Where the constraints live — decides how a test can check them ─────
     /** Field/getter constraints: {@code Validator.validate(obj)} sees them. */
-    default boolean isPropertyConstrained()    { return isConstrained(); }
+    boolean isPropertyConstrained();
     /** Constructor-parameter constraints: only {@code ExecutableValidator} sees them. */
-    default boolean isConstructorConstrained() { return false; }
+    boolean isConstructorConstrained();
     /** Index of the constructor parameter that sets this field, or -1. */
-    default int     constructorIndex()         { return -1; }
+    int     constructorIndex();
     /** Constraints no value can satisfy (e.g. {@code @Min(5) @Max(3)}); empty when fine. */
-    default List<String> conflicts()           { return List.of(); }
+    List<String> conflicts();
 }

@@ -106,8 +106,6 @@ class SplitGodRecordFieldCharWrapperArrayTest {
   }
 
   static Stream<Arguments> validCharWrapperArrayValues() {
-    return Stream.of(
-        Arguments.of(
-            "charWrapperArray [Ljava.lang.Character;@e3b9817 (valid)", new Character[] {'U', 'P'}));
+    return Stream.of(Arguments.of("charWrapperArray [U, P] (valid)", new Character[] {'U', 'P'}));
   }
 }

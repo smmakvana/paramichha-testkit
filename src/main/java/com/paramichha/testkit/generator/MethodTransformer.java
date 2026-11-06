@@ -8,6 +8,8 @@ import java.util.List;
  */
 final class MethodTransformer {
 
+    private MethodTransformer() {}
+
     static ClassCoderInfo transform(MethodData method, ClassDataConfig config) {
         String className   = config.sourceClassName();
         String displayName = com.paramichha.testkit.NameFormat.display(

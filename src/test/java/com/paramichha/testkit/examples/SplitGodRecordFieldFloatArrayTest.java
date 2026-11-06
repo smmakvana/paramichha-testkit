@@ -106,6 +106,6 @@ class SplitGodRecordFieldFloatArrayTest {
   }
 
   static Stream<Arguments> validFloatArrayValues() {
-    return Stream.of(Arguments.of("floatArray [F@48727d33 (valid)", new float[] {-1.0f, -1.0f}));
+    return Stream.of(Arguments.of("floatArray [-1.0, -1.0] (valid)", new float[] {-1.0f, -1.0f}));
   }
 }

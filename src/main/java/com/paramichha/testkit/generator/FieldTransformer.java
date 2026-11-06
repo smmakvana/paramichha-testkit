@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
  */
 final class FieldTransformer {
 
+    private FieldTransformer() {}
+
     static ClassCoderInfo transform(MemberData member, ClassData classData,
                                     ClassDataConfig config) {
         String className   = config.sourceClassName();
@@ -195,7 +197,7 @@ final class FieldTransformer {
         for (int j = 0; j < values.size(); j++) {
             Object v   = values.get(j);
             String lit = v == null ? "(" + boxedType + ") null" : LiteralConverter.toLiteral(v);
-            body.append("    Arguments.of(\"").append(labelFor(v, name, kind, j))
+            body.append("    Arguments.of(\"").append(labelFor(v, name, kind))
                 .append("\", ").append(lit).append(")");
             body.append(j < values.size() - 1 ? ",\n" : "\n");
         }
@@ -211,10 +213,20 @@ final class FieldTransformer {
     }
 
     /** "radius -1.5 (valid)": the member, the value and the verdict. Quotes in strings are escaped. */
-    private static String labelFor(Object value, String name, String kind, int index) {
+    private static String labelFor(Object value, String name, String kind) {
         String shown = value == null ? "null"
                 : value instanceof String s ? (s.isEmpty() ? "blank" : "\"" + escape(s) + "\"")
+                : value.getClass().isArray() ? arrayText(value)
                 : String.valueOf(value);
         return escape(name + " " + shown + " (" + kind + ")");
+    }
+
+    /**
+     * {@code [330, 189]}: an array's contents. Its own toString ({@code [I@60451d22}) says nothing
+     * and changes on every run, so each regeneration rewrote the file.
+     */
+    private static String arrayText(Object array) {
+        String s = java.util.Arrays.deepToString(new Object[]{array});
+        return s.substring(1, s.length() - 1);
     }
 }

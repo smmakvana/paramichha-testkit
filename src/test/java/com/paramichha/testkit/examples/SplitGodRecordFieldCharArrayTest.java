@@ -106,6 +106,6 @@ class SplitGodRecordFieldCharArrayTest {
   }
 
   static Stream<Arguments> validCharArrayValues() {
-    return Stream.of(Arguments.of("charArray [C@5c12cd66 (valid)", new char[] {'U', 'P'}));
+    return Stream.of(Arguments.of("charArray [U, P] (valid)", new char[] {'U', 'P'}));
   }
 }

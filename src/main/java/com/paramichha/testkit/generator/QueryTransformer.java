@@ -10,6 +10,8 @@ import java.util.List;
  */
 final class QueryTransformer {
 
+    private QueryTransformer() {}
+
     /**
      * Tag on a test that fails until a developer states the expected value. A build can leave
      * these out ({@code excludedGroups}) while the expectations are being written.

@@ -29,25 +29,14 @@ public interface ClassData {
     String className();       // simple name: "UserRequest"
     String packageName();     // "com.example.requests"
 
-    default String qualifiedName() {
-        String pkg = packageName();
-        return (pkg == null || pkg.isBlank()) ? className() : pkg + "." + className();
-    }
-
     // ── Type characteristics ──────────────────────────────────────────────
 
     boolean isPrimitive();     // int, long, boolean, etc.
     boolean isVoid();          // void / Void
     boolean isEnum();          // enum types
-    boolean isRecord();        // Java record
     boolean isArray();         // int[], String[], UserRequest[]
     boolean isCollection();    // List, Set, Collection
     boolean isMap();           // Map, HashMap, etc.
-    boolean isConstrained();   // has at least one Jakarta annotation
-
-    // ── Component type — for arrays and collections ───────────────────────
-
-    ClassData componentType(); // null for non-array/collection/map
 
     // ── Structure — only populated for domain types ───────────────────────
 
@@ -57,5 +46,4 @@ public interface ClassData {
     // ── Pre-resolved values (ALL from DataFactory, set in ClassDataFactory) ──
 
     List<Object> validValues();    // boundary-covering valid instances
-    List<Object> invalidValues();  // one-constraint-violated instances
 }

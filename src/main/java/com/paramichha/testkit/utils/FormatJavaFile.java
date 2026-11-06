@@ -1,7 +1,9 @@
 package com.paramichha.testkit.utils;
 
 
-public class FormatJavaFile {
+public final class FormatJavaFile {
+
+    private FormatJavaFile() {}
 
     public static String removeUnUsedImport(String source) {
         return JavaFormatting.removeUnusedImportsAndFormat(source);

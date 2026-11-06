@@ -10,6 +10,8 @@ import java.util.List;
  */
 final class CreationTransformer {
 
+    private CreationTransformer() {}
+
     static ClassCoderInfo transform(ClassData data, ClassDataConfig config) {
         List<MethodCoderInfo> methods = new ArrayList<>();
         String instanceName  = config.instanceName();

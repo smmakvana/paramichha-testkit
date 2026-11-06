@@ -106,8 +106,6 @@ class SplitGodRecordFieldIntWrapperArrayTest {
   }
 
   static Stream<Arguments> validIntWrapperArrayValues() {
-    return Stream.of(
-        Arguments.of(
-            "intWrapperArray [Ljava.lang.Integer;@6a6f92a0 (valid)", new Integer[] {330, 189}));
+    return Stream.of(Arguments.of("intWrapperArray [330, 189] (valid)", new Integer[] {330, 189}));
   }
 }

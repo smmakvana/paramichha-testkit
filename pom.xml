@@ -27,9 +27,9 @@
     <properties>
         <datafactory.version>0.2.0-SNAPSHOT</datafactory.version>
         <datafactory-catalog.version>0.2.0-SNAPSHOT</datafactory-catalog.version>
-        <!-- Line-coverage floor checked by `mvn verify` (rule in paramichha-dev). Set just below
-             current coverage (86.5%); raise it as tests are added, never lower it. -->
-        <jacoco.line.minimum>0.86</jacoco.line.minimum>
+        <!-- Line-coverage floor checked by `mvn verify` (rule in paramichha-dev). Every line is
+             covered: new code needs a test, or the build fails. Never lower it. -->
+        <jacoco.line.minimum>1.00</jacoco.line.minimum>
         <!-- Generated tests tagged "todo" fail until a developer writes the expected value (the
              example services leave theirs open on purpose). Skipped here; run them with
              -DexcludedGroups= -->

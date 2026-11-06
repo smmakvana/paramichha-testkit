@@ -107,8 +107,6 @@ class SplitGodRecordFieldDoubleWrapperArrayTest {
 
   static Stream<Arguments> validDoubleWrapperArrayValues() {
     return Stream.of(
-        Arguments.of(
-            "doubleWrapperArray [Ljava.lang.Double;@58905e25 (valid)",
-            new Double[] {-1.0d, -1.0d}));
+        Arguments.of("doubleWrapperArray [-1.0, -1.0] (valid)", new Double[] {-1.0d, -1.0d}));
   }
 }

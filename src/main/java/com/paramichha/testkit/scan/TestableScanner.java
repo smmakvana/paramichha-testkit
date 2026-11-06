@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  */
 public final class TestableScanner {
 
-    public  TestableScanner() {}
+    private TestableScanner() {}
 
     /**
      * Returns all classes in the given package (and subpackages)
@@ -74,7 +74,7 @@ public final class TestableScanner {
     }
 
     private static void scanDirectory(Path dir, String packageName,
-                                       ClassLoader cl, List<Class<?>> found) {
+                                       ClassLoader cl, List<Class<?>> found) throws IOException {
         if (!Files.exists(dir)) return;
         try (Stream<Path> walk = Files.walk(dir)) {
             walk.filter(p -> p.toString().endsWith(".class"))
@@ -84,16 +84,15 @@ public final class TestableScanner {
                             .replace(".class", "");
                     loadQuietly(packageName + "." + relative, cl, found);
                 });
-        } catch (IOException e) {
-            throw new com.paramichha.testkit.TestKitException(
-                    "Failed to scan directory: " + dir, e);
         }
     }
 
     private static void scanJar(URI jarUri, String path, String packageName,
                                   ClassLoader cl, List<Class<?>> found) throws IOException {
         try (FileSystem fs = FileSystems.newFileSystem(jarUri, Map.of())) {
-            try (Stream<Path> walk = Files.walk(fs.getPath(path))) {
+            // Absolute ("/com/acme/..."), so the names below start with "/": a relative path
+            // made every class name lose its first letter and no class in a jar was ever found.
+            try (Stream<Path> walk = Files.walk(fs.getPath("/" + path))) {
                 walk.filter(p -> p.toString().endsWith(".class"))
                     .forEach(p -> {
                         String className = p.toString()

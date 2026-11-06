@@ -49,6 +49,13 @@ public final class ReflectionReturnTypeInfo implements ReturnTypeInfo {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof ReflectionReturnTypeInfo o)) return false;
+        return Objects.equals(type, o.type) && Objects.equals(annotations, o.annotations);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(type, annotations);
     }

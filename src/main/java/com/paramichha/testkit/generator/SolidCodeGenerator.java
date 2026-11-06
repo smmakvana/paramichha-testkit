@@ -123,7 +123,10 @@ public final class SolidCodeGenerator implements CodeGenerator {
         boolean   hasJakarta   = payload.projectType().hasValidator()
                 && classInfo.fields().stream().anyMatch(f -> !f.validations().isEmpty());
         boolean   isRecord     = classInfo.constructorStyle() == ConstructorStyle.RECORD;
-        String    instanceName = TestNames.toVariable(classInfo.simpleName());
+        // A utility class has no instance: its static methods are called on the class itself.
+        String    instanceName = classInfo.utilityClass()
+                ? classInfo.simpleName()
+                : TestNames.toVariable(classInfo.simpleName());
 
         ImportCollector imports = buildImports(classInfo, payload);
         // Values can bring types the field types don't show, e.g. a BigDecimal inside a nested

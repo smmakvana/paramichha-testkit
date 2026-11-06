@@ -226,15 +226,8 @@ public final class ReflectionClassReader implements ClassReader {
                         || pkg.startsWith("org.hibernate.validator")) return true;
             }
         }
-        if (type.isRecord()) {
-            for (RecordComponent rc : type.getRecordComponents()) {
-                for (Annotation a : rc.getAnnotations()) {
-                    String pkg = a.annotationType().getPackageName();
-                    if (pkg.startsWith("jakarta.validation") || pkg.startsWith("javax.validation")
-                            || pkg.startsWith("org.hibernate.validator")) return true;
-                }
-            }
-        }
+        // Records need no extra pass: validation annotations don't target record components
+        // alone, so the compiler puts them on the backing field checked above.
         return false;
     }
 

@@ -49,21 +49,13 @@ final class ClassDataFactory {
         List<MethodData> methods = buildMethods(classInfo, template, seed,
                 payload.projectType().hasValidator(), visiting);
 
-        boolean isConstrained = false;
-        try { isConstrained = classInfo.fields().stream().anyMatch(FieldInfo::isConstrained); }
-        catch (Exception ignored) {}
-
-        boolean isRecord = classInfo.constructorStyle() == com.paramichha.testkit.model.ConstructorStyle.RECORD;
-
         return new DefaultClassData(
                 template.classAffix().apply(classInfo.simpleName()),
                 payload.targetPackage(),
                 false, false, false,
-                isRecord, false, false, false,
-                isConstrained,
-                null,
+                false, false, false,
                 members, methods,
-                validParts, List.of()
+                validParts
         );
     }
 
@@ -73,12 +65,9 @@ final class ClassDataFactory {
                                                   InstantiationWriter iw) {
         List<Object> parts = new ArrayList<>();
         for (FieldInfo f : classInfo.fields()) {
-            try {
-                List<?> vals = iw.validValuesFor(fixture != null ? fixture.type() : classInfo.type(), f);
-                parts.add(vals.isEmpty() ? null : vals.get(0));
-            } catch (Exception ignored) {
-                parts.add(null);
-            }
+            // validValuesFor never throws: no values (empty) when a field can't be generated
+            List<?> vals = iw.validValuesFor(fixture != null ? fixture.type() : classInfo.type(), f);
+            parts.add(vals.isEmpty() ? null : vals.get(0));
         }
         // Not List.copyOf: it rejects nulls, and one field without a valid value (null) used to
         // throw here and wipe the baseline of every field.
@@ -106,21 +95,18 @@ final class ClassDataFactory {
                         .collect(Collectors.toList());
                 invalidVals = distinct(withTypeExtremes(rawType, field, invalidVals));
                 validVals   = distinct(validVals);
-                ClassData fieldType = classDataForType(rawType, field.genericType());
+                ClassData fieldType = classDataForType(rawType);
                 boolean propertyConstrained    = !field.propertyValidations().isEmpty() || field.hasIndirectConstraints();
                 boolean constructorConstrained = !field.constructorValidations().isEmpty();
                 List<String> conflicts = com.paramichha.datafactory.constraint.ConstraintConflicts.find(
                         com.paramichha.datafactory.constraint.AnnotationResolver.analyze(
                                 field.name(), rawType, field.validations()));
                 result.add(new DefaultMemberData(
-                        field.name(), fieldType, field.required(),
+                        field.name(), fieldType,
                         validVals, invalidVals,
                         propertyConstrained, constructorConstrained, field.constructorIndex(), conflicts));
             } catch (Exception ignored) {
-                ClassData fieldType = classDataForType(field.rawType(), field.genericType());
-                result.add(new DefaultMemberData(
-                        field.name(), fieldType,
-                        false, false, List.of(), List.of()));
+                result.add(DefaultMemberData.unresolved(field.name(), classDataForType(field.rawType())));
             }
         }
         return List.copyOf(result);
@@ -171,7 +157,6 @@ final class ClassDataFactory {
                                               boolean accessor) {
         String methodName      = method.name();
         String nestedClassName = template.resolveMethod(template.methodClassName, className, methodName);
-        String displayName     = template.resolveMethod(template.methodDisplay, className, methodName);
         String validSrc        = template.resolveMethod(template.validInputsSource, className, methodName);
         String invalidSrc      = template.resolveMethod(template.invalidInputsSource, className, methodName);
 
@@ -186,7 +171,7 @@ final class ClassDataFactory {
 
         return new DefaultMethodData(
                 methodName, method.kind(), params, returnData,
-                nestedClassName, displayName, validSrc, invalidSrc);
+                nestedClassName, validSrc, invalidSrc);
     }
 
     // ── Parameters ────────────────────────────────────────────────────────
@@ -269,16 +254,12 @@ final class ClassDataFactory {
         return List.of();
     }
 
-    @SuppressWarnings("unchecked")
     private static List<Object> resolveParamInvalid(ParameterInfo param) {
         if (!param.isConstrained()) return List.of();
-        try {
-            List<?> invalids = DataFactory.field(
-                    param.name(), (Class<Object>) param.type(),
-                    param.validations()).invalidList();
-            return new ArrayList<>(invalids);
-        } catch (Exception ignored) {}
-        return List.of();
+        // One value per rule; DataFactory doesn't throw here, even for a type it can't generate
+        // (the invalid value is then null).
+        return new ArrayList<Object>(
+                DataFactory.field(param.name(), param.type(), param.validations()).invalidList());
     }
 
     private static ClassData resolveParamClassData(ParameterInfo param, long seed,
@@ -290,7 +271,7 @@ final class ClassDataFactory {
                 && !pkg.startsWith("javax.");
 
         if (isDomain && visiting.contains(type)) return primitiveOrSimpleClassData(type);
-        return classDataForType(type, null);
+        return classDataForType(type);
     }
 
     // ── Instance builder ──────────────────────────────────────────────────
@@ -316,10 +297,10 @@ final class ClassDataFactory {
     // ── ClassData construction ────────────────────────────────────────────
 
     /**
-     * Builds a correct ClassData for any type — correctly sets isArray, isCollection,
-     * isMap, isRecord, componentType.
+     * Builds the ClassData for a type: its source name and whether it is primitive, void, an
+     * enum, an array, a collection or a map.
      */
-    static ClassData classDataForType(Class<?> type, java.lang.reflect.Type genericType) {
+    static ClassData classDataForType(Class<?> type) {
         if (type == null) return primitiveOrSimpleClassData(void.class);
 
         boolean isPrimitive  = type.isPrimitive();
@@ -328,34 +309,18 @@ final class ClassDataFactory {
         boolean isArray      = type.isArray();
         boolean isCollection = !isArray && isCollectionType(type);
         boolean isMap        = isMapType(type);
-        boolean isRecord     = type.isRecord();
         String  pkg          = isPrimitive ? "" : type.getPackageName();
-
-        ClassData component = null;
-        if (isArray) {
-            component = classDataForType(type.getComponentType(), null);
-        } else if (isCollection && genericType instanceof java.lang.reflect.ParameterizedType pt) {
-            java.lang.reflect.Type[] args = pt.getActualTypeArguments();
-            if (args.length == 1 && args[0] instanceof Class<?> argClass)
-                component = classDataForType(argClass, null);
-        } else if (isMap && genericType instanceof java.lang.reflect.ParameterizedType pt) {
-            java.lang.reflect.Type[] args = pt.getActualTypeArguments();
-            if (args.length == 2 && args[1] instanceof Class<?> valClass)
-                component = classDataForType(valClass, null);
-        }
 
         return new DefaultClassData(
                 JavaTypeNames.of(type),
                 pkg,
                 isPrimitive, isVoid, isEnum,
-                isRecord, isArray, isCollection, isMap,
-                false, // constrained — field-level, not type-level
-                component,
-                List.of(), List.of(), List.of(), List.of());
+                isArray, isCollection, isMap,
+                List.of(), List.of(), List.of());
     }
 
     private static ClassData primitiveOrSimpleClassData(Class<?> type) {
-        return classDataForType(type, null);
+        return classDataForType(type);
     }
 
     private static boolean isCollectionType(Class<?> type) {
@@ -368,9 +333,8 @@ final class ClassDataFactory {
 
     // ── Primitive defaults ────────────────────────────────────────────────
 
-    private static Object primitiveDefault(Class<?> type) {
+    static Object primitiveDefault(Class<?> type) {
         return switch (type.getName()) {
-            case "int"     -> 0;
             case "long"    -> 0L;
             case "double"  -> 0.0d;
             case "float"   -> 0.0f;
@@ -378,7 +342,7 @@ final class ClassDataFactory {
             case "byte"    -> (byte) 0;
             case "short"   -> (short) 0;
             case "char"    -> 'A';
-            default        -> 0;
+            default        -> 0;    // int
         };
     }
 
@@ -487,7 +451,7 @@ final class ClassDataFactory {
         return v;
     }
 
-    private static Class<?> boxed(Class<?> t) {
+    static Class<?> boxed(Class<?> t) {
         if (!t.isPrimitive()) return t;
         if (t == int.class)     return Integer.class;
         if (t == long.class)    return Long.class;
@@ -496,8 +460,7 @@ final class ClassDataFactory {
         if (t == short.class)   return Short.class;
         if (t == byte.class)    return Byte.class;
         if (t == char.class)    return Character.class;
-        if (t == boolean.class) return Boolean.class;
-        return Void.class;
+        return Boolean.class;   // the last primitive: a field is never void
     }
 
     private static List<Object> castList(List<?> list) {

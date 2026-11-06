@@ -70,6 +70,16 @@ public final class ReflectionMethodInfo implements MethodInfo {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof ReflectionMethodInfo o)) return false;
+        return Objects.equals(name, o.name)
+                && Objects.equals(returnType, o.returnType)
+                && Objects.equals(parameters, o.parameters)
+                && Objects.equals(kind, o.kind);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(name, returnType, parameters, kind);
     }

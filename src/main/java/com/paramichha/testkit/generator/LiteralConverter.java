@@ -135,35 +135,52 @@ final class LiteralConverter {
         };
     }
 
-    /** Returns true if all record components can be serialized. */
-    private static boolean canSerializeRecord(Object record) {
+    // ── Reading components and fields ──
+
+    /** Stands for a record component or field whose value could not be read. */
+    private static final Object UNREADABLE = new Object();
+
+    /** The component's value, or {@link #UNREADABLE} when its accessor throws. */
+    private static Object read(java.lang.reflect.RecordComponent rc, Object record) {
+        return readOrMark(() -> rc.getAccessor().invoke(record));
+    }
+
+    /** The field's value, or {@link #UNREADABLE} when it can't be opened (e.g. a closed module). */
+    private static Object read(java.lang.reflect.Field f, Object value) {
+        return readOrMark(() -> {
+            f.setAccessible(true);
+            return f.get(value);
+        });
+    }
+
+    private static Object readOrMark(java.util.concurrent.Callable<Object> reader) {
         try {
-            for (java.lang.reflect.RecordComponent rc : record.getClass().getRecordComponents()) {
-                Object val = rc.getAccessor().invoke(record);
-                if (!canSerialize(val)) return false;
-            }
-            return true;
+            return reader.call();
         } catch (Exception e) {
-            return false;
+            return UNREADABLE;
         }
+    }
+
+    /** Returns true if all record components can be read and serialized. */
+    private static boolean canSerializeRecord(Object record) {
+        for (java.lang.reflect.RecordComponent rc : record.getClass().getRecordComponents()) {
+            Object val = read(rc, record);
+            if (val == UNREADABLE || !canSerialize(val)) return false;
+        }
+        return true;
     }
 
     /** Serializes a record as a constructor call: new Foo("bar", 42). */
     private static String toLiteralRecord(Object record) {
-        try {
-            java.lang.reflect.RecordComponent[] rcs = record.getClass().getRecordComponents();
-            String typeName = JavaTypeNames.of(record.getClass());
-            StringBuilder sb = new StringBuilder("new ")
-                    .append(typeName).append("(");
-            for (int i = 0; i < rcs.length; i++) {
-                Object val = rcs[i].getAccessor().invoke(record);
-                sb.append(toLiteral(val));
-                if (i < rcs.length - 1) sb.append(", ");
-            }
-            return sb.append(")").toString();
-        } catch (Exception e) {
-            return "/* TODO: " + record.getClass().getSimpleName() + " */ null";
+        java.lang.reflect.RecordComponent[] rcs = record.getClass().getRecordComponents();
+        StringBuilder sb = new StringBuilder("new ").append(JavaTypeNames.of(record.getClass())).append("(");
+        for (int i = 0; i < rcs.length; i++) {
+            Object val = read(rcs[i], record);
+            if (val == UNREADABLE) return "/* TODO: " + record.getClass().getSimpleName() + " */ null";
+            sb.append(toLiteral(val));
+            if (i < rcs.length - 1) sb.append(", ");
         }
+        return sb.append(")").toString();
     }
 
     // ── Plain classes: new Foo(a, b) via a field-matching public constructor ──
@@ -209,31 +226,24 @@ final class LiteralConverter {
         if (!CONSTRUCTING.get().add(value)) return false; // cycle
         try {
             for (java.lang.reflect.Field f : instanceFields(value.getClass())) {
-                f.setAccessible(true);
-                if (!canSerialize(f.get(value))) return false;
+                Object v = read(f, value);
+                if (v == UNREADABLE || !canSerialize(v)) return false;
             }
             return true;
-        } catch (Exception e) {
-            return false;
         } finally {
             CONSTRUCTING.get().remove(value);
         }
     }
 
-    /** Serializes a plain class as a constructor call: new Foo("bar", 42). */
+    /** Serializes a plain class as a constructor call: new Foo("bar", 42). Only after canSerializeConstructed. */
     private static String toLiteralConstructed(Object value) {
-        try {
-            StringBuilder sb = new StringBuilder("new ").append(JavaTypeNames.of(value.getClass())).append("(");
-            List<java.lang.reflect.Field> fields = instanceFields(value.getClass());
-            for (int i = 0; i < fields.size(); i++) {
-                fields.get(i).setAccessible(true);
-                sb.append(toLiteral(fields.get(i).get(value)));
-                if (i < fields.size() - 1) sb.append(", ");
-            }
-            return sb.append(")").toString();
-        } catch (Exception e) {
-            return "/* TODO: " + value.getClass().getSimpleName() + " */ null";
+        StringBuilder sb = new StringBuilder("new ").append(JavaTypeNames.of(value.getClass())).append("(");
+        List<java.lang.reflect.Field> fields = instanceFields(value.getClass());
+        for (int i = 0; i < fields.size(); i++) {
+            sb.append(toLiteral(read(fields.get(i), value)));
+            if (i < fields.size() - 1) sb.append(", ");
         }
+        return sb.append(")").toString();
     }
 
     public static List<String> importsFor(Object value) {
@@ -257,25 +267,19 @@ final class LiteralConverter {
         if (value.getClass().isRecord()) {
             java.util.Set<String> all = new java.util.LinkedHashSet<>(base);
             all.addAll(importsForClass(value.getClass()));
-            try {
-                for (java.lang.reflect.RecordComponent rc : value.getClass().getRecordComponents()) {
-                    Object v = rc.getAccessor().invoke(value);
-                    all.addAll(importsFor(v));
-                    all.addAll(importsForClass(rc.getType()));
-                }
-            } catch (Exception ignored2) {}
+            for (java.lang.reflect.RecordComponent rc : value.getClass().getRecordComponents()) {
+                all.addAll(importsFor(read(rc, value)));
+                all.addAll(importsForClass(rc.getType()));
+            }
             return List.copyOf(all);
         }
         // For constructed plain classes: the class plus each field's imports
         if (canSerializeConstructed(value)) {
             java.util.Set<String> all = new java.util.LinkedHashSet<>(base);
             all.addAll(importsForClass(value.getClass()));
-            try {
-                for (java.lang.reflect.Field f : instanceFields(value.getClass())) {
-                    f.setAccessible(true);
-                    all.addAll(importsFor(f.get(value)));
-                }
-            } catch (Exception ignored3) {}
+            for (java.lang.reflect.Field f : instanceFields(value.getClass())) {
+                all.addAll(importsFor(read(f, value)));
+            }
             return List.copyOf(all);
         }
         // For collections (List, Set, Queue): recurse into each element

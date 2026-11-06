@@ -43,8 +43,13 @@ public enum ProjectType {
      * Called once at generation time.
      */
     public static ProjectType detect() {
-        if (isOnClasspath("org.springframework.context.ApplicationContext")) return SPRING;
-        if (isOnClasspath("org.hibernate.validator.HibernateValidator"))     return JAKARTA;
+        return detect(ProjectType::isOnClasspath);
+    }
+
+    /** Detection with the classpath check given, so each outcome can be tested. */
+    static ProjectType detect(java.util.function.Predicate<String> onClasspath) {
+        if (onClasspath.test("org.springframework.context.ApplicationContext")) return SPRING;
+        if (onClasspath.test("org.hibernate.validator.HibernateValidator"))     return JAKARTA;
         return PLAIN_JAVA;
     }
 
