@@ -106,6 +106,6 @@ class SplitGodRecordFieldBooleanArrayTest {
   }
 
   static Stream<Arguments> validBooleanArrayValues() {
-    return Stream.of(Arguments.of("booleanArray [Z@59720cf7 (valid)", new boolean[] {true, true}));
+    return Stream.of(Arguments.of("booleanArray [true, true] (valid)", new boolean[] {true, true}));
   }
 }

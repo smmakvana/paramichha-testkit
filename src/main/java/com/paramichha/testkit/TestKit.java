@@ -117,7 +117,7 @@ public final class TestKit {
     }
 
     /** The same class, seen without methods — so no method tests are generated. */
-    private static ClassInfo withoutMethods(ClassInfo c) {
+    static ClassInfo withoutMethods(ClassInfo c) {
         return new ClassInfo() {
             @Override public String simpleName()                  { return c.simpleName(); }
             @Override public String packageName()                 { return c.packageName(); }

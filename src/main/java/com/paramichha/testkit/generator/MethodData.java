@@ -19,12 +19,10 @@ public interface MethodData {
     // ── Template-resolved names ───────────────────────────────────────────
 
     String  nestedClassName();     // e.g. "ObjectAnnotatedServiceMethodMergeTest"
-    String  displayName();         // e.g. "merge()"
     String  validSourceName();     // e.g. "validMergeInputs"
     String  invalidSourceName();   // e.g. "invalidMergeInputs"
 
     // ── Convenience ───────────────────────────────────────────────────────
 
-    default boolean hasParams()         { return !params().isEmpty(); }
     default boolean anyParamConstrained(){ return params().stream().anyMatch(ParamData::isConstrained); }
 }

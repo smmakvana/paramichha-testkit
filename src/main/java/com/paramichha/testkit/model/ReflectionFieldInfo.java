@@ -102,8 +102,23 @@ public final class ReflectionFieldInfo implements FieldInfo {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof ReflectionFieldInfo o)) return false;
+        return Objects.equals(name, o.name)
+                && Objects.equals(rawType, o.rawType)
+                && Objects.equals(genericType, o.genericType)
+                && Objects.equals(validations, o.validations)
+                && required == o.required
+                && hasIndirectConstraints == o.hasIndirectConstraints
+                && Objects.equals(propertyValidations, o.propertyValidations)
+                && Objects.equals(constructorValidations, o.constructorValidations)
+                && constructorIndex == o.constructorIndex;
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(name, rawType, genericType, validations, required, hasIndirectConstraints);
+        return Objects.hash(name, rawType, genericType, validations, required, hasIndirectConstraints, propertyValidations, constructorValidations, constructorIndex);
     }
 
     @Override

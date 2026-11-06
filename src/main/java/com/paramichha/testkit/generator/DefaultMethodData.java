@@ -11,19 +11,17 @@ final class DefaultMethodData implements MethodData {
     private final List<ParamData> params;
     private final ReturnData      returnData;
     private final String          nestedClassName;
-    private final String          displayName;
     private final String          validSourceName;
     private final String          invalidSourceName;
 
     DefaultMethodData(String name, MethodKind kind, List<ParamData> params,
-                      ReturnData returnData, String nestedClassName, String displayName,
+                      ReturnData returnData, String nestedClassName,
                       String validSourceName, String invalidSourceName) {
         this.name             = name;
         this.kind             = kind;
         this.params           = params;
         this.returnData       = returnData;
         this.nestedClassName  = nestedClassName;
-        this.displayName      = displayName;
         this.validSourceName  = validSourceName;
         this.invalidSourceName= invalidSourceName;
     }
@@ -33,7 +31,6 @@ final class DefaultMethodData implements MethodData {
     public List<ParamData> params()           { return params;           }
     public ReturnData      returnData()       { return returnData;       }
     public String          nestedClassName()  { return nestedClassName;  }
-    public String          displayName()      { return displayName;      }
     public String          validSourceName()  { return validSourceName;  }
     public String          invalidSourceName(){ return invalidSourceName; }
 }

@@ -12,6 +12,8 @@ import java.util.List;
  */
 final class ClassDataTransformer {
 
+    private ClassDataTransformer() {}
+
     // ── Single file ───────────────────────────────────────────────────────
 
     static ClassCoderInfo transform(ClassData data, ClassDataConfig config) {

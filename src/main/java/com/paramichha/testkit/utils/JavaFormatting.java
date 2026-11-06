@@ -24,31 +24,36 @@ public final class JavaFormatting {
 
     private static volatile Boolean available;
 
+    /** One formatting step; may fail with a {@link LinkageError} when jdk.compiler is closed. */
+    @FunctionalInterface
+    interface Step {
+        String apply(String source) throws Exception;
+    }
+
+    private static final Step FORMAT = source -> new Formatter().formatSource(source);
+
     private JavaFormatting() {}
 
     /** Formats {@code source}, or returns it unchanged if formatting is off or can't run. */
     public static String format(String source) {
+        return run(source, FORMAT);
+    }
+
+    /** Removes unused imports, then formats; returns the input unchanged on any failure. */
+    public static String removeUnusedImportsAndFormat(String source) {
+        return run(source, s -> FORMAT.apply(RemoveUnusedImports.removeUnusedImports(s)));
+    }
+
+    /** Applies {@code step}; on any failure returns {@code source}, and turns formatting off for a LinkageError. */
+    static String run(String source, Step step) {
         if (!enabled()) return source;
         try {
-            return new Formatter().formatSource(source);
+            return step.apply(source);
         } catch (LinkageError e) {
             disable(e);
             return source;
         } catch (Exception e) {
             // Unparseable output — keep generation going with the raw source.
-            return source;
-        }
-    }
-
-    /** Removes unused imports, then formats; returns the input unchanged on any failure. */
-    public static String removeUnusedImportsAndFormat(String source) {
-        if (!enabled()) return source;
-        try {
-            return format(RemoveUnusedImports.removeUnusedImports(source));
-        } catch (LinkageError e) {
-            disable(e);
-            return source;
-        } catch (Exception e) {
             return source;
         }
     }
@@ -59,16 +64,16 @@ public final class JavaFormatting {
         Boolean a = available;
         if (a == null) {
             synchronized (JavaFormatting.class) {
-                if (available == null) available = probe();
+                if (available == null) available = probe(FORMAT);
                 a = available;
             }
         }
         return a;
     }
 
-    private static boolean probe() {
+    static boolean probe(Step step) {
         try {
-            new Formatter().formatSource("class P {}");
+            step.apply("class P {}");
             return true;
         } catch (LinkageError e) {
             warn(e);
@@ -76,6 +81,11 @@ public final class JavaFormatting {
         } catch (Exception e) {
             return true; // formatter runs; this input just didn't parse
         }
+    }
+
+    /** Forgets the probe result, so the next call probes again. For tests. */
+    static void reset() {
+        available = null;
     }
 
     private static void disable(LinkageError e) {

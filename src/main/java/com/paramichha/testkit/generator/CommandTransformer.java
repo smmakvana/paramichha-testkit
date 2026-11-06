@@ -10,6 +10,8 @@ import java.util.List;
  */
 final class CommandTransformer {
 
+    private CommandTransformer() {}
+
     static List<MethodCoderInfo> transform(MethodData method, ClassDataConfig config) {
         List<MethodCoderInfo> result = new ArrayList<>();
         String call = config.instanceName() + "." + method.name() + "()";

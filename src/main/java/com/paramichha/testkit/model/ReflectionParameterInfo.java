@@ -52,6 +52,16 @@ public final class ReflectionParameterInfo implements ParameterInfo {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof ReflectionParameterInfo o)) return false;
+        return Objects.equals(name, o.name)
+                && Objects.equals(type, o.type)
+                && Objects.equals(validations, o.validations)
+                && hasIndirectConstraints == o.hasIndirectConstraints;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(name, type, validations, hasIndirectConstraints);
     }

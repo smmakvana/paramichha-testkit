@@ -47,6 +47,14 @@ class GeneratedCodeHygieneTest {
     }
 
     @Test
+    @DisplayName("an array value is labelled by its contents, so the label is readable and the same on every run")
+    void arrayLabelsAreStable() {
+        String src = TestKit.of(GodRecord.class).generateTest().asString();
+        assertThat(src).containsPattern("intArray \\[[-0-9, ]+\\] \\(valid\\)").doesNotContainPattern("\\[I@");
+        assertThat(TestKit.of(GodRecord.class).generateTest().asString()).isEqualTo(src);
+    }
+
+    @Test
     @DisplayName("an unchanged file is left alone, and a write failure names the class")
     void writing(@TempDir Path dir) throws IOException {
         JavaSourceCode code = new JavaSourceCode("demo", "DemoTest",

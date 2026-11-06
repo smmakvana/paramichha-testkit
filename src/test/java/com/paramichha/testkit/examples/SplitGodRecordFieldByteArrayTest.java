@@ -107,6 +107,6 @@ class SplitGodRecordFieldByteArrayTest {
 
   static Stream<Arguments> validByteArrayValues() {
     return Stream.of(
-        Arguments.of("byteArray [B@364210d8 (valid)", new byte[] {(byte) 127, (byte) 127}));
+        Arguments.of("byteArray [127, 127] (valid)", new byte[] {(byte) 127, (byte) 127}));
   }
 }

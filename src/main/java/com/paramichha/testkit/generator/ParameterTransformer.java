@@ -7,6 +7,8 @@ package com.paramichha.testkit.generator;
  */
 final class ParameterTransformer {
 
+    private ParameterTransformer() {}
+
     static ParameterCoderInfo transform(ParamData param) {
         return ParameterCoderInfo.of(param.type().className(), param.name());
     }

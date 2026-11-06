@@ -17,9 +17,4 @@ public record FieldCoderInfo(
         annotations = List.copyOf(annotations);
         modifiers   = List.copyOf(modifiers);
     }
-
-    /** Convenience — no annotations, no initializer */
-    public static FieldCoderInfo of(List<String> modifiers, String type, String name) {
-        return new FieldCoderInfo(List.of(), modifiers, type, name, null);
-    }
 }

@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
  */
 final class MutatorTransformer {
 
+    private MutatorTransformer() {}
+
     static List<MethodCoderInfo> transform(MethodData method, ClassDataConfig config) {
         List<MethodCoderInfo> result = new ArrayList<>();
         ReturnData ret          = method.returnData();
@@ -142,7 +144,7 @@ final class MutatorTransformer {
         return sb.toString();
     }
 
-    private static String literalFor(Object val, ClassData type) {
+    static String literalFor(Object val, ClassData type) {
         if (val != null) {
             String lit = LiteralConverter.toLiteralOrNull(val);
             if (lit != null) return lit;

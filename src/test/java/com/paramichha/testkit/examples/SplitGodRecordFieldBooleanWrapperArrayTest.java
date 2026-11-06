@@ -107,8 +107,6 @@ class SplitGodRecordFieldBooleanWrapperArrayTest {
 
   static Stream<Arguments> validBooleanWrapperArrayValues() {
     return Stream.of(
-        Arguments.of(
-            "booleanWrapperArray [Ljava.lang.Boolean;@3c79b589 (valid)",
-            new Boolean[] {true, true}));
+        Arguments.of("booleanWrapperArray [true, true] (valid)", new Boolean[] {true, true}));
   }
 }

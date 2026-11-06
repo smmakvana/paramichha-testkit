@@ -3,7 +3,6 @@ package com.paramichha.testkit.generator;
 import com.paramichha.datafactory.DataFactory;
 import com.paramichha.testkit.model.ClassInfo;
 import com.paramichha.testkit.model.FieldInfo;
-import com.paramichha.utils.Texts;
 
 import java.lang.annotation.Annotation;
 
@@ -62,21 +61,13 @@ final class InstantiationWriter {
             boolean isDomainType = !rawType.isPrimitive() && !rawType.isEnum()
                     && !pkg.startsWith("java.") && !pkg.startsWith("jakarta.");
             if (isDomainType) {
-                try {
-                    Object domainValid = DataFactory.of(rawType).seed(seed).valid().getOrNull();
-                    return domainValid != null ? List.of(domainValid) : List.of();
-                } catch (Exception ignored2) {
-                    return List.of();
-                }
+                // a result, not an exception, when the type can't be built
+                Object domainValid = DataFactory.of(rawType).seed(seed).valid().getOrNull();
+                return domainValid != null ? List.of(domainValid) : List.of();
             }
 
-            List<?> values = DataFactory.field(field.name(), rawType, annotations).seed(seed).validList();
-            // validAll may return empty for truly unknown types — fall back to valid()
-            if (values.isEmpty()) {
-                Object single = DataFactory.field(field.name(), rawType, annotations).seed(seed).valid();
-                return single != null ? List.of(single) : List.of();
-            }
-            return values;
+            // throws for a type DataFactory can't generate (e.g. Object): no values then
+            return DataFactory.field(field.name(), rawType, annotations).seed(seed).validList();
         } catch (Exception e) {
             return List.of();
         }
@@ -140,16 +131,9 @@ final class InstantiationWriter {
     List<?> invalidValuesFor(Class<?> type, FieldInfo field) {
         try {
             List<Annotation> annotations = field.validations();
-            @SuppressWarnings("unchecked")
-            List<?> values = DataFactory.field(
-                    field.name(), (Class<Object>) field.rawType(), annotations).seed(seed).invalidList();
-            return values;
+            return DataFactory.field(field.name(), field.rawType(), annotations).seed(seed).invalidList();
         } catch (Exception e) {
             return List.of();
         }
-    }
-
-    private String capitalize(String s) {
-        return Texts.capitalize(s);
     }
 }

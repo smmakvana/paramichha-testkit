@@ -59,6 +59,17 @@ public final class ReflectionClassInfo implements ClassInfo {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof ReflectionClassInfo o)) return false;
+        return Objects.equals(constructorStyle, o.constructorStyle)
+                && Objects.equals(fields, o.fields)
+                && Objects.equals(methods, o.methods)
+                && utilityClass == o.utilityClass
+                && Objects.equals(type, o.type);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(constructorStyle, fields, methods, utilityClass, type);
     }
