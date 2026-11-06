@@ -44,16 +44,14 @@ class CatalogSweepTest {
 
     private static final String CATALOG_PACKAGE = "com/paramichha/datafactory/catalog/";
 
+    /** Fixtures TestKit can't create: it must say why, not write a test that does not compile. */
+    private static final String UNSUPPORTED = "com.paramichha.datafactory.catalog.unsupported.";
+
     @TempDir Path dir;
 
     /** Why a catalog class is known to fail today. Each one is a TestKit bug to fix. */
     enum Gap {
-        GETTER("Optional field: the getter check compares against the wrong value"),
-        IMPORT("a nested type used by a field is not imported"),
-        NESTED_SETTER("JavaBeans class with a @Valid nested object: a method test expects the setter to throw for an"
-                + " invalid nested value, but setters do not validate"),
-        ENUM("enum: TestKit writes only a TODO comment and no test class"),
-        UNSUPPORTED("fixture TestKit does not support yet: it should be reported, not turned into code that does not compile");
+        ; // none open. Add a constant (with its reason) when the sweep finds a new gap.
 
         final String reason;
 
@@ -67,17 +65,7 @@ class CatalogSweepTest {
      * may only shrink: a class on it that starts passing fails this sweep until it is removed, and a
      * class not on it must pass.
      */
-    static final Map<String, Gap> KNOWN_FAILING = Map.ofEntries(
-            Map.entry("nested.NestedPojo", Gap.NESTED_SETTER),
-            Map.entry("optional.OptionalPojo", Gap.GETTER),
-            Map.entry("optional.OptionalAllArgs", Gap.GETTER),
-            Map.entry("optional.OptionalLombok", Gap.GETTER),
-            Map.entry("realworld.trading.TradeWithLegs", Gap.IMPORT),
-            Map.entry("enumtype.OrderStatus", Gap.ENUM),
-            Map.entry("realworld.trading.TradeSide", Gap.ENUM),
-            Map.entry("realworld.trading.TradeStatus", Gap.ENUM),
-            Map.entry("unsupported.CircularReference", Gap.UNSUPPORTED),
-            Map.entry("unsupported.ErasedGeneric", Gap.UNSUPPORTED));
+    static final Map<String, Gap> KNOWN_FAILING = Map.ofEntries();
 
 
     static Stream<String> catalogClasses() throws Exception {
@@ -102,6 +90,10 @@ class CatalogSweepTest {
     @MethodSource("catalogClasses")
     void generatedTestCompilesAndPasses(String className) throws Exception {
         Gap gap = KNOWN_FAILING.get(className.substring("com.paramichha.datafactory.catalog.".length()));
+        if (className.startsWith(UNSUPPORTED)) {
+            expectClearReport(className);
+            return;
+        }
         if (gap == null) {
             generateCompileAndRun(className);
             return;
@@ -120,6 +112,14 @@ class CatalogSweepTest {
         List<String> catalog = catalogClasses()
                 .map(n -> n.substring("com.paramichha.datafactory.catalog.".length())).toList();
         assertThat(catalog).containsAll(KNOWN_FAILING.keySet());
+    }
+
+    private static void expectClearReport(String className) throws Exception {
+        String source = TestKit.of(Class.forName(className)).generateTest().asString();
+        assertThat(source).as("TestKit output for unsupported %s", className)
+                .doesNotContainPattern("(?m)^\\s*class\\s")
+                .contains("// Generation failed for: ")
+                .contains("// Reason: ");
     }
 
     private void generateCompileAndRun(String className) throws Exception {

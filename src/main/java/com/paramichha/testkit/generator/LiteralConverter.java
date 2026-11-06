@@ -55,6 +55,7 @@ final class LiteralConverter {
             case List<?> list        -> list.stream().allMatch(LiteralConverter::canSerialize);
             case java.util.Set<?> set -> set.stream().allMatch(LiteralConverter::canSerialize);
             case java.util.Queue<?> queue -> queue.stream().allMatch(LiteralConverter::canSerialize);
+            case java.util.Optional<?> opt -> opt.isEmpty() || canSerialize(opt.get());
             case java.util.Map<?, ?> map -> map.entrySet().stream()
                     .allMatch(e -> canSerialize(e.getKey()) && canSerialize(e.getValue()));
             default                  -> {
@@ -113,6 +114,8 @@ final class LiteralConverter {
                 yield "Set.of(" + set.stream().map(LiteralConverter::toLiteral)
                         .reduce((a, b) -> a + ", " + b).orElse("") + ")";
             }
+            case java.util.Optional<?> opt -> opt.isEmpty() ? "java.util.Optional.empty()"
+                    : "java.util.Optional.of(" + toLiteral(opt.get()) + ")";
             case java.util.Queue<?> queue -> "new java.util.ArrayDeque<>(List.of("
                     + queue.stream().map(LiteralConverter::toLiteral).reduce((a, b) -> a + ", " + b).orElse("")
                     + "))";
@@ -275,11 +278,19 @@ final class LiteralConverter {
             } catch (Exception ignored3) {}
             return List.copyOf(all);
         }
-        // For lists: recurse into each element
-        if (value instanceof List<?> list) {
+        // For collections (List, Set, Queue): recurse into each element
+        if (value instanceof java.util.Collection<?> collection) {
             java.util.Set<String> all = new java.util.LinkedHashSet<>(base);
-            for (Object elem : list) all.addAll(importsFor(elem));
+            for (Object elem : collection) all.addAll(importsFor(elem));
             return List.copyOf(all);
+        }
+        if (value instanceof java.util.Map<?, ?> map) {
+            java.util.Set<String> all = new java.util.LinkedHashSet<>(base);
+            map.forEach((k, v) -> { all.addAll(importsFor(k)); all.addAll(importsFor(v)); });
+            return List.copyOf(all);
+        }
+        if (value instanceof java.util.Optional<?> opt) {
+            return opt.map(LiteralConverter::importsFor).orElse(List.of());
         }
         // For enums: import the enum class
         if (value instanceof Enum<?>) {
