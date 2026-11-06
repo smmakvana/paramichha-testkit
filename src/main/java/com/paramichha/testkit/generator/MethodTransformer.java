@@ -1,6 +1,5 @@
 package com.paramichha.testkit.generator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,14 +21,6 @@ final class MethodTransformer {
                  OPERATION   -> MutatorTransformer.transform(method, config);
         };
 
-        List<FieldCoderInfo> fields = new ArrayList<>();
-        if (method.returnData().needsWrapperRecord()
-                && method.returnData().wrapperRecord() != null) {
-            fields.add(new FieldCoderInfo(
-                    List.of(), List.of(),
-                    "", method.returnData().wrapperRecord(), null));
-        }
-
         return ClassCoderInfo.nested(
                 List.of("@Nested",
                         "@DisplayName(\"" + displayName + "\")",
@@ -37,7 +28,7 @@ final class MethodTransformer {
                         "@TestMethodOrder(MethodOrderer.MethodName.class)"),
                 List.of(),
                 method.nestedClassName(),
-                List.copyOf(fields),
+                List.of(),
                 methods,
                 List.of());
     }

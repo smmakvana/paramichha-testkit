@@ -5,7 +5,6 @@ import com.paramichha.datafactory.catalog.annotation.combined.CombinedAllArgs;
 import com.paramichha.datafactory.catalog.annotation.email.EmailRecord;
 import com.paramichha.datafactory.catalog.annotation.numeric.NumericConstraintRecord;
 import com.paramichha.datafactory.catalog.annotation.numeric.NumericConstraintAllArgs;
-import com.paramichha.datafactory.catalog.number.NumberRecord;
 import com.paramichha.datafactory.catalog.nested.NestedRecord;
 import com.paramichha.datafactory.catalog.realworld.registration.UserRegistration;
 import com.paramichha.testkit.fixture.PlainRecord;

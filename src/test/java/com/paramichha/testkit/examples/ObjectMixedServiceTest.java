@@ -3,7 +3,6 @@ package com.paramichha.testkit.examples;
 import com.paramichha.utils.DataValidation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -442,9 +441,6 @@ class ObjectMixedServiceTest {
   @Tag("method")
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectMixedServiceMethodResolvedPriceTest {
-
-    private record ResolvedPriceResult(@NotNull BigDecimal value) {}
-    ;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("validResolvedPriceInputs")

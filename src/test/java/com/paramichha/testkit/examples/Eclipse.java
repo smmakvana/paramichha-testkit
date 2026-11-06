@@ -1,6 +1,5 @@
 package com.paramichha.testkit.examples;
 
-import jakarta.validation.constraints.Positive;
 
 public class Eclipse {
     int x;

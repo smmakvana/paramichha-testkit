@@ -70,13 +70,10 @@ final class InstantiationWriter {
                 }
             }
 
-            @SuppressWarnings("unchecked")
-            List<?> values = DataFactory.field(
-                    field.name(), (Class<Object>) rawType, annotations).seed(seed).validList();
+            List<?> values = DataFactory.field(field.name(), rawType, annotations).seed(seed).validList();
             // validAll may return empty for truly unknown types — fall back to valid()
             if (values.isEmpty()) {
-                Object single = DataFactory.field(
-                        field.name(), (Class<Object>) rawType, annotations).seed(seed).valid();
+                Object single = DataFactory.field(field.name(), rawType, annotations).seed(seed).valid();
                 return single != null ? List.of(single) : List.of();
             }
             return values;
@@ -89,7 +86,6 @@ final class InstantiationWriter {
      * Builds a single-element list as the valid value for a List<T> field.
      * Uses DataFactory to generate one valid element of the list's element type.
      */
-    @SuppressWarnings("unchecked")
     /**
      * A container of the field's type holding one valid element (or entry) of its declared type
      * arguments, or null when no element can be produced.

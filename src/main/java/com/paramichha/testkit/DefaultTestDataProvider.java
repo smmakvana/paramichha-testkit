@@ -40,7 +40,6 @@ public final class DefaultTestDataProvider implements TestDataProvider {
      * Per-field boundary variants live in validAllPerField and are used
      * separately by FieldTestWriter for parameterized field tests.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public TestFixture provide(Class<?> type, Long seed) {
         // Always seed from class name when no explicit seed given — deterministic output.

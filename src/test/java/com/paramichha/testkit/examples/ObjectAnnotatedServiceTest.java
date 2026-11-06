@@ -3,9 +3,6 @@ package com.paramichha.testkit.examples;
 import com.paramichha.utils.DataValidation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -417,9 +414,6 @@ class ObjectAnnotatedServiceTest {
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodApplyTaxTest {
 
-    private record ApplyTaxResult(@NotNull @Positive BigDecimal value) {}
-    ;
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("validApplyTaxInputs")
     @DisplayName("applyTax accepts valid input")
@@ -513,9 +507,6 @@ class ObjectAnnotatedServiceTest {
   @Tag("method")
   @TestMethodOrder(MethodOrderer.MethodName.class)
   class ObjectAnnotatedServiceMethodFormatDisplayTest {
-
-    private record FormatDisplayResult(@NotBlank String value) {}
-    ;
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("validFormatDisplayInputs")
