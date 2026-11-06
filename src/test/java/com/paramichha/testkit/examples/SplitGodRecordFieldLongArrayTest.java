@@ -106,6 +106,6 @@ class SplitGodRecordFieldLongArrayTest {
   }
 
   static Stream<Arguments> validLongArrayValues() {
-    return Stream.of(Arguments.of("longArray [J@2ef731d4 (valid)", new long[] {330L, 189L}));
+    return Stream.of(Arguments.of("longArray [J@541fbe6e (valid)", new long[] {330L, 189L}));
   }
 }

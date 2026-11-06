@@ -106,6 +106,6 @@ class SplitGodRecordFieldIntArrayTest {
   }
 
   static Stream<Arguments> validIntArrayValues() {
-    return Stream.of(Arguments.of("intArray [I@73c5ffb4 (valid)", new int[] {330, 189}));
+    return Stream.of(Arguments.of("intArray [I@60451d22 (valid)", new int[] {330, 189}));
   }
 }

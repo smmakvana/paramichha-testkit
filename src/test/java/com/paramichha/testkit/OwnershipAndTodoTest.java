@@ -27,6 +27,17 @@ class OwnershipAndTodoTest {
     }
 
     @Test
+    @DisplayName("a TODO test is tagged \"todo\" so a build can leave it out; a test with a known check is not")
+    void todoTestIsTagged() {
+        String circle = TestKit.of(Circle.class).generateTest().asString();
+        assertThat(circle).containsOnlyOnce("@Tag(\"todo\")");
+        assertThat(circle.indexOf("@Tag(\"todo\")")).isLessThan(circle.indexOf("TODO: define the expected result of area()"));
+        // SampleService: only getRawCount() and isActive() have no known check
+        String sample = TestKit.of(com.paramichha.testkit.examples.SampleService.class).generateTest().asString();
+        assertThat(sample.split("@Tag\\(\"todo\"\\)", -1)).hasSize(3);
+    }
+
+    @Test
     @DisplayName("a hand-owned file is not overwritten")
     void handOwnedFileIsKept(@TempDir Path dir) throws IOException {
         Path file = dir.resolve("demo").resolve("CircleTest.java");

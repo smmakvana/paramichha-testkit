@@ -64,7 +64,7 @@ public class SampleService {
     public BigDecimal getPrice() { return price; }
 
     /** QUERY — plain Object, no annotation */
-    public Object getMetadata() { return null; }
+    public Object getMetadata() { return "metadata"; }
 
     // =========================================================================
     // MUTATOR — void, one param, annotation permutations
@@ -77,7 +77,10 @@ public class SampleService {
     }
 
     /** MUTATOR — constrained primitive param */
-    public void setQuantity(@Min(1) @Max(100) int quantity) { this.quantity = quantity; }
+    public void setQuantity(@Min(1) @Max(100) int quantity) {
+        if (quantity < 1 || quantity > 100) throw new IllegalArgumentException("quantity must be 1..100");
+        this.quantity = quantity;
+    }
 
     /** MUTATOR — unannotated param */
     public void setMetadata(String metadata) { /* no-op */ }

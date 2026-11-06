@@ -106,6 +106,6 @@ class SplitGodRecordFieldDoubleArrayTest {
   }
 
   static Stream<Arguments> validDoubleArrayValues() {
-    return Stream.of(Arguments.of("doubleArray [D@5966bae (valid)", new double[] {-1.0d, -1.0d}));
+    return Stream.of(Arguments.of("doubleArray [D@3d3347f5 (valid)", new double[] {-1.0d, -1.0d}));
   }
 }

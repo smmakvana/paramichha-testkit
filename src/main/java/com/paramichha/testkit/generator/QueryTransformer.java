@@ -10,6 +10,12 @@ import java.util.List;
  */
 final class QueryTransformer {
 
+    /**
+     * Tag on a test that fails until a developer states the expected value. A build can leave
+     * these out ({@code excludedGroups}) while the expectations are being written.
+     */
+    static final String TODO_TAG = "todo";
+
     static List<MethodCoderInfo> transform(MethodData method, ClassDataConfig config) {
         List<MethodCoderInfo> result = new ArrayList<>();
         ReturnData ret      = method.returnData();
@@ -18,17 +24,21 @@ final class QueryTransformer {
 
         // testReturnsResult
         String returnsBody = typeName + " result = " + call + ";";
+        boolean todo = false;
         if (!ret.assertionCode().isBlank()) {
             returnsBody += "\n" + ret.assertionCode();
         } else if (!ret.isVoid()) {
             // No known expected value: fail until a person states it, so the test cannot pass silently.
             returnsBody += "\norg.assertj.core.api.Assertions.fail(\"TODO: define the expected result of "
                     + method.name() + "(), e.g. assertThat(result).isEqualTo(...)\");";
+            todo = true;
         }
 
+        List<String> returnsAnnotations = new ArrayList<>(List.of("@Test",
+                "@DisplayName(\"" + method.name() + " returns a value\")"));
+        if (todo) returnsAnnotations.add("@Tag(\"" + TODO_TAG + "\")");
         result.add(MethodCoderInfo.of(
-                List.of("@Test",
-                        "@DisplayName(\"" + method.name() + " returns a value\")"),
+                returnsAnnotations,
                 "void",
                 "testReturnsResult",
                 returnsBody));

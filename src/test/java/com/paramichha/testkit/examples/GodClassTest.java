@@ -1126,7 +1126,7 @@ class GodClassTest {
 
     static Stream<Arguments> validByteArrayValues() {
       return Stream.of(
-          Arguments.of("byteArray [B@7be1e187 (valid)", new byte[] {(byte) 127, (byte) 127}));
+          Arguments.of("byteArray [B@4fd00e10 (valid)", new byte[] {(byte) 127, (byte) 127}));
     }
   }
 
@@ -1183,7 +1183,7 @@ class GodClassTest {
 
     static Stream<Arguments> validShortArrayValues() {
       return Stream.of(
-          Arguments.of("shortArray [S@1107c465 (valid)", new short[] {(short) 791, (short) 858}));
+          Arguments.of("shortArray [S@7be1e187 (valid)", new short[] {(short) 791, (short) 858}));
     }
   }
 
@@ -1239,7 +1239,7 @@ class GodClassTest {
     }
 
     static Stream<Arguments> validIntArrayValues() {
-      return Stream.of(Arguments.of("intArray [I@64df8422 (valid)", new int[] {791, 858}));
+      return Stream.of(Arguments.of("intArray [I@1107c465 (valid)", new int[] {791, 858}));
     }
   }
 
@@ -1295,7 +1295,7 @@ class GodClassTest {
     }
 
     static Stream<Arguments> validLongArrayValues() {
-      return Stream.of(Arguments.of("longArray [J@2b30b627 (valid)", new long[] {791L, 858L}));
+      return Stream.of(Arguments.of("longArray [J@64df8422 (valid)", new long[] {791L, 858L}));
     }
   }
 
@@ -1351,7 +1351,7 @@ class GodClassTest {
     }
 
     static Stream<Arguments> validFloatArrayValues() {
-      return Stream.of(Arguments.of("floatArray [F@5fa9971f (valid)", new float[] {-1.0f, -1.0f}));
+      return Stream.of(Arguments.of("floatArray [F@2b30b627 (valid)", new float[] {-1.0f, -1.0f}));
     }
   }
 
@@ -1408,7 +1408,7 @@ class GodClassTest {
 
     static Stream<Arguments> validDoubleArrayValues() {
       return Stream.of(
-          Arguments.of("doubleArray [D@70a24463 (valid)", new double[] {-1.0d, -1.0d}));
+          Arguments.of("doubleArray [D@5fa9971f (valid)", new double[] {-1.0d, -1.0d}));
     }
   }
 
@@ -1465,7 +1465,7 @@ class GodClassTest {
 
     static Stream<Arguments> validBooleanArrayValues() {
       return Stream.of(
-          Arguments.of("booleanArray [Z@684430c1 (valid)", new boolean[] {true, true}));
+          Arguments.of("booleanArray [Z@70a24463 (valid)", new boolean[] {true, true}));
     }
   }
 
@@ -1521,7 +1521,7 @@ class GodClassTest {
     }
 
     static Stream<Arguments> validCharArrayValues() {
-      return Stream.of(Arguments.of("charArray [C@46eb2260 (valid)", new char[] {'I', 'Y'}));
+      return Stream.of(Arguments.of("charArray [C@684430c1 (valid)", new char[] {'I', 'Y'}));
     }
   }
 
@@ -1579,7 +1579,7 @@ class GodClassTest {
     static Stream<Arguments> validByteWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "byteWrapperArray [Ljava.lang.Byte;@556944cd (valid)",
+              "byteWrapperArray [Ljava.lang.Byte;@46eb2260 (valid)",
               new Byte[] {(byte) 127, (byte) 127}));
     }
   }
@@ -1638,7 +1638,7 @@ class GodClassTest {
     static Stream<Arguments> validShortWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "shortWrapperArray [Ljava.lang.Short;@370a935f (valid)",
+              "shortWrapperArray [Ljava.lang.Short;@556944cd (valid)",
               new Short[] {(short) 791, (short) 858}));
     }
   }
@@ -1697,7 +1697,7 @@ class GodClassTest {
     static Stream<Arguments> validIntWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "intWrapperArray [Ljava.lang.Integer;@7e017f47 (valid)", new Integer[] {791, 858}));
+              "intWrapperArray [Ljava.lang.Integer;@370a935f (valid)", new Integer[] {791, 858}));
     }
   }
 
@@ -1755,7 +1755,7 @@ class GodClassTest {
     static Stream<Arguments> validLongWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "longWrapperArray [Ljava.lang.Long;@6166aac5 (valid)", new Long[] {791L, 858L}));
+              "longWrapperArray [Ljava.lang.Long;@7e017f47 (valid)", new Long[] {791L, 858L}));
     }
   }
 
@@ -1813,7 +1813,7 @@ class GodClassTest {
     static Stream<Arguments> validFloatWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "floatWrapperArray [Ljava.lang.Float;@7e36d508 (valid)", new Float[] {-1.0f, -1.0f}));
+              "floatWrapperArray [Ljava.lang.Float;@6166aac5 (valid)", new Float[] {-1.0f, -1.0f}));
     }
   }
 
@@ -1871,7 +1871,7 @@ class GodClassTest {
     static Stream<Arguments> validDoubleWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "doubleWrapperArray [Ljava.lang.Double;@1d4531fa (valid)",
+              "doubleWrapperArray [Ljava.lang.Double;@7e36d508 (valid)",
               new Double[] {-1.0d, -1.0d}));
     }
   }
@@ -1930,7 +1930,7 @@ class GodClassTest {
     static Stream<Arguments> validBooleanWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "booleanWrapperArray [Ljava.lang.Boolean;@68cb8e52 (valid)",
+              "booleanWrapperArray [Ljava.lang.Boolean;@1d4531fa (valid)",
               new Boolean[] {true, true}));
     }
   }
@@ -1989,7 +1989,7 @@ class GodClassTest {
     static Stream<Arguments> validCharWrapperArrayValues() {
       return Stream.of(
           Arguments.of(
-              "charWrapperArray [Ljava.lang.Character;@3c2f310c (valid)",
+              "charWrapperArray [Ljava.lang.Character;@68cb8e52 (valid)",
               new Character[] {'I', 'Y'}));
     }
   }

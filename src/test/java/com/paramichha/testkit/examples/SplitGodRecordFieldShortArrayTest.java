@@ -107,6 +107,6 @@ class SplitGodRecordFieldShortArrayTest {
 
   static Stream<Arguments> validShortArrayValues() {
     return Stream.of(
-        Arguments.of("shortArray [S@452904ea (valid)", new short[] {(short) 330, (short) 189}));
+        Arguments.of("shortArray [S@6ce6f5f (valid)", new short[] {(short) 330, (short) 189}));
   }
 }

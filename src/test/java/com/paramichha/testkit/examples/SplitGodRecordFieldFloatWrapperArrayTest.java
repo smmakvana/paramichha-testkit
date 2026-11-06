@@ -108,6 +108,6 @@ class SplitGodRecordFieldFloatWrapperArrayTest {
   static Stream<Arguments> validFloatWrapperArrayValues() {
     return Stream.of(
         Arguments.of(
-            "floatWrapperArray [Ljava.lang.Float;@105a46b8 (valid)", new Float[] {-1.0f, -1.0f}));
+            "floatWrapperArray [Ljava.lang.Float;@325d3477 (valid)", new Float[] {-1.0f, -1.0f}));
   }
 }

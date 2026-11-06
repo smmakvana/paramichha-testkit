@@ -108,7 +108,7 @@ class SplitGodRecordFieldShortWrapperArrayTest {
   static Stream<Arguments> validShortWrapperArrayValues() {
     return Stream.of(
         Arguments.of(
-            "shortWrapperArray [Ljava.lang.Short;@59d50e3d (valid)",
+            "shortWrapperArray [Ljava.lang.Short;@20795bd2 (valid)",
             new Short[] {(short) 330, (short) 189}));
   }
 }

@@ -108,7 +108,7 @@ class SplitGodRecordFieldByteWrapperArrayTest {
   static Stream<Arguments> validByteWrapperArrayValues() {
     return Stream.of(
         Arguments.of(
-            "byteWrapperArray [Ljava.lang.Byte;@6fa8d37d (valid)",
+            "byteWrapperArray [Ljava.lang.Byte;@7d2b832 (valid)",
             new Byte[] {(byte) 127, (byte) 127}));
   }
 }
