@@ -201,8 +201,11 @@ final class ClassDataFactory {
             List<Object> invalidVals = resolveParamInvalid(p);
             List<String> hints       = buildEnforcementHints(p);
             ClassData    paramType   = resolveParamClassData(p, paramSeed, visiting);
+            // Only annotations on the parameter itself make the method responsible for rejecting
+            // input. A parameter whose type merely has constraints (e.g. Address with @NotBlank
+            // fields) is not validated by a plain call such as setAddress(address).
             result.add(new DefaultParamData(
-                    p.name(), paramType, p.isConstrained(),
+                    p.name(), paramType, !p.validations().isEmpty(),
                     validVals, invalidVals, hints));
         }
         return List.copyOf(result);

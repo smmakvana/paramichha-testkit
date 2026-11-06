@@ -46,6 +46,11 @@ final class InstantiationWriter {
 
             // Containers: one valid element of the declared type argument(s), e.g. List<Integer>,
             // Map<String, Integer>. DataFactory's field-level API only sees the raw type.
+            // Optional<T>: present, holding one valid T (absent is valid too, but says nothing)
+            if (rawType == java.util.Optional.class) {
+                Object inner = oneElement(field, typeArgument(field, 0), "");
+                return inner != null ? List.of(java.util.Optional.of(inner)) : List.of();
+            }
             if (java.util.Collection.class.isAssignableFrom(rawType) || java.util.Map.class.isAssignableFrom(rawType)) {
                 Object container = buildOneValidContainer(field);
                 return container != null ? List.of(container) : List.of();
