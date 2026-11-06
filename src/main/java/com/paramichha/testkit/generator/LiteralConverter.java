@@ -54,6 +54,9 @@ final class LiteralConverter {
             case Enum<?> ignored     -> true;
             case List<?> list        -> list.stream().allMatch(LiteralConverter::canSerialize);
             case java.util.Set<?> set -> set.stream().allMatch(LiteralConverter::canSerialize);
+            case java.util.Queue<?> queue -> queue.stream().allMatch(LiteralConverter::canSerialize);
+            case java.util.Map<?, ?> map -> map.entrySet().stream()
+                    .allMatch(e -> canSerialize(e.getKey()) && canSerialize(e.getValue()));
             default                  -> {
                 Class<?> c = value.getClass();
                 if (c.isArray()) yield canSerializeArray(value);
@@ -108,6 +111,15 @@ final class LiteralConverter {
                 if (set.isEmpty()) yield "Set.of()";
                 if (!set.stream().allMatch(LiteralConverter::canSerialize)) yield "Set.of()";
                 yield "Set.of(" + set.stream().map(LiteralConverter::toLiteral)
+                        .reduce((a, b) -> a + ", " + b).orElse("") + ")";
+            }
+            case java.util.Queue<?> queue -> "new java.util.ArrayDeque<>(List.of("
+                    + queue.stream().map(LiteralConverter::toLiteral).reduce((a, b) -> a + ", " + b).orElse("")
+                    + "))";
+            case java.util.Map<?, ?> map -> {
+                if (map.isEmpty()) yield "Map.of()";
+                yield "Map.ofEntries(" + map.entrySet().stream()
+                        .map(e -> "Map.entry(" + toLiteral(e.getKey()) + ", " + toLiteral(e.getValue()) + ")")
                         .reduce((a, b) -> a + ", " + b).orElse("") + ")";
             }
             default                  -> {

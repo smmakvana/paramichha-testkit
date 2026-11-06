@@ -36,8 +36,11 @@ final class CreationTransformer {
                     ? instanceName + "." + m.name() + "()"
                     : instanceName + "." + TestNames.getterName(
                     m.name(), isBooleanType(m.type()), config.isRecord()) + "()";
+            // A Queue (ArrayDeque) does not implement equals: compare its elements in order.
+            String check = val instanceof java.util.Queue<?>
+                    ? ").containsExactlyElementsOf(" : ").isEqualTo(";
             holdsBody.append("assertThat(").append(accessor)
-                    .append(").isEqualTo(").append(LiteralConverter.toLiteral(val)).append(");\n");
+                    .append(check).append(LiteralConverter.toLiteral(val)).append(");\n");
         }
         methods.add(MethodCoderInfo.of(
                 List.of("@Test",

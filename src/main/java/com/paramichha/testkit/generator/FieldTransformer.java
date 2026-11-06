@@ -67,7 +67,7 @@ final class FieldTransformer {
                             "@MethodSource(\"" + validSrc + "\")",
                             "@DisplayName(\"accepts valid values\")"),
                     List.of(), "void", acceptsM,
-                    List.of(ParameterCoderInfo.of("String", "description"),
+                    List.of(ParameterCoderInfo.of("String", com.paramichha.testkit.utils.TestNames.labelParameter(List.of(name))),
                             ParameterCoderInfo.of(boxedType, name)),
                     body));
             methods.add(new MethodCoderInfo(
@@ -112,7 +112,7 @@ final class FieldTransformer {
                             "@MethodSource(\"" + invalidSrc + "\")",
                             "@DisplayName(\"rejects invalid values\")"),
                     List.of(), "void", rejectsM,
-                    List.of(ParameterCoderInfo.of("String", "description"),
+                    List.of(ParameterCoderInfo.of("String", com.paramichha.testkit.utils.TestNames.labelParameter(List.of(name))),
                             ParameterCoderInfo.of(boxedType, name)),
                     body));
             methods.add(new MethodCoderInfo(
