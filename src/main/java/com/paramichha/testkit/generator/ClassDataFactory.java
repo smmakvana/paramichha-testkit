@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Everything it produces is plain data — no DataFactory below this point.
  *
  * Flow:
- *   TestCodeData → ClassDataFactory.build() → ClassData → ClassDataCoder → String
+ *   TestCodeData → ClassDataFactory.build() → ClassData → ClassDataTransformer → ClassCoder → String
  */
 final class ClassDataFactory {
 

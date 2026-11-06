@@ -164,3 +164,9 @@ Set `-Dtestkit.format=false` to skip formatting entirely, for example in an IDE 
 ## License
 
 Apache 2.0
+
+---
+
+## Design notes
+
+- [Reading a raw `.java` source file](docs/SOURCE-READER.md): an idea to revisit, not built yet.
