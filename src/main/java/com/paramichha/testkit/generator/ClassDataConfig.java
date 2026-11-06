@@ -5,7 +5,7 @@ import com.paramichha.testkit.Affix;
 import java.util.List;
 
 /**
- * Template-resolved configuration passed to {@link ClassDataCoder}.
+ * Template-resolved configuration used by {@link ClassDataTransformer} and the coders.
  * No DataFactory, no ClassInfo — pure config strings.
  */
 final class ClassDataConfig {

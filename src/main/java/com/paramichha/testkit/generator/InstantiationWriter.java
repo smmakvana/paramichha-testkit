@@ -8,11 +8,10 @@ import com.paramichha.utils.Texts;
 import java.lang.annotation.Annotation;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Writes constructor/builder call expressions for a class.
- * Single responsibility — knows how to instantiate, nothing else.
+ * Picks the valid and invalid values for a class's fields, from DataFactory.
+ * How a generated test creates the instance is decided in {@link CreationExpressions}.
  */
 final class InstantiationWriter {
 
@@ -22,63 +21,6 @@ final class InstantiationWriter {
     InstantiationWriter(ClassInfo meta, long seed) {
         this.meta = meta;
         this.seed = seed;
-    }
-
-    /** Full constructor call with all field values as literals. */
-    String constructorCall(List<Object> values) {
-        return switch (meta.constructorStyle()) {
-            case RECORD, ALL_ARGS -> {
-                String args = values.stream().map(LiteralConverter::toLiteral)
-                        .collect(Collectors.joining(", "));
-                yield "new " + meta.simpleName() + "(" + args + ")";
-            }
-            case LOMBOK_BUILDER -> {
-                StringBuilder b = new StringBuilder(meta.simpleName() + ".builder()");
-                List<FieldInfo> fields = meta.fields();
-                for (int i = 0; i < fields.size() && i < values.size(); i++)
-                    b.append("\n                    .").append(fields.get(i).name())
-                            .append("(").append(LiteralConverter.toLiteral(values.get(i))).append(")");
-                yield b.append("\n                    .build()").toString();
-            }
-            case SETTER -> {
-                List<FieldInfo> fields = meta.fields();
-                StringBuilder b = new StringBuilder("build" + meta.simpleName() + "(");
-                for (int i = 0; i < fields.size() && i < values.size(); i++) {
-                    if (i > 0) b.append(", ");
-                    b.append(LiteralConverter.toLiteral(values.get(i)));
-                }
-                b.append(")");
-                yield b.toString();
-            }
-        };
-    }
-
-    /** Constructor call with one field replaced by a variable reference. */
-    String constructorCallWithVar(List<Object> baseParts, int fieldIndex, String varName) {
-        List<String> args = new java.util.ArrayList<>();
-        List<FieldInfo> fields = meta.fields();
-        for (int i = 0; i < fields.size(); i++)
-            args.add(i == fieldIndex ? varName : LiteralConverter.toLiteral(baseParts.get(i)));
-
-        return switch (meta.constructorStyle()) {
-            case RECORD, ALL_ARGS -> "new " + meta.simpleName() + "(" + String.join(", ", args) + ")";
-            case LOMBOK_BUILDER -> {
-                StringBuilder b = new StringBuilder(meta.simpleName() + ".builder()");
-                for (int i = 0; i < fields.size(); i++)
-                    b.append(".").append(fields.get(i).name()).append("(").append(args.get(i)).append(")");
-                yield b.append(".build()").toString();
-            }
-            case SETTER -> {
-                fields = meta.fields();
-                StringBuilder b = new StringBuilder("build" + meta.simpleName() + "(");
-                for (int i = 0; i < fields.size(); i++) {
-                    if (i > 0) b.append(", ");
-                    b.append(i == fieldIndex ? varName : LiteralConverter.toLiteral(baseParts.get(i)));
-                }
-                b.append(")");
-                yield b.toString();
-            }
-        };
     }
 
     /**

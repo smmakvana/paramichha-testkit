@@ -9,7 +9,8 @@ import java.util.List;
  * enabling deep generation for domain objects passed as method arguments.
  *
  * <p>All DataFactory calls happen in {@link ClassDataFactory} before this is created.
- * {@link ClassDataCoder} receives this and produces a pure String — no DataFactory, no reflection.
+ * {@link ClassDataTransformer} turns this into coder info and {@link ClassCoder} writes the String —
+ * no DataFactory, no reflection.
  *
  * <pre>
  * Class&lt;?&gt;
@@ -17,7 +18,7 @@ import java.util.List;
  * ClassInfo
  *     ↓  ClassDataFactory  (ALL DataFactory calls here)
  * ClassData  ← you are here
- *     ↓  ClassDataCoder
+ *     ↓  ClassDataTransformer → ClassCoder
  * String → GenerationResult
  * </pre>
  */
