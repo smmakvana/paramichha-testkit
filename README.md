@@ -1,13 +1,8 @@
 # TestKit
 
-Generates JUnit 5 tests for your Java classes from their Jakarta Validation annotations.
-Point it at a class; it writes a test file that checks the class can be built, that every
-field accepts its boundary values and rejects values that break each constraint, and that
-each public method accepts valid input and rejects invalid input.
+[![Java 21+](https://img.shields.io/badge/Java-21%2B-blue)](https://openjdk.org/) [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green)](LICENSE)
 
-Built on [DataFactory](https://github.com/smmakvana/paramichha-datafactory), which supplies all the data.
-
----
+TestKit generates JUnit 5 test classes from Java classes, using their Jakarta validation annotations. Each field and method gets tests for valid and invalid values. The output is plain source that you can read, commit and extend in a separate file.
 
 ## The Paramichha libraries
 
@@ -160,6 +155,10 @@ Set `-Dtestkit.format=false` to skip formatting entirely, for example in an IDE 
 - **JUnit 5 + AssertJ only.** No TestNG, JUnit 4 or Hamcrest output.
 
 ---
+
+## Contributing
+
+Open an issue to discuss a change, then send a pull request. Run `mvn test` before you submit. The committed examples are generated output: regenerate them when the generator changes.
 
 ## License
 
