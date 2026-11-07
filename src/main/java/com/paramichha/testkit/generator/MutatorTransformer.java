@@ -17,7 +17,6 @@ final class MutatorTransformer {
         List<MethodCoderInfo> result = new ArrayList<>();
         ReturnData ret          = method.returnData();
         boolean    anyConstrained = method.anyParamConstrained();
-        String     paramSig     = buildParamSig(method.params());
         String     paramCall    = buildParamCall(method.params());
         String     call         = config.instanceName() + "." + method.name() + "(" + paramCall + ")";
 
@@ -94,12 +93,6 @@ final class MutatorTransformer {
                 params.stream().map(ParamData::name).toList())));
         params.forEach(p -> result.add(ParameterTransformer.transform(p)));
         return List.copyOf(result);
-    }
-
-    private static String buildParamSig(List<ParamData> params) {
-        return params.stream()
-                .map(p -> p.type().className() + " " + p.name())
-                .collect(Collectors.joining(", "));
     }
 
     private static String buildParamCall(List<ParamData> params) {
